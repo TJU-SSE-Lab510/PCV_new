@@ -524,7 +524,7 @@ void CloudViewer::initial()
 	setConsoleTable();
 
 	// 输出窗口
-	consoleLog("Software start", "CloudViewer", "Welcome to use CloudViewer", "Nightn");
+	consoleLog("Software start", "CloudViewer", "Welcome to use CloudViewer", "TJ510");
 
 
 	// 设置背景颜色为 dark
@@ -583,16 +583,16 @@ void CloudViewer::about()
 	aboutwin->show();
 
 	// 输出窗口
-	consoleLog("About", "Nightn", "http://nightn.com", "Welcome to my blog!");
+	consoleLog("About", "TJ-510", "TJ510", "TJ510");
 }
 
 //帮助
 void CloudViewer::help()
 {
-	QDesktopServices::openUrl(QUrl(QLatin1String("http://nightn.com/cloudviewer")));
+	QDesktopServices::openUrl(QUrl(QLatin1String("http://www.baidu.com")));
 
 	// 输出窗口
-	consoleLog("Help", "Cloudviewer help", "http://nightn.com/cloudviewer", "");
+	consoleLog("Help", "Cloudviewer help", "none", "none");
 
 	//QMessageBox::information(this, "Help", "we are building help widget...");
 }

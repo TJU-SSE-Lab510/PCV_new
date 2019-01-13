@@ -63,126 +63,6 @@
     </item>
    </layout>
   </widget>
-  <widget class="QMenuBar" name="menuBar">
-   <property name="geometry">
-    <rect>
-     <x>0</x>
-     <y>0</y>
-     <width>1246</width>
-     <height>26</height>
-    </rect>
-   </property>
-   <property name="font">
-    <font>
-     <family>微软雅黑</family>
-    </font>
-   </property>
-   <widget class="QMenu" name="menuFile">
-    <property name="title">
-     <string>File</string>
-    </property>
-    <addaction name="openAction"/>
-    <addaction name="addAction"/>
-    <addaction name="clearAction"/>
-    <addaction name="saveAction"/>
-    <addaction name="saveBinaryAction"/>
-    <addaction name="changeAction"/>
-    <addaction name="exitAction"/>
-   </widget>
-   <widget class="QMenu" name="menuGenerate">
-    <property name="title">
-     <string>Generate</string>
-    </property>
-    <widget class="QMenu" name="menuBasic_shapes">
-     <property name="title">
-      <string>Basic shapes</string>
-     </property>
-     <property name="icon">
-      <iconset resource="cloudviewer.qrc">
-       <normaloff>:/Resources/images/shape.png</normaloff>:/Resources/images/shape.png</iconset>
-     </property>
-     <addaction name="sphereAction"/>
-     <addaction name="cylinderAction"/>
-    </widget>
-    <addaction name="cubeAction"/>
-    <addaction name="menuBasic_shapes"/>
-   </widget>
-   <widget class="QMenu" name="menuAbout">
-    <property name="title">
-     <string>About</string>
-    </property>
-    <addaction name="helpAction"/>
-    <addaction name="aboutAction"/>
-   </widget>
-   <widget class="QMenu" name="menuOption">
-    <property name="title">
-     <string>Option</string>
-    </property>
-    <widget class="QMenu" name="themeAction">
-     <property name="title">
-      <string>Theme</string>
-     </property>
-     <property name="icon">
-      <iconset resource="cloudviewer.qrc">
-       <normaloff>:/Resources/images/theme.png</normaloff>:/Resources/images/theme.png</iconset>
-     </property>
-     <addaction name="windowsThemeAction"/>
-     <addaction name="darculaThemeAction"/>
-    </widget>
-    <widget class="QMenu" name="langAction">
-     <property name="title">
-      <string>Language</string>
-     </property>
-     <property name="icon">
-      <iconset resource="cloudviewer.qrc">
-       <normaloff>:/Resources/images/language.png</normaloff>:/Resources/images/language.png</iconset>
-     </property>
-     <addaction name="englishAction"/>
-     <addaction name="chineseAction"/>
-    </widget>
-    <addaction name="themeAction"/>
-    <addaction name="langAction"/>
-   </widget>
-   <widget class="QMenu" name="menuView">
-    <property name="title">
-     <string>Display</string>
-    </property>
-    <widget class="QMenu" name="menuAngle_view">
-     <property name="title">
-      <string>Angle view</string>
-     </property>
-     <addaction name="mainviewAction"/>
-     <addaction name="leftviewAction"/>
-     <addaction name="topviewAction"/>
-    </widget>
-    <addaction name="pointcolorAction"/>
-    <addaction name="bgcolorAction"/>
-    <addaction name="menuAngle_view"/>
-   </widget>
-   <widget class="QMenu" name="menuView_2">
-    <property name="title">
-     <string>View</string>
-    </property>
-    <addaction name="dataAction"/>
-    <addaction name="propertyAction"/>
-    <addaction name="consoleAction"/>
-    <addaction name="RGBAction"/>
-   </widget>
-   <widget class="QMenu" name="menuProcess">
-    <property name="title">
-     <string>Process</string>
-    </property>
-    <addaction name="meshsurfaceAction"/>
-    <addaction name="wireframeAction"/>
-   </widget>
-   <addaction name="menuFile"/>
-   <addaction name="menuView"/>
-   <addaction name="menuView_2"/>
-   <addaction name="menuGenerate"/>
-   <addaction name="menuProcess"/>
-   <addaction name="menuOption"/>
-   <addaction name="menuAbout"/>
-  </widget>
   <widget class="QToolBar" name="mainToolBar">
    <attribute name="toolBarArea">
     <enum>TopToolBarArea</enum>
@@ -855,6 +735,127 @@
     </layout>
    </widget>
   </widget>
+  <widget class="QMenuBar" name="menuBar">
+   <property name="geometry">
+    <rect>
+     <x>0</x>
+     <y>0</y>
+     <width>1246</width>
+     <height>23</height>
+    </rect>
+   </property>
+   <property name="font">
+    <font>
+     <family>微软雅黑</family>
+    </font>
+   </property>
+   <widget class="QMenu" name="menuFile">
+    <property name="title">
+     <string>File</string>
+    </property>
+    <addaction name="openAction"/>
+    <addaction name="addAction"/>
+    <addaction name="clearAction"/>
+    <addaction name="saveAction"/>
+    <addaction name="saveBinaryAction"/>
+    <addaction name="changeAction"/>
+    <addaction name="exitAction"/>
+   </widget>
+   <widget class="QMenu" name="menuGenerate">
+    <property name="title">
+     <string>Generate</string>
+    </property>
+    <widget class="QMenu" name="menuBasic_shapes">
+     <property name="title">
+      <string>Basic shapes</string>
+     </property>
+     <property name="icon">
+      <iconset resource="cloudviewer.qrc">
+       <normaloff>:/Resources/images/shape.png</normaloff>:/Resources/images/shape.png</iconset>
+     </property>
+     <addaction name="sphereAction"/>
+     <addaction name="cylinderAction"/>
+    </widget>
+    <addaction name="cubeAction"/>
+    <addaction name="menuBasic_shapes"/>
+   </widget>
+   <widget class="QMenu" name="menuAbout">
+    <property name="title">
+     <string>About</string>
+    </property>
+    <addaction name="helpAction"/>
+    <addaction name="aboutAction"/>
+    <addaction name="separator"/>
+   </widget>
+   <widget class="QMenu" name="menuOption">
+    <property name="title">
+     <string>Option</string>
+    </property>
+    <widget class="QMenu" name="themeAction">
+     <property name="title">
+      <string>Theme</string>
+     </property>
+     <property name="icon">
+      <iconset resource="cloudviewer.qrc">
+       <normaloff>:/Resources/images/theme.png</normaloff>:/Resources/images/theme.png</iconset>
+     </property>
+     <addaction name="windowsThemeAction"/>
+     <addaction name="darculaThemeAction"/>
+    </widget>
+    <widget class="QMenu" name="langAction">
+     <property name="title">
+      <string>Language</string>
+     </property>
+     <property name="icon">
+      <iconset resource="cloudviewer.qrc">
+       <normaloff>:/Resources/images/language.png</normaloff>:/Resources/images/language.png</iconset>
+     </property>
+     <addaction name="englishAction"/>
+     <addaction name="chineseAction"/>
+    </widget>
+    <addaction name="themeAction"/>
+    <addaction name="langAction"/>
+   </widget>
+   <widget class="QMenu" name="menuView">
+    <property name="title">
+     <string>Display</string>
+    </property>
+    <widget class="QMenu" name="menuAngle_view">
+     <property name="title">
+      <string>Angle view</string>
+     </property>
+     <addaction name="mainviewAction"/>
+     <addaction name="leftviewAction"/>
+     <addaction name="topviewAction"/>
+    </widget>
+    <addaction name="pointcolorAction"/>
+    <addaction name="bgcolorAction"/>
+    <addaction name="menuAngle_view"/>
+   </widget>
+   <widget class="QMenu" name="menuView_2">
+    <property name="title">
+     <string>View</string>
+    </property>
+    <addaction name="dataAction"/>
+    <addaction name="propertyAction"/>
+    <addaction name="consoleAction"/>
+    <addaction name="RGBAction"/>
+   </widget>
+   <widget class="QMenu" name="menuProcess">
+    <property name="title">
+     <string>Process</string>
+    </property>
+    <addaction name="meshsurfaceAction"/>
+    <addaction name="wireframeAction"/>
+   </widget>
+   <addaction name="menuFile"/>
+   <addaction name="menuView"/>
+   <addaction name="menuView_2"/>
+   <addaction name="menuGenerate"/>
+   <addaction name="menuProcess"/>
+   <addaction name="menuOption"/>
+   <addaction name="menuAbout"/>
+  </widget>
   <action name="openAction">
    <property name="icon">
     <iconset resource="cloudviewer.qrc">
@@ -1123,6 +1124,11 @@
    </property>
    <property name="statusTip">
     <string>Save point cloud as binary file</string>
+   </property>
+  </action>
+  <action name="actionaaa">
+   <property name="text">
+    <string>aaa</string>
    </property>
   </action>
  </widget>

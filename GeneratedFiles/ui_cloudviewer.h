@@ -65,21 +65,10 @@ public:
     QAction *englishAction;
     QAction *chineseAction;
     QAction *saveBinaryAction;
+    QAction *actionaaa;
     QWidget *centralWidget;
     QHBoxLayout *horizontalLayout_5;
     QVTKWidget *screen;
-    QMenuBar *menuBar;
-    QMenu *menuFile;
-    QMenu *menuGenerate;
-    QMenu *menuBasic_shapes;
-    QMenu *menuAbout;
-    QMenu *menuOption;
-    QMenu *themeAction;
-    QMenu *langAction;
-    QMenu *menuView;
-    QMenu *menuAngle_view;
-    QMenu *menuView_2;
-    QMenu *menuProcess;
     QToolBar *mainToolBar;
     QStatusBar *statusBar;
     QDockWidget *RGBDock;
@@ -117,6 +106,18 @@ public:
     QWidget *dockWidgetContents_7;
     QVBoxLayout *verticalLayout_5;
     QTableWidget *consoleTable;
+    QMenuBar *menuBar;
+    QMenu *menuFile;
+    QMenu *menuGenerate;
+    QMenu *menuBasic_shapes;
+    QMenu *menuAbout;
+    QMenu *menuOption;
+    QMenu *themeAction;
+    QMenu *langAction;
+    QMenu *menuView;
+    QMenu *menuAngle_view;
+    QMenu *menuView_2;
+    QMenu *menuProcess;
 
     void setupUi(QMainWindow *CloudViewerClass)
     {
@@ -255,6 +256,8 @@ public:
         QIcon icon18;
         icon18.addFile(QStringLiteral(":/Resources/images/saveBinary.png"), QSize(), QIcon::Normal, QIcon::Off);
         saveBinaryAction->setIcon(icon18);
+        actionaaa = new QAction(CloudViewerClass);
+        actionaaa->setObjectName(QStringLiteral("actionaaa"));
         centralWidget = new QWidget(CloudViewerClass);
         centralWidget->setObjectName(QStringLiteral("centralWidget"));
         QSizePolicy sizePolicy1(QSizePolicy::Preferred, QSizePolicy::Preferred);
@@ -273,44 +276,6 @@ public:
         horizontalLayout_5->addWidget(screen);
 
         CloudViewerClass->setCentralWidget(centralWidget);
-        menuBar = new QMenuBar(CloudViewerClass);
-        menuBar->setObjectName(QStringLiteral("menuBar"));
-        menuBar->setGeometry(QRect(0, 0, 1246, 26));
-        QFont font;
-        font.setFamily(QString::fromUtf8("\345\276\256\350\275\257\351\233\205\351\273\221"));
-        menuBar->setFont(font);
-        menuFile = new QMenu(menuBar);
-        menuFile->setObjectName(QStringLiteral("menuFile"));
-        menuGenerate = new QMenu(menuBar);
-        menuGenerate->setObjectName(QStringLiteral("menuGenerate"));
-        menuBasic_shapes = new QMenu(menuGenerate);
-        menuBasic_shapes->setObjectName(QStringLiteral("menuBasic_shapes"));
-        QIcon icon19;
-        icon19.addFile(QStringLiteral(":/Resources/images/shape.png"), QSize(), QIcon::Normal, QIcon::Off);
-        menuBasic_shapes->setIcon(icon19);
-        menuAbout = new QMenu(menuBar);
-        menuAbout->setObjectName(QStringLiteral("menuAbout"));
-        menuOption = new QMenu(menuBar);
-        menuOption->setObjectName(QStringLiteral("menuOption"));
-        themeAction = new QMenu(menuOption);
-        themeAction->setObjectName(QStringLiteral("themeAction"));
-        QIcon icon20;
-        icon20.addFile(QStringLiteral(":/Resources/images/theme.png"), QSize(), QIcon::Normal, QIcon::Off);
-        themeAction->setIcon(icon20);
-        langAction = new QMenu(menuOption);
-        langAction->setObjectName(QStringLiteral("langAction"));
-        QIcon icon21;
-        icon21.addFile(QStringLiteral(":/Resources/images/language.png"), QSize(), QIcon::Normal, QIcon::Off);
-        langAction->setIcon(icon21);
-        menuView = new QMenu(menuBar);
-        menuView->setObjectName(QStringLiteral("menuView"));
-        menuAngle_view = new QMenu(menuView);
-        menuAngle_view->setObjectName(QStringLiteral("menuAngle_view"));
-        menuView_2 = new QMenu(menuBar);
-        menuView_2->setObjectName(QStringLiteral("menuView_2"));
-        menuProcess = new QMenu(menuBar);
-        menuProcess->setObjectName(QStringLiteral("menuProcess"));
-        CloudViewerClass->setMenuBar(menuBar);
         mainToolBar = new QToolBar(CloudViewerClass);
         mainToolBar->setObjectName(QStringLiteral("mainToolBar"));
         CloudViewerClass->addToolBar(Qt::TopToolBarArea, mainToolBar);
@@ -340,10 +305,10 @@ public:
         sizePolicy2.setVerticalStretch(0);
         sizePolicy2.setHeightForWidth(label_1->sizePolicy().hasHeightForWidth());
         label_1->setSizePolicy(sizePolicy2);
-        QFont font1;
-        font1.setFamily(QString::fromUtf8("\345\276\256\350\275\257\351\233\205\351\273\221"));
-        font1.setPointSize(10);
-        label_1->setFont(font1);
+        QFont font;
+        font.setFamily(QString::fromUtf8("\345\276\256\350\275\257\351\233\205\351\273\221"));
+        font.setPointSize(10);
+        label_1->setFont(font);
 
         horizontalLayout->addWidget(label_1);
 
@@ -391,7 +356,7 @@ public:
         label_2->setObjectName(QStringLiteral("label_2"));
         sizePolicy2.setHeightForWidth(label_2->sizePolicy().hasHeightForWidth());
         label_2->setSizePolicy(sizePolicy2);
-        label_2->setFont(font1);
+        label_2->setFont(font);
 
         horizontalLayout_2->addWidget(label_2);
 
@@ -426,7 +391,7 @@ public:
         label_3->setObjectName(QStringLiteral("label_3"));
         sizePolicy2.setHeightForWidth(label_3->sizePolicy().hasHeightForWidth());
         label_3->setSizePolicy(sizePolicy2);
-        label_3->setFont(font1);
+        label_3->setFont(font);
 
         horizontalLayout_3->addWidget(label_3);
 
@@ -461,7 +426,7 @@ public:
         label_4->setObjectName(QStringLiteral("label_4"));
         sizePolicy2.setHeightForWidth(label_4->sizePolicy().hasHeightForWidth());
         label_4->setSizePolicy(sizePolicy2);
-        label_4->setFont(font1);
+        label_4->setFont(font);
 
         horizontalLayout_4->addWidget(label_4);
 
@@ -492,10 +457,10 @@ public:
 
         colorBtn = new QPushButton(dockWidgetContents_4);
         colorBtn->setObjectName(QStringLiteral("colorBtn"));
-        QFont font2;
-        font2.setFamily(QStringLiteral("Times New Roman"));
-        font2.setPointSize(11);
-        colorBtn->setFont(font2);
+        QFont font1;
+        font1.setFamily(QStringLiteral("Times New Roman"));
+        font1.setPointSize(11);
+        colorBtn->setFont(font1);
         colorBtn->setStyleSheet(QStringLiteral(""));
 
         verticalLayout->addWidget(colorBtn);
@@ -505,13 +470,13 @@ public:
 
         cooCbx = new QCheckBox(dockWidgetContents_4);
         cooCbx->setObjectName(QStringLiteral("cooCbx"));
-        cooCbx->setFont(font1);
+        cooCbx->setFont(font);
 
         verticalLayout_2->addWidget(cooCbx);
 
         bgcCbx = new QCheckBox(dockWidgetContents_4);
         bgcCbx->setObjectName(QStringLiteral("bgcCbx"));
-        bgcCbx->setFont(font1);
+        bgcCbx->setFont(font);
 
         verticalLayout_2->addWidget(bgcCbx);
 
@@ -521,7 +486,7 @@ public:
         dataDock->setObjectName(QStringLiteral("dataDock"));
         dataDock->setMinimumSize(QSize(250, 233));
         dataDock->setMaximumSize(QSize(300, 524287));
-        dataDock->setFont(font1);
+        dataDock->setFont(font);
         dockWidgetContents_5 = new QWidget();
         dockWidgetContents_5->setObjectName(QStringLiteral("dockWidgetContents_5"));
         verticalLayout_3 = new QVBoxLayout(dockWidgetContents_5);
@@ -531,10 +496,10 @@ public:
         dataTree = new QTreeWidget(dockWidgetContents_5);
         dataTree->setObjectName(QStringLiteral("dataTree"));
         dataTree->setMinimumSize(QSize(0, 180));
-        QFont font3;
-        font3.setFamily(QString::fromUtf8("\345\276\256\350\275\257\351\233\205\351\273\221"));
-        font3.setPointSize(9);
-        dataTree->setFont(font3);
+        QFont font2;
+        font2.setFamily(QString::fromUtf8("\345\276\256\350\275\257\351\233\205\351\273\221"));
+        font2.setPointSize(9);
+        dataTree->setFont(font2);
         dataTree->setContextMenuPolicy(Qt::CustomContextMenu);
 
         verticalLayout_3->addWidget(dataTree);
@@ -544,7 +509,7 @@ public:
         propertyDock = new QDockWidget(CloudViewerClass);
         propertyDock->setObjectName(QStringLiteral("propertyDock"));
         propertyDock->setMinimumSize(QSize(250, 233));
-        propertyDock->setFont(font1);
+        propertyDock->setFont(font);
         dockWidgetContents_6 = new QWidget();
         dockWidgetContents_6->setObjectName(QStringLiteral("dockWidgetContents_6"));
         verticalLayout_4 = new QVBoxLayout(dockWidgetContents_6);
@@ -564,9 +529,9 @@ public:
             propertyTable->setRowCount(4);
         propertyTable->setObjectName(QStringLiteral("propertyTable"));
         propertyTable->setMinimumSize(QSize(0, 180));
-        QFont font4;
-        font4.setPointSize(9);
-        propertyTable->setFont(font4);
+        QFont font3;
+        font3.setPointSize(9);
+        propertyTable->setFont(font3);
         propertyTable->setFrameShadow(QFrame::Sunken);
         propertyTable->setMidLineWidth(0);
         propertyTable->setHorizontalScrollBarPolicy(Qt::ScrollBarAsNeeded);
@@ -639,45 +604,45 @@ public:
 
         consoleDock->setWidget(dockWidgetContents_7);
         CloudViewerClass->addDockWidget(static_cast<Qt::DockWidgetArea>(8), consoleDock);
+        menuBar = new QMenuBar(CloudViewerClass);
+        menuBar->setObjectName(QStringLiteral("menuBar"));
+        menuBar->setGeometry(QRect(0, 0, 1246, 23));
+        QFont font4;
+        font4.setFamily(QString::fromUtf8("\345\276\256\350\275\257\351\233\205\351\273\221"));
+        menuBar->setFont(font4);
+        menuFile = new QMenu(menuBar);
+        menuFile->setObjectName(QStringLiteral("menuFile"));
+        menuGenerate = new QMenu(menuBar);
+        menuGenerate->setObjectName(QStringLiteral("menuGenerate"));
+        menuBasic_shapes = new QMenu(menuGenerate);
+        menuBasic_shapes->setObjectName(QStringLiteral("menuBasic_shapes"));
+        QIcon icon19;
+        icon19.addFile(QStringLiteral(":/Resources/images/shape.png"), QSize(), QIcon::Normal, QIcon::Off);
+        menuBasic_shapes->setIcon(icon19);
+        menuAbout = new QMenu(menuBar);
+        menuAbout->setObjectName(QStringLiteral("menuAbout"));
+        menuOption = new QMenu(menuBar);
+        menuOption->setObjectName(QStringLiteral("menuOption"));
+        themeAction = new QMenu(menuOption);
+        themeAction->setObjectName(QStringLiteral("themeAction"));
+        QIcon icon20;
+        icon20.addFile(QStringLiteral(":/Resources/images/theme.png"), QSize(), QIcon::Normal, QIcon::Off);
+        themeAction->setIcon(icon20);
+        langAction = new QMenu(menuOption);
+        langAction->setObjectName(QStringLiteral("langAction"));
+        QIcon icon21;
+        icon21.addFile(QStringLiteral(":/Resources/images/language.png"), QSize(), QIcon::Normal, QIcon::Off);
+        langAction->setIcon(icon21);
+        menuView = new QMenu(menuBar);
+        menuView->setObjectName(QStringLiteral("menuView"));
+        menuAngle_view = new QMenu(menuView);
+        menuAngle_view->setObjectName(QStringLiteral("menuAngle_view"));
+        menuView_2 = new QMenu(menuBar);
+        menuView_2->setObjectName(QStringLiteral("menuView_2"));
+        menuProcess = new QMenu(menuBar);
+        menuProcess->setObjectName(QStringLiteral("menuProcess"));
+        CloudViewerClass->setMenuBar(menuBar);
 
-        menuBar->addAction(menuFile->menuAction());
-        menuBar->addAction(menuView->menuAction());
-        menuBar->addAction(menuView_2->menuAction());
-        menuBar->addAction(menuGenerate->menuAction());
-        menuBar->addAction(menuProcess->menuAction());
-        menuBar->addAction(menuOption->menuAction());
-        menuBar->addAction(menuAbout->menuAction());
-        menuFile->addAction(openAction);
-        menuFile->addAction(addAction);
-        menuFile->addAction(clearAction);
-        menuFile->addAction(saveAction);
-        menuFile->addAction(saveBinaryAction);
-        menuFile->addAction(changeAction);
-        menuFile->addAction(exitAction);
-        menuGenerate->addAction(cubeAction);
-        menuGenerate->addAction(menuBasic_shapes->menuAction());
-        menuBasic_shapes->addAction(sphereAction);
-        menuBasic_shapes->addAction(cylinderAction);
-        menuAbout->addAction(helpAction);
-        menuAbout->addAction(aboutAction);
-        menuOption->addAction(themeAction->menuAction());
-        menuOption->addAction(langAction->menuAction());
-        themeAction->addAction(windowsThemeAction);
-        themeAction->addAction(darculaThemeAction);
-        langAction->addAction(englishAction);
-        langAction->addAction(chineseAction);
-        menuView->addAction(pointcolorAction);
-        menuView->addAction(bgcolorAction);
-        menuView->addAction(menuAngle_view->menuAction());
-        menuAngle_view->addAction(mainviewAction);
-        menuAngle_view->addAction(leftviewAction);
-        menuAngle_view->addAction(topviewAction);
-        menuView_2->addAction(dataAction);
-        menuView_2->addAction(propertyAction);
-        menuView_2->addAction(consoleAction);
-        menuView_2->addAction(RGBAction);
-        menuProcess->addAction(meshsurfaceAction);
-        menuProcess->addAction(wireframeAction);
         mainToolBar->addAction(openAction);
         mainToolBar->addAction(addAction);
         mainToolBar->addAction(clearAction);
@@ -699,6 +664,45 @@ public:
         mainToolBar->addSeparator();
         mainToolBar->addAction(helpAction);
         mainToolBar->addAction(aboutAction);
+        menuBar->addAction(menuFile->menuAction());
+        menuBar->addAction(menuView->menuAction());
+        menuBar->addAction(menuView_2->menuAction());
+        menuBar->addAction(menuGenerate->menuAction());
+        menuBar->addAction(menuProcess->menuAction());
+        menuBar->addAction(menuOption->menuAction());
+        menuBar->addAction(menuAbout->menuAction());
+        menuFile->addAction(openAction);
+        menuFile->addAction(addAction);
+        menuFile->addAction(clearAction);
+        menuFile->addAction(saveAction);
+        menuFile->addAction(saveBinaryAction);
+        menuFile->addAction(changeAction);
+        menuFile->addAction(exitAction);
+        menuGenerate->addAction(cubeAction);
+        menuGenerate->addAction(menuBasic_shapes->menuAction());
+        menuBasic_shapes->addAction(sphereAction);
+        menuBasic_shapes->addAction(cylinderAction);
+        menuAbout->addAction(helpAction);
+        menuAbout->addAction(aboutAction);
+        menuAbout->addSeparator();
+        menuOption->addAction(themeAction->menuAction());
+        menuOption->addAction(langAction->menuAction());
+        themeAction->addAction(windowsThemeAction);
+        themeAction->addAction(darculaThemeAction);
+        langAction->addAction(englishAction);
+        langAction->addAction(chineseAction);
+        menuView->addAction(pointcolorAction);
+        menuView->addAction(bgcolorAction);
+        menuView->addAction(menuAngle_view->menuAction());
+        menuAngle_view->addAction(mainviewAction);
+        menuAngle_view->addAction(leftviewAction);
+        menuAngle_view->addAction(topviewAction);
+        menuView_2->addAction(dataAction);
+        menuView_2->addAction(propertyAction);
+        menuView_2->addAction(consoleAction);
+        menuView_2->addAction(RGBAction);
+        menuProcess->addAction(meshsurfaceAction);
+        menuProcess->addAction(wireframeAction);
 
         retranslateUi(CloudViewerClass);
 
@@ -760,17 +764,7 @@ public:
 #ifndef QT_NO_STATUSTIP
         saveBinaryAction->setStatusTip(QApplication::translate("CloudViewerClass", "Save point cloud as binary file", Q_NULLPTR));
 #endif // QT_NO_STATUSTIP
-        menuFile->setTitle(QApplication::translate("CloudViewerClass", "File", Q_NULLPTR));
-        menuGenerate->setTitle(QApplication::translate("CloudViewerClass", "Generate", Q_NULLPTR));
-        menuBasic_shapes->setTitle(QApplication::translate("CloudViewerClass", "Basic shapes", Q_NULLPTR));
-        menuAbout->setTitle(QApplication::translate("CloudViewerClass", "About", Q_NULLPTR));
-        menuOption->setTitle(QApplication::translate("CloudViewerClass", "Option", Q_NULLPTR));
-        themeAction->setTitle(QApplication::translate("CloudViewerClass", "Theme", Q_NULLPTR));
-        langAction->setTitle(QApplication::translate("CloudViewerClass", "Language", Q_NULLPTR));
-        menuView->setTitle(QApplication::translate("CloudViewerClass", "Display", Q_NULLPTR));
-        menuAngle_view->setTitle(QApplication::translate("CloudViewerClass", "Angle view", Q_NULLPTR));
-        menuView_2->setTitle(QApplication::translate("CloudViewerClass", "View", Q_NULLPTR));
-        menuProcess->setTitle(QApplication::translate("CloudViewerClass", "Process", Q_NULLPTR));
+        actionaaa->setText(QApplication::translate("CloudViewerClass", "aaa", Q_NULLPTR));
         RGBDock->setWindowTitle(QApplication::translate("CloudViewerClass", "RGB", Q_NULLPTR));
         label_1->setText(QApplication::translate("CloudViewerClass", "Red", Q_NULLPTR));
         label_2->setText(QApplication::translate("CloudViewerClass", "Green", Q_NULLPTR));
@@ -798,6 +792,17 @@ public:
         ___qtablewidgetitem5->setText(QApplication::translate("CloudViewerClass", "Details", Q_NULLPTR));
         QTableWidgetItem *___qtablewidgetitem6 = consoleTable->horizontalHeaderItem(4);
         ___qtablewidgetitem6->setText(QApplication::translate("CloudViewerClass", "Note", Q_NULLPTR));
+        menuFile->setTitle(QApplication::translate("CloudViewerClass", "File", Q_NULLPTR));
+        menuGenerate->setTitle(QApplication::translate("CloudViewerClass", "Generate", Q_NULLPTR));
+        menuBasic_shapes->setTitle(QApplication::translate("CloudViewerClass", "Basic shapes", Q_NULLPTR));
+        menuAbout->setTitle(QApplication::translate("CloudViewerClass", "About", Q_NULLPTR));
+        menuOption->setTitle(QApplication::translate("CloudViewerClass", "Option", Q_NULLPTR));
+        themeAction->setTitle(QApplication::translate("CloudViewerClass", "Theme", Q_NULLPTR));
+        langAction->setTitle(QApplication::translate("CloudViewerClass", "Language", Q_NULLPTR));
+        menuView->setTitle(QApplication::translate("CloudViewerClass", "Display", Q_NULLPTR));
+        menuAngle_view->setTitle(QApplication::translate("CloudViewerClass", "Angle view", Q_NULLPTR));
+        menuView_2->setTitle(QApplication::translate("CloudViewerClass", "View", Q_NULLPTR));
+        menuProcess->setTitle(QApplication::translate("CloudViewerClass", "Process", Q_NULLPTR));
     } // retranslateUi
 
 };

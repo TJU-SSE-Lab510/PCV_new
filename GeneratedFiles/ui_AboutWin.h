@@ -24,7 +24,6 @@ class Ui_AboutWin
 public:
     QLabel *label;
     QLabel *label_2;
-    QLabel *label_3;
 
     void setupUi(QWidget *AboutWin)
     {
@@ -51,11 +50,8 @@ public:
         label->setPixmap(QPixmap(QString::fromUtf8(":/Resources/images/icon.png")));
         label_2 = new QLabel(AboutWin);
         label_2->setObjectName(QStringLiteral("label_2"));
-        label_2->setGeometry(QRect(120, 40, 141, 41));
+        label_2->setGeometry(QRect(150, 110, 141, 41));
         label_2->setTextFormat(Qt::AutoText);
-        label_3 = new QLabel(AboutWin);
-        label_3->setObjectName(QStringLiteral("label_3"));
-        label_3->setGeometry(QRect(130, 90, 351, 221));
 
         retranslateUi(AboutWin);
 
@@ -66,8 +62,7 @@ public:
     {
         AboutWin->setWindowTitle(QApplication::translate("AboutWin", "About CloudViewer", Q_NULLPTR));
         label->setText(QString());
-        label_2->setText(QApplication::translate("AboutWin", "<html><head/><body><p><span style=\" font-size:14pt; font-weight:600;\">CloutViewer</span></p></body></html>", Q_NULLPTR));
-        label_3->setText(QApplication::translate("AboutWin", "<html><head/><body><p><span style=\" font-size:12pt;\">Version 1.0.1</span></p><p><span style=\" font-size:12pt;\">Copyright(C) 2017 </span><span style=\" font-size:12pt; font-weight:600;\">Nightn</span><span style=\" font-size:12pt;\">. </span></p><p><span style=\" font-size:12pt;\">All rights reservd. </span></p><p><br/></p><p><br/></p></body></html>", Q_NULLPTR));
+        label_2->setText(QApplication::translate("AboutWin", "<html><head/><body><p><span style=\" font-size:14pt; font-weight:600;\">CloudViewer</span></p></body></html>", Q_NULLPTR));
     } // retranslateUi
 
 };
