@@ -2,15 +2,7 @@
 
 # CloudViewer
 该项目基于https://github.com/nightn/CloudViewer 。如果CloudViewer对你有帮助，还请给原作者star。
-
-该项目只是修改相关配置文件，仅为自我学习之用。
-
-## 环境
-
-1. vs2015 
-2. pcl1.8.0 
-3. qt5.8 
-4. VTK 7.0
+并借鉴了https://gitee.com/xhzhou/CloudViewer 的配置文件调整。
 
 ## 配置文件
 
@@ -29,14 +21,6 @@
 修改对应版本号
 
 ![图2](http://wx1.sinaimg.cn/large/6e529308gy1ftu312wsfkj21450qaguw.jpg)
-
-### VTK
-
-该项目回用到VTK，可以自行编译或者使用我编译好的`VTK-7.0`版本，注意修改图2中的相关路径
-
-[VTK7.0-google drive](https://drive.google.com/open?id=1DStneyGnaUUj4kPJVCGOA985yimOcX1o)
-
-[VTK7.0-百度网盘](https://pan.baidu.com/s/1yjFOP6Ako-MMpnrDX597eg)  密码: 68th
 
 ## 编译运行即可
 
