@@ -98,10 +98,10 @@
     <ClInclude Include="GBK.h">
       <Filter>Header Files</Filter>
     </ClInclude>
-    <ClInclude Include="Tools.h">
+    <ClInclude Include="MyCloud.h">
       <Filter>Header Files</Filter>
     </ClInclude>
-    <ClInclude Include="MyCloud.h">
+    <ClInclude Include="Tools.h">
       <Filter>Header Files</Filter>
     </ClInclude>
   </ItemGroup>

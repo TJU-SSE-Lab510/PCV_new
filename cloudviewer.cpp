@@ -1,4 +1,6 @@
+#define _SCL_SECURE_NO_WARNINGS    //https://blog.csdn.net/cyh706510441/article/details/44757553
 #include "cloudviewer.h"
+
 
 CloudViewer::CloudViewer(QWidget *parent)
 	: QMainWindow(parent)
@@ -78,7 +80,7 @@ CloudViewer::~CloudViewer()
 // Open point cloud
 void CloudViewer::open()
 {
-	QStringList filenames = QFileDialog::getOpenFileNames(this, tr("Open point cloud file"), QString::fromLocal8Bit(mycloud.dirname.c_str()), tr("Point cloud data(*.pcd *.ply *.obj);;All file(*.*)"));
+	QStringList filenames = QFileDialog::getOpenFileNames(this, tr("Open point cloud file"), QString::fromLocal8Bit(mycloud.dirname.c_str()), tr("Point cloud data(*.pcd *.ply *.obj *.las);;All file(*.*)"));
 	//Return if filenames is empty
 	if (filenames.isEmpty())
 		return;
@@ -126,11 +128,50 @@ void CloudViewer::open()
 				setCloudColor(255, 255, 255);
 			}
 		}
+		else if (filename.endsWith(".las", Qt::CaseInsensitive))
+		{
+			// Opening  the las file
+			std::ifstream ifs(file_name.c_str(), std::ios::in | std::ios::binary);
+			liblas::ReaderFactory f;
+			liblas::Reader reader = f.CreateWithStream(ifs); // reading las file
+			unsigned long int nbPoints=reader.GetHeader().GetPointRecordsCount();
+
+			// Fill in the cloud data
+			mycloud.cloud->width    = nbPoints;				// This means that the point cloud is "unorganized"
+			mycloud.cloud->height   = 1;						// (i.e. not a depth map)
+			mycloud.cloud->is_dense = false;
+			mycloud.cloud->points.resize (mycloud.cloud->width * mycloud.cloud->height);
+			
+			int i=0;				// counter
+			uint16_t r1, g1, b1;	// RGB variables for .las (16-bit coded)
+			int r2, g2, b2;			// RGB variables for converted values (see below)
+
+			while(reader.ReadNextPoint()) 
+			{
+				// get XYZ information
+				mycloud.cloud->points[i].x = (reader.GetPoint().GetX());
+				mycloud.cloud->points[i].y = (reader.GetPoint().GetY());
+				mycloud.cloud->points[i].z = (reader.GetPoint().GetZ());
+				
+				// get RGB information. Note: in liblas, the "Color" class can be accessed from within the "Point" class, thus the triple gets
+				r1 = (reader.GetPoint().GetColor().GetRed());
+				g1 = (reader.GetPoint().GetColor().GetGreen());
+				b1 = (reader.GetPoint().GetColor().GetBlue()); 
+
+				// .las stores RGB color in 16-bit (0-65535) while .pcd demands an 8-bit value (0-255). Let's convert them!
+				mycloud.cloud->points[i].r = ceil(((float)r1/65536)*(float)256);
+				mycloud.cloud->points[i].g = ceil(((float)g1/65536)*(float)256);
+				mycloud.cloud->points[i].b = ceil(((float)b1/65536)*(float)256);
+
+				i++; // ...moving on
+				status = 0;
+			}
+		}
 		else
 		{
 			//提示：无法读取除了.ply .pcd .obj以外的文件
 			QMessageBox::information(this, tr("File format error"),
-				tr("Can't open files except .ply .pcd .obj"));
+				tr("Can't open files except .ply .pcd .obj .las"));
 			return;
 		}
 		//提示：后缀没问题，但文件内容无法读取

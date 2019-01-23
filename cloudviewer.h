@@ -5,7 +5,12 @@
 VTK_MODULE_INIT(vtkRenderingOpenGL2);
 VTK_MODULE_INIT(vtkInteractionStyle);
 
+#include <iostream>
+#include <cstdlib>
+#include <liblas/liblas.hpp>
+
 #include "MyCloud.h"
+#include <pcl/io/io.h>
 #include <pcl/io/pcd_io.h>
 #include <pcl/io/ply_io.h>
 #include <pcl/io/vtk_io.h>
