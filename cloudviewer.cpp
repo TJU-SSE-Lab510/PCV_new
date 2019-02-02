@@ -1,4 +1,5 @@
 #include "cloudviewer.h"
+//add a line
 
 CloudViewer::CloudViewer(QWidget *parent)
 	: QMainWindow(parent)
