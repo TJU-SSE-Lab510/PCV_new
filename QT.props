@@ -4,7 +4,7 @@
   <PropertyGroup Label="UserMacros" />
   <PropertyGroup>
     <!-- 请把QTRoot属性的值替换为你的CGAL编译输出的目标目录，它包含x64、x86这样的子目录 -->
-    <QTRoot>C:\Qt\Qt5.8.0\5.8\msvc2015_64</QTRoot>
+    <QTRoot>E:\Qt\Qt5.8.0\5.8\msvc2015_64</QTRoot>
     <!-- 指定INCLUDE路径-->
     <IncludePath>$(QTRoot)\include;$(QTRoot)\include\QtCore;$(QTRoot)\include\QtGui;$(QTRoot)\include\QtOpenGL;$(QTRoot)\include\QtXml;$(QTRoot)\include\QtWidgets;$(IncludePath)</IncludePath>
     <!-- 指定链接所需lib目录-->

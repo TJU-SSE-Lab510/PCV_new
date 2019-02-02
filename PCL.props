@@ -1,4 +1,4 @@
-<?xml version="1.0" encoding="utf-8"?>
+﻿<?xml version="1.0" encoding="utf-8"?>
 <!--
      PCL 1.8.0属性表文件
      不用单独配置环境变量PCL
@@ -11,9 +11,9 @@
   <PropertyGroup Label="UserMacros" />
   <PropertyGroup>
     <!-- 请把PCL_ROOT属性的值替换为你的PCL编译输出的目标目录，它包含x64、x86这样的子目录 -->
-    <PCL_ROOT>C:\Program Files\PCL 1.8.1</PCL_ROOT>
+    <PCL_ROOT>E:\PCL 1.8.1</PCL_ROOT>
     <!--VTK配置-->
-    <VTK_ROOT>D:\VTK-all\VTK-Install</VTK_ROOT>
+    <VTK_ROOT>E:\VTK-ALL\VTK-install</VTK_ROOT>
     <!-- 指定INCLUDE路径-->
     <IncludePath>$(PCL_ROOT)\include\pcl-1.8;$(PCL_ROOT)\3rdParty\Boost\include\boost-1_64;$(PCL_ROOT)\3rdParty\Eigen\eigen3;$(PCL_ROOT)\3rdParty\FLANN\include;$(PCL_ROOT)\3rdParty\OpenNI2\Include;$(PCL_ROOT)\3rdParty\Qhull\include;$(IncludePath)</IncludePath>
     <IncludePath Condition="'$(Configuration)'=='Debug'">$(VTK_ROOT)\VTK-D\include\vtk-8.0;$(IncludePath)</IncludePath>
