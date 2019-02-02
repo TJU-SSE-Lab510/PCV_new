@@ -32,11 +32,16 @@ CloudViewer::CloudViewer(QWidget *parent)
 	// Process (connect)
 	QObject::connect(ui.meshsurfaceAction, &QAction::triggered, this, &CloudViewer::convertSurface);
 	QObject::connect(ui.wireframeAction, &QAction::triggered, this, &CloudViewer::convertWireframe);
+	//Filter (connect)
+	QObject::connect(ui.statisticalAction, &QAction::triggered, this, &CloudViewer::statisticalFilter);
+	QObject::connect(ui.radiusAction, &QAction::triggered, this, &CloudViewer::radiusFilter);
 	// Option (connect)
 	QObject::connect(ui.windowsThemeAction, &QAction::triggered, this, &CloudViewer::windowsTheme);
 	QObject::connect(ui.darculaThemeAction, &QAction::triggered, this, &CloudViewer::darculaTheme);
 	QObject::connect(ui.englishAction, &QAction::triggered, this, &CloudViewer::langEnglish);
 	QObject::connect(ui.chineseAction, &QAction::triggered, this, &CloudViewer::langChinese);
+	//Operations (connect)
+//	QObject::connect(ui.registerAction, &QAction::triggered, this, &CloudViewer::registering);
 	// About (connect)
 	QObject::connect(ui.aboutAction, &QAction::triggered, this, &CloudViewer::about);
 	QObject::connect(ui.helpAction, &QAction::triggered, this, &CloudViewer::help);
@@ -597,6 +602,9 @@ void CloudViewer::help()
 	//QMessageBox::information(this, "Help", "we are building help widget...");
 }
 
+//降噪算法
+//统计滤波
+//void CloudViewer::statistical(){}
 
 //设置停靠窗口的显示与隐藏
 void CloudViewer::data()
@@ -1476,3 +1484,117 @@ int CloudViewer::convertWireframe()
 	return 0;
 
 }
+//Statistical Outlier Removal
+void CloudViewer::statisticalFilter() {
+
+	//用户设置临近点数及标准差乘数
+	bool isOK1, isOK2;
+	int par = QInputDialog::getInt(this, "The number of neighbor points",
+		"Please input the number of neighbor points",
+		50, 1, 1000, 10, &isOK1);
+	if (isOK1) {
+		double smt = QInputDialog::getDouble(this, "The standard deviation multiplier", "Please input the standard deviation multiplier", 1.00, 0.01, 10.00, 1, &isOK2);
+		if (isOK2) {
+			//获取.pcd文件
+			QString path = QFileDialog::getOpenFileName(this, tr("Open point cloud file"), QString::fromLocal8Bit(mycloud.dirname.c_str()), tr("Point cloud data(*.pcd);;All file(*.*)"));
+			//Return if filenames is empty
+			if (path.isEmpty())
+				return;
+			string str = path.toStdString();
+			string pureName = str.substr(0, str.rfind("."));//去除后缀名
+
+			pcl::PointCloud<pcl::PointXYZ>::Ptr cloud(new pcl::PointCloud<pcl::PointXYZ>);
+			pcl::PointCloud<pcl::PointXYZ>::Ptr cloud_filtered(new pcl::PointCloud<pcl::PointXYZ>);
+
+			// Fill in the cloud data
+			pcl::PCDReader reader;
+			//str即为.pcd文件路径
+			reader.read<pcl::PointXYZ>(str, *cloud);
+
+			// Create the filtering object
+			pcl::StatisticalOutlierRemoval<pcl::PointXYZ> sor;
+			sor.setInputCloud(cloud);
+			sor.setMeanK(par);
+			sor.setStddevMulThresh(smt);
+			sor.filter(*cloud_filtered);
+
+			pcl::PCDWriter writer;
+			writer.write<pcl::PointXYZ>(pureName + "_statistical.pcd", *cloud_filtered, false);
+		}
+	}
+}
+
+//Radius Outlier Removal
+void CloudViewer::radiusFilter() {
+	//用户设置半径及邻点个数
+	bool isOK1, isOK2;
+	double radiusSearch = QInputDialog::getDouble(this, "The standard deviation multiplier", "Please input the standard deviation multiplier", 1.00, 0.01, 10.00, 1, &isOK1);
+	if (isOK1) {
+		int MinNeighbor = QInputDialog::getInt(this, "The number of neighbor points",
+			"Please input the number of neighbor points",
+			5, 1, 1000, 10, &isOK2);
+		if (isOK2) {
+			//Get ".pcd" file.
+			QString path = QFileDialog::getOpenFileName(this, tr("Open point cloud file"), QString::fromLocal8Bit(mycloud.dirname.c_str()), tr("Point cloud data(*.pcd);;All file(*.*)"));
+			//Return if filenames is empty
+			if (path.isEmpty())
+				return;
+			string str = path.toStdString();
+			string pureName = str.substr(0, str.rfind("."));//去除后缀名
+			pcl::PointCloud<pcl::PointXYZ>::Ptr cloud(new pcl::PointCloud<pcl::PointXYZ>);
+			pcl::PointCloud<pcl::PointXYZ>::Ptr cloud_filtered(new pcl::PointCloud<pcl::PointXYZ>);
+
+			// Fill in the cloud data
+			pcl::PCDReader reader;
+			//str即为.pcd文件路径
+			reader.read<pcl::PointXYZ>(str, *cloud);
+
+			// Create the filtering object
+			pcl::RadiusOutlierRemoval<pcl::PointXYZ> sor;
+			sor.setInputCloud(cloud);
+			sor.setRadiusSearch(radiusSearch);
+			sor.setMinNeighborsInRadius(MinNeighbor);
+			sor.filter(*cloud_filtered);
+
+			pcl::PCDWriter writer;
+			writer.write<pcl::PointXYZ>(pureName + "_radius.pcd", *cloud_filtered, false);
+		}
+	}
+}
+
+/*//registration
+void CloudViewer::registering() {
+	pcl::PointCloud<pcl::PointXYZ>::Ptr cloud_in(new pcl::PointCloud<pcl::PointXYZ>);
+	pcl::PointCloud<pcl::PointXYZ>::Ptr cloud_out(new pcl::PointCloud<pcl::PointXYZ>);
+
+	// Fill in the CloudIn data
+	cloud_in->width = 5;
+	cloud_in->height = 1;
+	cloud_in->is_dense = false;
+	cloud_in->points.resize(cloud_in->width * cloud_in->height);
+	for (size_t i = 0; i < cloud_in->points.size(); ++i)
+	{
+		cloud_in->points[i].x = 1024 * rand() / (RAND_MAX + 1.0f);
+		cloud_in->points[i].y = 1024 * rand() / (RAND_MAX + 1.0f);
+		cloud_in->points[i].z = 1024 * rand() / (RAND_MAX + 1.0f);
+	}
+	for (size_t i = 0; i < cloud_in->points.size(); ++i) std::cout << "    " <<
+		cloud_in->points[i].x << " " << cloud_in->points[i].y << " " <<
+		cloud_in->points[i].z << std::endl;
+	*cloud_out = *cloud_in;
+	std::cout << "size:" << cloud_out->points.size() << std::endl;
+	for (size_t i = 0; i < cloud_in->points.size(); ++i)
+		cloud_out->points[i].x = cloud_in->points[i].x + 0.7f;
+	for (size_t i = 0; i < cloud_out->points.size(); ++i)
+		std::cout << "    " << cloud_out->points[i].x << " " <<
+		cloud_out->points[i].y << " " << cloud_out->points[i].z << std::endl;
+	pcl::IterativeClosestPoint<pcl::PointXYZ, pcl::PointXYZ> icp;
+	icp.setInputSource(cloud_in);
+	icp.setInputTarget(cloud_out);
+	pcl::PointCloud<pcl::PointXYZ> Final;
+	icp.align(Final);
+	QMessageBox::about(NULL, tr("Result"), tr("has converged:%1 \nscore:%2\nThe result is saved in \"Transformation Matrix.txt\"").arg(icp.hasConverged()).arg(icp.getFitnessScore()));
+	ofstream MatFile("Transformation Matrix.txt");
+	MatFile << icp.getFinalTransformation() << std::endl;
+}
+*/
