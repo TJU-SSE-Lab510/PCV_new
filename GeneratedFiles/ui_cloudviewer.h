@@ -66,6 +66,8 @@ public:
     QAction *chineseAction;
     QAction *saveBinaryAction;
     QAction *actionaaa;
+    QAction *actiondsmAction;
+    QAction *actionactiondem;
     QWidget *centralWidget;
     QHBoxLayout *horizontalLayout_5;
     QVTKWidget *screen;
@@ -258,6 +260,16 @@ public:
         saveBinaryAction->setIcon(icon18);
         actionaaa = new QAction(CloudViewerClass);
         actionaaa->setObjectName(QStringLiteral("actionaaa"));
+        actiondsmAction = new QAction(CloudViewerClass);
+        actiondsmAction->setObjectName(QStringLiteral("actiondsmAction"));
+        QIcon icon19;
+        icon19.addFile(QStringLiteral(":/Resources/images/dsm.png"), QSize(), QIcon::Normal, QIcon::Off);
+        actiondsmAction->setIcon(icon19);
+        actionactiondem = new QAction(CloudViewerClass);
+        actionactiondem->setObjectName(QStringLiteral("actionactiondem"));
+        QIcon icon20;
+        icon20.addFile(QStringLiteral(":/Resources/images/dem.png"), QSize(), QIcon::Normal, QIcon::Off);
+        actionactiondem->setIcon(icon20);
         centralWidget = new QWidget(CloudViewerClass);
         centralWidget->setObjectName(QStringLiteral("centralWidget"));
         QSizePolicy sizePolicy1(QSizePolicy::Preferred, QSizePolicy::Preferred);
@@ -616,23 +628,23 @@ public:
         menuGenerate->setObjectName(QStringLiteral("menuGenerate"));
         menuBasic_shapes = new QMenu(menuGenerate);
         menuBasic_shapes->setObjectName(QStringLiteral("menuBasic_shapes"));
-        QIcon icon19;
-        icon19.addFile(QStringLiteral(":/Resources/images/shape.png"), QSize(), QIcon::Normal, QIcon::Off);
-        menuBasic_shapes->setIcon(icon19);
+        QIcon icon21;
+        icon21.addFile(QStringLiteral(":/Resources/images/shape.png"), QSize(), QIcon::Normal, QIcon::Off);
+        menuBasic_shapes->setIcon(icon21);
         menuAbout = new QMenu(menuBar);
         menuAbout->setObjectName(QStringLiteral("menuAbout"));
         menuOption = new QMenu(menuBar);
         menuOption->setObjectName(QStringLiteral("menuOption"));
         themeAction = new QMenu(menuOption);
         themeAction->setObjectName(QStringLiteral("themeAction"));
-        QIcon icon20;
-        icon20.addFile(QStringLiteral(":/Resources/images/theme.png"), QSize(), QIcon::Normal, QIcon::Off);
-        themeAction->setIcon(icon20);
+        QIcon icon22;
+        icon22.addFile(QStringLiteral(":/Resources/images/theme.png"), QSize(), QIcon::Normal, QIcon::Off);
+        themeAction->setIcon(icon22);
         langAction = new QMenu(menuOption);
         langAction->setObjectName(QStringLiteral("langAction"));
-        QIcon icon21;
-        icon21.addFile(QStringLiteral(":/Resources/images/language.png"), QSize(), QIcon::Normal, QIcon::Off);
-        langAction->setIcon(icon21);
+        QIcon icon23;
+        icon23.addFile(QStringLiteral(":/Resources/images/language.png"), QSize(), QIcon::Normal, QIcon::Off);
+        langAction->setIcon(icon23);
         menuView = new QMenu(menuBar);
         menuView->setObjectName(QStringLiteral("menuView"));
         menuAngle_view = new QMenu(menuView);
@@ -662,6 +674,8 @@ public:
         mainToolBar->addAction(meshsurfaceAction);
         mainToolBar->addAction(wireframeAction);
         mainToolBar->addSeparator();
+        mainToolBar->addAction(actiondsmAction);
+        mainToolBar->addAction(actionactiondem);
         mainToolBar->addAction(helpAction);
         mainToolBar->addAction(aboutAction);
         menuBar->addAction(menuFile->menuAction());
@@ -765,6 +779,14 @@ public:
         saveBinaryAction->setStatusTip(QApplication::translate("CloudViewerClass", "Save point cloud as binary file", Q_NULLPTR));
 #endif // QT_NO_STATUSTIP
         actionaaa->setText(QApplication::translate("CloudViewerClass", "aaa", Q_NULLPTR));
+        actiondsmAction->setText(QApplication::translate("CloudViewerClass", "dsmAction", Q_NULLPTR));
+#ifndef QT_NO_TOOLTIP
+        actiondsmAction->setToolTip(QApplication::translate("CloudViewerClass", "Translate to dsm", Q_NULLPTR));
+#endif // QT_NO_TOOLTIP
+        actionactiondem->setText(QApplication::translate("CloudViewerClass", "actiondem", Q_NULLPTR));
+#ifndef QT_NO_TOOLTIP
+        actionactiondem->setToolTip(QApplication::translate("CloudViewerClass", "translate to dem", Q_NULLPTR));
+#endif // QT_NO_TOOLTIP
         RGBDock->setWindowTitle(QApplication::translate("CloudViewerClass", "RGB", Q_NULLPTR));
         label_1->setText(QApplication::translate("CloudViewerClass", "Red", Q_NULLPTR));
         label_2->setText(QApplication::translate("CloudViewerClass", "Green", Q_NULLPTR));
