@@ -18,10 +18,6 @@ VTK_MODULE_INIT(vtkInteractionStyle);
 #include <pcl/features/normal_3d.h>
 #include <pcl/search/kdtree.h>
 #include <pcl/surface/gp3.h>
-#include <pcl/registration/icp.h>
-
-#include <pcl/filters/statistical_outlier_removal.h>
-#include <pcl/filters/radius_outlier_removal.h>
 
 #include <QtWidgets/QMainWindow>
 #include "GBK.h"
@@ -41,7 +37,6 @@ VTK_MODULE_INIT(vtkInteractionStyle);
 #include <QToolBar>
 #include <QStatusBar>
 #include <QFileDialog>
-#include <QInputDialog>
 #include <QColorDialog>
 #include <QHBoxLayout>
 #include <QVBoxLayout>
@@ -118,11 +113,6 @@ private:
 	// Process menu slots 
 	int convertSurface();  //法线估计、曲面重建、网格面片显示
 	int convertWireframe(); //法线估计、曲面重建、网格线框显示
-	//Filters
-	void statisticalFilter();  //统计滤波
-	void radiusFilter();
-	//Operations
-	void registering();//配准
 	// Option menu slots
 	void windowsTheme();
 	void darculaTheme();
