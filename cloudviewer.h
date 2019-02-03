@@ -12,6 +12,7 @@ VTK_MODULE_INIT(vtkInteractionStyle);
 #include <pcl/io/obj_io.h>
 #include <pcl/point_types.h>
 #include <pcl/point_cloud.h>
+#include <pcl/PCLPointCloud2.h>
 #include <pcl/visualization/pcl_visualizer.h>
 #include <pcl/visualization/common/common.h>
 #include <pcl/ModelCoefficients.h>
@@ -48,9 +49,28 @@ VTK_MODULE_INIT(vtkInteractionStyle);
 #include <QDesktopServices> 
 #include <QUrl>
 
+#include <pdal/Options.hpp>
+#include <pdal/StageFactory.hpp>
+
+#include <pdal/PipelineManager.hpp>
+#include <pdal/PipelineExecutor.hpp>
+#include <pdal/PipelineWriter.hpp>
+#include <pdal/PipelineReaderJSON.hpp>
+
+#include <pdal/io/BufferReader.hpp>
+#include <pdal/io/PlyReader.hpp>
+
+#include <vector>
+#include <iostream>
+#include <string>
+#include <limits>
+#include <fstream>
+
 typedef pcl::PointXYZRGBA PointT;
 typedef pcl::PointCloud<PointT> PointCloudT;
 
+extern string inputfile; //global v
+extern string inputroutine;
 
 class CloudViewer : public QMainWindow
 {
@@ -162,6 +182,9 @@ private:
 	void clearConsole();
 	void enableConsole();
 	void disableConsole();
+
+	void todsm(); //add by rowlynnh
+	void todem();
 };
 
 #endif // CLOUDVIEWER_H

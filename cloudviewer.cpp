@@ -1,4 +1,5 @@
 #include "cloudviewer.h"
+#pragma comment( lib, "ws2_32.lib")
 
 CloudViewer::CloudViewer(QWidget *parent)
 	: QMainWindow(parent)
@@ -32,6 +33,9 @@ CloudViewer::CloudViewer(QWidget *parent)
 	// Process (connect)
 	QObject::connect(ui.meshsurfaceAction, &QAction::triggered, this, &CloudViewer::convertSurface);
 	QObject::connect(ui.wireframeAction, &QAction::triggered, this, &CloudViewer::convertWireframe);
+	// Translation
+	QObject::connect(ui.actiondsmAction, &QAction::triggered, this, &CloudViewer::todsm);
+	QObject::connect(ui.actionactiondem, &QAction::triggered, this, &CloudViewer::todem);
 	// Option (connect)
 	QObject::connect(ui.windowsThemeAction, &QAction::triggered, this, &CloudViewer::windowsTheme);
 	QObject::connect(ui.darculaThemeAction, &QAction::triggered, this, &CloudViewer::darculaTheme);
@@ -70,9 +74,182 @@ CloudViewer::CloudViewer(QWidget *parent)
 	initial();
 }
 
+
 CloudViewer::~CloudViewer()
 {
 
+}
+
+//global v
+
+string inputfile;
+string inputroutine;
+
+
+int string_replace(string &s1, const string &s2, const string &s3)
+{
+	string::size_type pos = 0;
+	string::size_type a = s2.size();
+	string::size_type b = s3.size();
+	while ((pos = s1.find(s2, pos)) != string::npos)
+	{
+		s1.replace(pos, a, s3);
+		pos += b;
+	}
+	return 0;
+}
+
+
+
+
+
+void CloudViewer::todem()
+{
+	using namespace pcl;
+	using namespace pcl::io;
+	using namespace std;
+	using namespace pdal;
+	
+	//get the filename and the routine
+	char charfile[100] = {}; //the filename of the input
+	string purename = inputfile.substr(0, inputfile.rfind(".")); //without the format:purename
+	strcpy(charfile, purename.c_str());
+
+	char charroutine[100] = {}; //the fileroutine of the input
+	if (purename.empty())
+	{
+		QMessageBox::information(this, "DEM", "You should open a file!");
+	}
+	else
+	{
+		//replacement of the routine
+		string_replace(inputroutine, "/", "\\\\");
+		strcpy(charroutine, inputroutine.c_str());
+
+		//pcd to ply
+		pcl::PCLPointCloud2 cloud;
+		if (loadPCDFile(inputroutine, cloud) < 0)
+		{
+			cout << "Error: cannot load the PCD file!!!" << endl;
+
+		}
+		PLYWriter writer;
+		//writer.write(".////result////"+purename+".ply", cloud, Eigen::Vector4f::Zero(), Eigen::Quaternionf::Identity(), true, true);
+		writer.write( "temp2.ply", cloud, Eigen::Vector4f::Zero(), Eigen::Quaternionf::Identity(), true, true);
+
+		//change the content of pipeline according to purename&input_name
+		//tempfile1
+		string file_path = ".\\pipeline\\ply2las.json.in";//infile
+		string out_path = ".\\pipeline\\temp1.json.in";//outfile
+		string str;
+		string file_name = purename; // enter the filename
+		string::size_type pos = 0;
+		ifstream instream;
+		ofstream outstream;
+		instream.open(file_path);
+		if (!instream)
+			cout << "error" << endl;
+		outstream.open(out_path);
+		while (getline(instream, str)) {
+			pos = str.find("X");//查找字符在string中第一次出现的位置
+			if (pos == string::npos)
+			{
+
+				outstream << str << endl;
+			}
+			else {
+				str.replace(pos, 1, file_name);//替换
+				outstream << str << endl;
+			}
+
+		}
+		instream.close();
+		outstream.close();
+
+		cout << "change!\n";
+
+		//tempfile2
+		string file_path2 = ".\\pipeline\\las2dem.json.in";//infile
+		string out_path2 = ".\\pipeline\\temp2.json.in";//outfile
+		string str2;
+		string::size_type pos2 = 0;
+		ifstream instream2;
+		ofstream outstream2;
+		instream2.open(file_path2);
+		if (!instream2)
+			cout << "error" << endl;
+		outstream2.open(out_path2);
+		while (getline(instream2, str2)) {
+			pos2 = str2.find("X");//查找字符在string中第一次出现的位置
+			if (pos2 == string::npos)
+			{
+
+				outstream2 << str2 << endl;
+			}
+			else {
+				str2.replace(pos2, 1, file_name);//替换
+				outstream2 << str2 << endl;
+			}
+
+		}
+		instream2.close();
+		outstream2.close();
+
+		//add the to las&dem function here
+
+		system("pdal pipeline pipeline/temp1.json.in");
+		system("pdal pipeline pipeline/temp2.json.in");
+
+		/*
+		PipelineManager mgr;
+		mgr.readPipeline(".\\pipeline\\temp1.json.in");
+		mgr.prepare();
+		mgr.execute();
+
+		//to dem
+		PipelineManager mgr2;
+		mgr2.readPipeline(".\\pipeline\\temp2.json.in");
+		mgr2.execute();
+		*/
+		//string plyfile;
+		//plyfile = purename + ".ply";
+		
+		remove("temp.las");
+		remove("temp2.ply");
+		remove(".\\pipeline\\temp1.json.in");
+		remove(".\\pipeline\\temp2.json.in");
+
+
+		//QMessageBox::information(this, "DEM", charfile);
+		QMessageBox::information(this, "DEM", "The DEM file is in the result folder");
+	}
+	
+	
+}
+
+void CloudViewer::todsm()
+{
+
+	using namespace pcl;
+	using namespace pcl::io;
+	using namespace std;
+	using namespace pdal;
+
+	//get the filename and the routine
+	char charfile[100] = {}; //the filename of the input
+	string purename = inputfile.substr(0, inputfile.rfind(".")); //without the format:purename
+	strcpy(charfile, purename.c_str());
+
+	char charroutine[100] = {}; //the fileroutine of the input
+	if (purename.empty())
+	{
+		QMessageBox::information(this, "DSM", "You should open a file!");
+	}
+	else
+	{
+		QMessageBox::information(this, "DSM", "Underdevelopment:The DSM file is in the result folder");
+	}
+	
 }
 
 // Open point cloud
@@ -80,6 +257,7 @@ void CloudViewer::open()
 {
 	QStringList filenames = QFileDialog::getOpenFileNames(this, tr("Open point cloud file"), QString::fromLocal8Bit(mycloud.dirname.c_str()), tr("Point cloud data(*.pcd *.ply *.obj);;All file(*.*)"));
 	//Return if filenames is empty
+	
 	if (filenames.isEmpty())
 		return;
 
@@ -95,8 +273,11 @@ void CloudViewer::open()
 		timeStart();
 		mycloud.cloud.reset(new PointCloudT); // Reset cloud
 		QString filename = filenames[i];
+		
 		std::string file_name = filename.toStdString();
 		std::string subname = getFileName(file_name);  //提取全路径中的文件名（带后缀）
+		inputfile = subname;
+		inputroutine = file_name;
 
 		//更新状态栏
 		ui.statusBar->showMessage(QString::fromLocal8Bit(subname.c_str()) + ": " + QString::number(i) + "/" + QString::number(filenames.size()) + " point cloud loading...");
@@ -445,9 +626,6 @@ void CloudViewer::savemulti()
 	setWindowTitle(save_filename + " - CloudViewer");
 	QMessageBox::information(this, tr("save point cloud file"), QString::fromLocal8Bit(("Save " + subname + " successfully!").c_str()));
 }
-
-
-
 
 //格式转换
 void CloudViewer::change()

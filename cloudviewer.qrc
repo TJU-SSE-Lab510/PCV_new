@@ -26,5 +26,7 @@
         <file>Resources/images/language.png</file>
         <file>Resources/images/theme.png</file>
         <file>Resources/images/saveBinary.png</file>
+        <file>Resources/images/dem.png</file>
+        <file>Resources/images/dsm.png</file>
     </qresource>
 </RCC>
