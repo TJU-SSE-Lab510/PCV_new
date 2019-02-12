@@ -1,6 +1,7 @@
 #ifndef CLOUDVIEWER_H
 #define CLOUDVIEWER_H
 
+#include <liblas/liblas.hpp> 
 #include <vtkAutoInit.h> 
 VTK_MODULE_INIT(vtkRenderingOpenGL2);
 VTK_MODULE_INIT(vtkInteractionStyle);
@@ -87,6 +88,9 @@ private:
 
 	/***** Slots of QMenuBar and QToolBar *****/
 	// File menu slots
+	void Xchange();
+	void Ychange();
+	void Zchange();
 	void open();
 	void add();
 	void clear();

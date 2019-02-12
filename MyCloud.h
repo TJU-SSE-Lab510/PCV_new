@@ -20,7 +20,7 @@ public:
 	string subname;  //点云的文件名
 	string dirname = "E:\\Date\\PointCloud\\";
 	bool visible = true;  //点云在 viewer 中是否可见
-
+	int pointSize = 1;    //点云的点的大小
 
 };
 
