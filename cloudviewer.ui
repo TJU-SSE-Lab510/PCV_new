@@ -6,7 +6,7 @@
    <rect>
     <x>0</x>
     <y>0</y>
-    <width>1246</width>
+    <width>1501</width>
     <height>749</height>
    </rect>
   </property>
@@ -91,13 +91,16 @@
    <addaction name="separator"/>
    <addaction name="helpAction"/>
    <addaction name="aboutAction"/>
+   <addaction name="actionX"/>
+   <addaction name="actionY"/>
+   <addaction name="actionZ"/>
   </widget>
   <widget class="QStatusBar" name="statusBar"/>
   <widget class="QDockWidget" name="RGBDock">
    <property name="minimumSize">
     <size>
-     <width>245</width>
-     <height>400</height>
+     <width>300</width>
+     <height>667</height>
     </size>
    </property>
    <property name="maximumSize">
@@ -459,7 +462,7 @@
    <property name="minimumSize">
     <size>
      <width>250</width>
-     <height>233</height>
+     <height>287</height>
     </size>
    </property>
    <property name="maximumSize">
@@ -513,7 +516,7 @@
    <property name="minimumSize">
     <size>
      <width>250</width>
-     <height>233</height>
+     <height>287</height>
     </size>
    </property>
    <property name="font">
@@ -646,8 +649,8 @@
   <widget class="QDockWidget" name="consoleDock">
    <property name="minimumSize">
     <size>
-     <width>200</width>
-     <height>140</height>
+     <width>220</width>
+     <height>220</height>
     </size>
    </property>
    <property name="maximumSize">
@@ -740,8 +743,8 @@
     <rect>
      <x>0</x>
      <y>0</y>
-     <width>1246</width>
-     <height>23</height>
+     <width>1501</width>
+     <height>45</height>
     </rect>
    </property>
    <property name="font">
@@ -1129,6 +1132,33 @@
   <action name="actionaaa">
    <property name="text">
     <string>aaa</string>
+   </property>
+  </action>
+  <action name="actionX">
+   <property name="icon">
+    <iconset>
+     <normaloff>Resources/images/X.PNG</normaloff>Resources/images/X.PNG</iconset>
+   </property>
+   <property name="text">
+    <string>X</string>
+   </property>
+  </action>
+  <action name="actionY">
+   <property name="icon">
+    <iconset>
+     <normaloff>Resources/images/Y.PNG</normaloff>Resources/images/Y.PNG</iconset>
+   </property>
+   <property name="text">
+    <string>Y</string>
+   </property>
+  </action>
+  <action name="actionZ">
+   <property name="icon">
+    <iconset>
+     <normaloff>Resources/images/z.PNG</normaloff>Resources/images/z.PNG</iconset>
+   </property>
+   <property name="text">
+    <string>Z</string>
    </property>
   </action>
  </widget>
