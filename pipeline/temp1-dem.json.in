@@ -1,8 +1,0 @@
-{
-    "pipeline":[
-        "temp2.ply",
-        {
-            "filename":"temp.las"
-        }
-    ]
-}
