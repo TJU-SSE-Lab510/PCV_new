@@ -1,6 +1,5 @@
 #ifndef CLOUDVIEWER_H
 #define CLOUDVIEWER_H
-#define NOMINMAX //solve the illegal token problem cause by pcl-by rowlynn
 
 #include <liblas/liblas.hpp> 
 #include <vtkAutoInit.h> 
@@ -55,29 +54,9 @@ VTK_MODULE_INIT(vtkInteractionStyle);
 #include <QDesktopServices> 
 #include <QUrl>
 
-#include <pdal/Options.hpp>
-#include <pdal/StageFactory.hpp>
-
-#include <pdal/PipelineManager.hpp>
-#include <pdal/PipelineExecutor.hpp>
-#include <pdal/PipelineWriter.hpp>
-#include <pdal/PipelineReaderJSON.hpp>
-
-#include <pdal/io/BufferReader.hpp>
-#include <pdal/io/PlyReader.hpp>
-
-
-#include <vector>
-#include <iostream>
-#include <string>
-#include <limits>
-#include <fstream>
-
 typedef pcl::PointXYZRGBA PointT;
 typedef pcl::PointCloud<PointT> PointCloudT;
 
-extern string inputfile; //global v-rowlynn
-extern string inputroutine;
 
 class CloudViewer : public QMainWindow
 {
@@ -197,10 +176,6 @@ private:
 	void clearConsole();
 	void enableConsole();
 	void disableConsole();
-
-	//add by rowlynn-to dsm&dem
-	void todsm();
-	void todem();
 };
 
 #endif // CLOUDVIEWER_H
