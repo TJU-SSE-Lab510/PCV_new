@@ -744,7 +744,7 @@
      <x>0</x>
      <y>0</y>
      <width>1501</width>
-     <height>45</height>
+     <height>26</height>
     </rect>
    </property>
    <property name="font">
@@ -851,11 +851,19 @@
     <addaction name="meshsurfaceAction"/>
     <addaction name="wireframeAction"/>
    </widget>
+   <widget class="QMenu" name="menuFilter">
+    <property name="title">
+     <string>Filter</string>
+    </property>
+    <addaction name="statisticalAction"/>
+    <addaction name="radiusAction"/>
+   </widget>
    <addaction name="menuFile"/>
    <addaction name="menuView"/>
    <addaction name="menuView_2"/>
    <addaction name="menuGenerate"/>
    <addaction name="menuProcess"/>
+   <addaction name="menuFilter"/>
    <addaction name="menuOption"/>
    <addaction name="menuAbout"/>
   </widget>
@@ -1159,6 +1167,16 @@
    </property>
    <property name="text">
     <string>Z</string>
+   </property>
+  </action>
+  <action name="statisticalAction">
+   <property name="text">
+    <string>statisticalFilter</string>
+   </property>
+  </action>
+  <action name="radiusAction">
+   <property name="text">
+    <string>radiusFilter</string>
    </property>
   </action>
  </widget>
