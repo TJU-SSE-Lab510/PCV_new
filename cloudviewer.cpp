@@ -704,9 +704,6 @@ void CloudViewer::help()
 	//QMessageBox::information(this, "Help", "we are building help widget...");
 }
 
-//降噪算法
-//统计滤波
-//void CloudViewer::statistical(){}
 
 //设置停靠窗口的显示与隐藏
 void CloudViewer::data()
@@ -1690,37 +1687,37 @@ void CloudViewer::radiusFilter() {
 
 /*//registration
 void CloudViewer::registering() {
-	pcl::PointCloud<pcl::PointXYZ>::Ptr cloud_in(new pcl::PointCloud<pcl::PointXYZ>);
-	pcl::PointCloud<pcl::PointXYZ>::Ptr cloud_out(new pcl::PointCloud<pcl::PointXYZ>);
+pcl::PointCloud<pcl::PointXYZ>::Ptr cloud_in(new pcl::PointCloud<pcl::PointXYZ>);
+pcl::PointCloud<pcl::PointXYZ>::Ptr cloud_out(new pcl::PointCloud<pcl::PointXYZ>);
 
-	// Fill in the CloudIn data
-	cloud_in->width = 5;
-	cloud_in->height = 1;
-	cloud_in->is_dense = false;
-	cloud_in->points.resize(cloud_in->width * cloud_in->height);
-	for (size_t i = 0; i < cloud_in->points.size(); ++i)
-	{
-		cloud_in->points[i].x = 1024 * rand() / (RAND_MAX + 1.0f);
-		cloud_in->points[i].y = 1024 * rand() / (RAND_MAX + 1.0f);
-		cloud_in->points[i].z = 1024 * rand() / (RAND_MAX + 1.0f);
-	}
-	for (size_t i = 0; i < cloud_in->points.size(); ++i) std::cout << "    " <<
-		cloud_in->points[i].x << " " << cloud_in->points[i].y << " " <<
-		cloud_in->points[i].z << std::endl;
-	*cloud_out = *cloud_in;
-	std::cout << "size:" << cloud_out->points.size() << std::endl;
-	for (size_t i = 0; i < cloud_in->points.size(); ++i)
-		cloud_out->points[i].x = cloud_in->points[i].x + 0.7f;
-	for (size_t i = 0; i < cloud_out->points.size(); ++i)
-		std::cout << "    " << cloud_out->points[i].x << " " <<
-		cloud_out->points[i].y << " " << cloud_out->points[i].z << std::endl;
-	pcl::IterativeClosestPoint<pcl::PointXYZ, pcl::PointXYZ> icp;
-	icp.setInputSource(cloud_in);
-	icp.setInputTarget(cloud_out);
-	pcl::PointCloud<pcl::PointXYZ> Final;
-	icp.align(Final);
-	QMessageBox::about(NULL, tr("Result"), tr("has converged:%1 \nscore:%2\nThe result is saved in \"Transformation Matrix.txt\"").arg(icp.hasConverged()).arg(icp.getFitnessScore()));
-	ofstream MatFile("Transformation Matrix.txt");
-	MatFile << icp.getFinalTransformation() << std::endl;
+// Fill in the CloudIn data
+cloud_in->width = 5;
+cloud_in->height = 1;
+cloud_in->is_dense = false;
+cloud_in->points.resize(cloud_in->width * cloud_in->height);
+for (size_t i = 0; i < cloud_in->points.size(); ++i)
+{
+cloud_in->points[i].x = 1024 * rand() / (RAND_MAX + 1.0f);
+cloud_in->points[i].y = 1024 * rand() / (RAND_MAX + 1.0f);
+cloud_in->points[i].z = 1024 * rand() / (RAND_MAX + 1.0f);
+}
+for (size_t i = 0; i < cloud_in->points.size(); ++i) std::cout << "    " <<
+cloud_in->points[i].x << " " << cloud_in->points[i].y << " " <<
+cloud_in->points[i].z << std::endl;
+*cloud_out = *cloud_in;
+std::cout << "size:" << cloud_out->points.size() << std::endl;
+for (size_t i = 0; i < cloud_in->points.size(); ++i)
+cloud_out->points[i].x = cloud_in->points[i].x + 0.7f;
+for (size_t i = 0; i < cloud_out->points.size(); ++i)
+std::cout << "    " << cloud_out->points[i].x << " " <<
+cloud_out->points[i].y << " " << cloud_out->points[i].z << std::endl;
+pcl::IterativeClosestPoint<pcl::PointXYZ, pcl::PointXYZ> icp;
+icp.setInputSource(cloud_in);
+icp.setInputTarget(cloud_out);
+pcl::PointCloud<pcl::PointXYZ> Final;
+icp.align(Final);
+QMessageBox::about(NULL, tr("Result"), tr("has converged:%1 \nscore:%2\nThe result is saved in \"Transformation Matrix.txt\"").arg(icp.hasConverged()).arg(icp.getFitnessScore()));
+ofstream MatFile("Transformation Matrix.txt");
+MatFile << icp.getFinalTransformation() << std::endl;
 }
 */

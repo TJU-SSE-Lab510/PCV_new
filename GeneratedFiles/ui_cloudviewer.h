@@ -66,12 +66,11 @@ public:
     QAction *chineseAction;
     QAction *saveBinaryAction;
     QAction *actionaaa;
-    QAction *statisticalAction;
-    QAction *radiusAction;
-//	QAction *registerAction;
     QAction *actionX;
     QAction *actionY;
     QAction *actionZ;
+	QAction *statisticalAction;
+	QAction *radiusAction;
     QWidget *centralWidget;
     QHBoxLayout *horizontalLayout_5;
     QVTKWidget *screen;
@@ -125,7 +124,7 @@ public:
     QMenu *menuView_2;
     QMenu *menuProcess;
 	QMenu *menuFilter;
-//	QMenu *menuOperation;
+	//	QMenu *menuOperation;
 
     void setupUi(QMainWindow *CloudViewerClass)
     {
@@ -227,8 +226,8 @@ public:
 		statisticalAction->setObjectName(QStringLiteral("statisticalAction"));
 		radiusAction = new QAction(CloudViewerClass);
 		radiusAction->setObjectName(QStringLiteral("radiusAction"));
-//		registerAction = new QAction(CloudViewerClass);
-//		registerAction->setObjectName(QStringLiteral("registerAction"));
+		//		registerAction = new QAction(CloudViewerClass);
+		//		registerAction->setObjectName(QStringLiteral("registerAction"));
         QIcon icon12;
         icon12.addFile(QStringLiteral(":/Resources/images/clear.png"), QSize(), QIcon::Normal, QIcon::Off);
         clearAction->setIcon(icon12);
@@ -672,8 +671,8 @@ public:
         menuProcess->setObjectName(QStringLiteral("menuProcess"));
 		menuFilter = new QMenu(menuBar);
 		menuFilter->setObjectName(QStringLiteral("menuFilter"));
-//		menuOperation = new QMenu(menuBar);
-//		menuOperation->setObjectName(QStringLiteral("menuRegister"));
+		//		menuOperation = new QMenu(menuBar);
+		//		menuOperation->setObjectName(QStringLiteral("menuRegister"));
         CloudViewerClass->setMenuBar(menuBar);
 
         mainToolBar->addAction(openAction);
@@ -707,7 +706,7 @@ public:
         menuBar->addAction(menuProcess->menuAction());
         menuBar->addAction(menuOption->menuAction());
 		menuBar->addAction(menuFilter->menuAction());
-//		menuBar->addAction(menuOperation->menuAction());
+		//		menuBar->addAction(menuOperation->menuAction());
         menuBar->addAction(menuAbout->menuAction());
         menuFile->addAction(openAction);
         menuFile->addAction(addAction);
@@ -743,7 +742,7 @@ public:
         menuProcess->addAction(wireframeAction);
 		menuFilter->addAction(statisticalAction);
 		menuFilter->addAction(radiusAction);
-//		menuOperation->addAction(registerAction);
+		//		menuOperation->addAction(registerAction);
 
         retranslateUi(CloudViewerClass);
 
@@ -804,7 +803,7 @@ public:
         saveBinaryAction->setText(QApplication::translate("CloudViewerClass", "Save as binary", Q_NULLPTR));
 		statisticalAction->setText(QApplication::translate("CloudViewerClass", "Statistical outlier removal", Q_NULLPTR));
 		radiusAction->setText(QApplication::translate("CloudViewerClass", "Radius outlier removal", Q_NULLPTR));
-//		registerAction->setText(QApplication::translate("CloudViewerClass", "Registration", Q_NULLPTR));
+		//		registerAction->setText(QApplication::translate("CloudViewerClass", "Registration", Q_NULLPTR));
 #ifndef QT_NO_STATUSTIP
         saveBinaryAction->setStatusTip(QApplication::translate("CloudViewerClass", "Save point cloud as binary file", Q_NULLPTR));
 #endif // QT_NO_STATUSTIP
@@ -851,7 +850,7 @@ public:
         menuView_2->setTitle(QApplication::translate("CloudViewerClass", "View", Q_NULLPTR));
         menuProcess->setTitle(QApplication::translate("CloudViewerClass", "Process", Q_NULLPTR));
 		menuFilter->setTitle(QApplication::translate("CloudViewerClass", "Filter", Q_NULLPTR));
-//		menuOperation->setTitle(QApplication::translate("CloudViewerClass", "Operations", Q_NULLPTR));
+		//		menuOperation->setTitle(QApplication::translate("CloudViewerClass", "Operations", Q_NULLPTR));
     } // retranslateUi
 
 };
