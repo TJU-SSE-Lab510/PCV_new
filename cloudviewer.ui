@@ -89,6 +89,8 @@
    <addaction name="meshsurfaceAction"/>
    <addaction name="wireframeAction"/>
    <addaction name="separator"/>
+   <addaction name="actiondsmAction"/>
+   <addaction name="actionactiondem"/>
    <addaction name="helpAction"/>
    <addaction name="aboutAction"/>
    <addaction name="actionX"/>
@@ -744,7 +746,7 @@
      <x>0</x>
      <y>0</y>
      <width>1501</width>
-     <height>26</height>
+     <height>23</height>
     </rect>
    </property>
    <property name="font">
@@ -1177,6 +1179,30 @@
   <action name="radiusAction">
    <property name="text">
     <string>radiusFilter</string>
+   </property>
+  </action>
+  <action name="actiondsmAction">
+   <property name="icon">
+    <iconset resource="cloudviewer.qrc">
+     <normaloff>:/Resources/images/dsm.png</normaloff>:/Resources/images/dsm.png</iconset>
+   </property>
+   <property name="text">
+    <string>dsmAction</string>
+   </property>
+   <property name="toolTip">
+    <string>Translate to dsm</string>
+   </property>
+  </action>
+  <action name="actionactiondem">
+   <property name="icon">
+    <iconset resource="cloudviewer.qrc">
+     <normaloff>:/Resources/images/dem.png</normaloff>:/Resources/images/dem.png</iconset>
+   </property>
+   <property name="text">
+    <string>actiondem</string>
+   </property>
+   <property name="toolTip">
+    <string>translate to dem</string>
    </property>
   </action>
  </widget>
