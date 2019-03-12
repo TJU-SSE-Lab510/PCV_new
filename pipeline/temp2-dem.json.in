@@ -1,0 +1,13 @@
+{
+  "pipeline":[
+    "temp.las",
+    {
+      "gdaldriver":"GTiff",
+      "output_type":"all",
+      "resolution":"0.2",
+      "radius": 1.1,
+      "type": "writers.gdal",
+      "filename":".\\result\\rabbit-DEM.tif"
+    }
+  ]
+}
