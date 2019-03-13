@@ -92,270 +92,98 @@ CloudViewer::~CloudViewer()
 string inputfile;
 string inputroutine;
 
-int string_replace(string &s1, const string &s2, const string &s3)
+int makedir() //v2
 {
-	string::size_type pos = 0;
-	string::size_type a = s2.size();
-	string::size_type b = s3.size();
-	while ((pos = s1.find(s2, pos)) != string::npos)
+	string folderPath = ".\\result";
+
+	if (0 != access(folderPath.c_str(), 0))
 	{
-		s1.replace(pos, a, s3);
-		pos += b;
+		// if this folder not exist, create a new one.
+		mkdir(folderPath.c_str());   // ï¿½ï¿½ï¿½ï¿½ 0 ï¿½ï¿½Ê¾ï¿½ï¿½ï¿½ï¿½ï¿½É¹ï¿½ï¿½ï¿½-1 ï¿½ï¿½Ê¾Ê§ï¿½ï¿½
+
 	}
 	return 0;
 }
 
 void CloudViewer::todem()
 {
-	using namespace pcl;
-	using namespace pcl::io;
-	using namespace std;
-	using namespace pdal;
-
-	//get the filename and the routine
-	char charfile[100] = {}; //the filename of the input
-	string purename = inputfile.substr(0, inputfile.rfind(".")); //without the format:purename
-	strcpy(charfile, purename.c_str());
-
-	char charroutine[100] = {}; //the fileroutine of the input
-	if (purename.empty())
-	{
-		QMessageBox::information(this, "DEM", "You should open a file!");
-	}
-	else
-	{
-		//replacement of the routine
-		string_replace(inputroutine, "/", "\\\\");
-		strcpy(charroutine, inputroutine.c_str());
-
-		//pcd to ply
-		pcl::PCLPointCloud2 cloud;
-		if (loadPCDFile(inputroutine, cloud) < 0)
-		{
-			cout << "Error: cannot load the PCD file!!!" << endl;
-
-		}
-		PLYWriter writer;
-		//writer.write(".////result////"+purename+".ply", cloud, Eigen::Vector4f::Zero(), Eigen::Quaternionf::Identity(), true, true);
-		writer.write("temp2.ply", cloud, Eigen::Vector4f::Zero(), Eigen::Quaternionf::Identity(), true, true);
-
-		//change the content of pipeline according to purename&input_name
-		//tempfile1
-		string file_path = ".\\pipeline\\ply2las.json.in";//infile
-		string out_path = ".\\pipeline\\temp1-dem.json.in";//outfile
-		string str;
-		string file_name = purename; // enter the filename
-		string::size_type pos = 0;
-		ifstream instream;
-		ofstream outstream;
-		instream.open(file_path);
-		if (!instream)
-			cout << "error" << endl;
-		outstream.open(out_path);
-		while (getline(instream, str)) {
-			pos = str.find("X");//²éÕÒ×Ö·ûÔÚstringÖÐµÚÒ»´Î³öÏÖµÄÎ»ÖÃ
-			if (pos == string::npos)
-			{
-
-				outstream << str << endl;
-			}
-			else {
-				str.replace(pos, 1, file_name);//Ìæ»»
-				outstream << str << endl;
-			}
-
-		}
-		instream.close();
-		outstream.close();
-
-		cout << "change!\n";
-
-		//tempfile2
-		string file_path2 = ".\\pipeline\\las2dem.json.in";//infile
-		string out_path2 = ".\\pipeline\\temp2-dem.json.in";//outfile
-		string str2;
-		string::size_type pos2 = 0;
-		ifstream instream2;
-		ofstream outstream2;
-		instream2.open(file_path2);
-		if (!instream2)
-			cout << "error" << endl;
-		outstream2.open(out_path2);
-		while (getline(instream2, str2)) {
-			pos2 = str2.find("X");//²éÕÒ×Ö·ûÔÚstringÖÐµÚÒ»´Î³öÏÖµÄÎ»ÖÃ
-			if (pos2 == string::npos)
-			{
-
-				outstream2 << str2 << endl;
-			}
-			else {
-				str2.replace(pos2, 1, file_name);//Ìæ»»
-				outstream2 << str2 << endl;
-			}
-
-		}
-		instream2.close();
-		outstream2.close();
-
-		//add the to las&dem function here
-
-
-		//system("pdal pipeline pipeline/temp1.json.in");
-		//system("pdal pipeline pipeline/temp2.json.in");
-
-
-
-		PipelineManager mgr;
-		mgr.readPipeline(".\\pipeline\\temp1-dem.json.in");
-		mgr.prepare();
-		mgr.execute();
-
-		//to dem
-		PipelineManager mgr2;
-		mgr2.readPipeline(".\\pipeline\\temp2-dem.json.in");
-		mgr2.execute();
-
-
-		//string plyfile;
-		//plyfile = purename + ".ply";
-
-		remove("temp.las");
-		remove("temp2.ply");
-		remove(".\\pipeline\\temp1-dem.json.in");
-		remove(".\\pipeline\\temp2-dem.json.in");
-
-
-		//QMessageBox::information(this, "DEM", charfile);
-		QMessageBox::information(this, "DEM", "The DEM file is in the result folder");
-	}
-
-
+	//QMessageBox::information(this, "DEM", charfile);
+	QMessageBox::information(this, "DEM", "The DEM file is in the result folder");
 }
 
 void CloudViewer::todsm()
 {
-	using namespace pcl;
-	using namespace pcl::io;
+
 	using namespace std;
 	using namespace pdal;
 
 	//get the filename and the routine
 	char charfile[100] = {}; //the filename of the input
 	string purename = inputfile.substr(0, inputfile.rfind(".")); //without the format:purename
-	strcpy(charfile, purename.c_str());
+	int isfile = 0;
+	//create the result folder
+	makedir();
 
-	char charroutine[100] = {}; //the fileroutine of the input
 	if (purename.empty())
 	{
+		isfile = 0;
 		QMessageBox::information(this, "DSM", "You should open a file!");
 	}
 	else
 	{
-		//replacement of the routine
-		string_replace(inputroutine, "/", "\\\\");
-		strcpy(charroutine, inputroutine.c_str());
+		isfile = 1;
+		//translate the in-memory pcd into las and save it
+		char strOutLasName[] = "temp.las";
 
-		//pcd to ply
-		pcl::PCLPointCloud2 cloud;
-		if (loadPCDFile(inputroutine, cloud) < 0)
+		std::ofstream ofs(strOutLasName, ios::out | ios::binary);
+
+		liblas::Header header;
+		header.SetVersionMajor(1);
+		header.SetVersionMinor(2);
+		header.SetDataFormatId(liblas::PointFormatName::ePointFormat3);
+		header.SetScale(0.01, 0.01, 0.01);  //slove the long double problem
+
+											//Ð´liblas,
+		liblas::Writer writer(ofs, header);
+		liblas::Point point(&header);
+
+		for (size_t i = 0; i < mycloud.cloud->points.size(); i++)
 		{
-			cout << "Error: cannot load the PCD file!!!" << endl;
+			long double x = mycloud.cloud->points[i].x;
+			long double y = mycloud.cloud->points[i].y;
+			long double z = mycloud.cloud->points[i].z;
+			point.SetCoordinates(x, y, z);
 
+			uint32_t red = (uint32_t)mycloud.cloud->points[i].r;
+			uint32_t green = (uint32_t)mycloud.cloud->points[i].g;
+			uint32_t blue = (uint32_t)mycloud.cloud->points[i].b;
+
+			liblas::Color pointColor(red, green, blue);
+			point.SetColor(pointColor);
+			writer.WritePoint(point);
 		}
-		PLYWriter writer;
-		//writer.write(".////result////"+purename+".ply", cloud, Eigen::Vector4f::Zero(), Eigen::Quaternionf::Identity(), true, true);
-		writer.write("temp2.ply", cloud, Eigen::Vector4f::Zero(), Eigen::Quaternionf::Identity(), true, true);
+		long double minPt[3] = { 9999999, 9999999, 9999999 };
+		long double maxPt[3] = { 0, 0, 0 };
+		header.SetPointRecordsCount(mycloud.cloud->points.size());
+		header.SetPointRecordsByReturnCount(0, mycloud.cloud->points.size());
+		header.SetMax(maxPt[0], maxPt[1], maxPt[2]);
+		header.SetMin(minPt[0], minPt[1], minPt[2]);
+		writer.SetHeader(header);
 
-		//change the content of pipeline according to purename&input_name
-		//tempfile1
-		string file_path = ".\\pipeline\\ply2las.json.in";//infile
-		string out_path = ".\\pipeline\\temp1-dsm.json.in";//outfile
-		string str;
-		string file_name = purename; // enter the filename
-		string::size_type pos = 0;
-		ifstream instream;
-		ofstream outstream;
-		instream.open(file_path);
-		if (!instream)
-			cout << "error" << endl;
-		outstream.open(out_path);
-		while (getline(instream, str)) {
-			pos = str.find("X");//²éÕÒ×Ö·ûÔÚstringÖÐµÚÒ»´Î³öÏÖµÄÎ»ÖÃ
-			if (pos == string::npos)
-			{
-
-				outstream << str << endl;
-			}
-			else {
-				str.replace(pos, 1, file_name);//Ìæ»»
-				outstream << str << endl;
-			}
-
-		}
-		instream.close();
-		outstream.close();
-
-		cout << "change!\n";
-
-		//tempfile2
-		string file_path2 = ".\\pipeline\\las2dsm.json.in";//infile
-		string out_path2 = ".\\pipeline\\temp2-dsm.json.in";//outfile
-		string str2;
-		string::size_type pos2 = 0;
-		ifstream instream2;
-		ofstream outstream2;
-		instream2.open(file_path2);
-		if (!instream2)
-			cout << "error" << endl;
-		outstream2.open(out_path2);
-		while (getline(instream2, str2)) {
-			pos2 = str2.find("X");//²éÕÒ×Ö·ûÔÚstringÖÐµÚÒ»´Î³öÏÖµÄÎ»ÖÃ
-			if (pos2 == string::npos)
-			{
-
-				outstream2 << str2 << endl;
-			}
-			else {
-				str2.replace(pos2, 1, file_name);//Ìæ»»
-				outstream2 << str2 << endl;
-			}
-
-		}
-		instream2.close();
-		outstream2.close();
-
-		//add the to las&dem function here
-
-
-		//system("pdal pipeline pipeline/temp1.json.in");
-		//system("pdal pipeline pipeline/temp2.json.in");
-
-
-
-		PipelineManager mgr;
-		mgr.readPipeline(".\\pipeline\\temp1-dsm.json.in");
-		mgr.prepare();
-		mgr.execute();
-
-		//to dem
-		PipelineManager mgr2;
-		mgr2.readPipeline(".\\pipeline\\temp2-dsm.json.in");
-		mgr2.execute();
-
-
-		//string plyfile;
-		//plyfile = purename + ".ply";
-
-		remove("temp.las");
-		remove("temp2.ply");
-		remove(".\\pipeline\\temp1-dsm.json.in");
-		remove(".\\pipeline\\temp2-dsm.json.in");
-
-
-		QMessageBox::information(this, "DSM", "The DSM file is in the result folder");
 	}
 
-
+	if (isfile == 1) //the las file will be broken if we don' t use the 'isfile' judge number
+	{
+		//CopyFile(L"temp.las", L"temp2.las", FALSE);
+		PipelineManager mgr;
+		std::stringstream ss2;
+		//the DSM will be blank if resolution is too big (eg. > 0.2)
+		ss2 << R"({"pipeline":["temp.las",{"resolution": 0.19,"radius": 0.6,"filename":".\\result\\)" << purename << R"(-DSM.tif"}]})";
+		mgr.readPipeline(ss2);
+		mgr.execute();
+		remove("temp.las");
+		QMessageBox::information(this, "DSM", "The DSM file is in the result folder");
+	}
 }
 
 void CloudViewer::Xchange() {
@@ -438,11 +266,11 @@ void CloudViewer::open()
 		mycloud.cloud.reset(new PointCloudT); // Reset cloud
 		QString filename = filenames[i];
 		std::string file_name = filename.toStdString();
-		std::string subname = getFileName(file_name);  //ÌáÈ¡È«Â·¾¶ÖÐµÄÎÄ¼þÃû£¨´øºó×º£©
+		std::string subname = getFileName(file_name);  //ï¿½ï¿½È¡È«Â·ï¿½ï¿½ï¿½Ðµï¿½ï¿½Ä¼ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½×ºï¿½ï¿½
 	    //change the global v - rowlynn
 		inputfile = subname;
 		inputroutine = file_name;
-		//¸üÐÂ×´Ì¬À¸
+		//ï¿½ï¿½ï¿½ï¿½×´Ì¬ï¿½ï¿½
 		ui.statusBar->showMessage(QString::fromLocal8Bit(subname.c_str()) + ": " + QString::number(i) + "/" + QString::number(filenames.size()) + " point cloud loading...");
 
 		int status = -1;
@@ -511,42 +339,42 @@ void CloudViewer::open()
 		}
 		else
 		{
-			//ÌáÊ¾£ºÎÞ·¨¶ÁÈ¡³ýÁË.ply .pcd .objÒÔÍâµÄÎÄ¼þ
+			//ï¿½ï¿½Ê¾ï¿½ï¿½ï¿½Þ·ï¿½ï¿½ï¿½È¡ï¿½ï¿½ï¿½ï¿½.ply .pcd .objï¿½ï¿½ï¿½ï¿½ï¿½ï¿½Ä¼ï¿½
 			QMessageBox::information(this, tr("File format error"),
 				tr("Can't open files except .ply .pcd .obj .las"));
 			return;
 		}
-		//ÌáÊ¾£ººó×ºÃ»ÎÊÌâ£¬µ«ÎÄ¼þÄÚÈÝÎÞ·¨¶ÁÈ¡
+		//ï¿½ï¿½Ê¾ï¿½ï¿½ï¿½ï¿½×ºÃ»ï¿½ï¿½ï¿½â£¬ï¿½ï¿½ï¿½Ä¼ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½Þ·ï¿½ï¿½ï¿½È¡
 		if (status != 0)
 		{
 			QMessageBox::critical(this, tr("Reading file error"), tr("We can not open the file"));
 			return;
 		}
-		setA(255);  //ÉèÖÃµãÔÆÎª²»Í¸Ã÷
-					// ×îºóµ¼ÈëµÄµãÔÆµÄÐÅÏ¢
+		setA(255);  //ï¿½ï¿½ï¿½Ãµï¿½ï¿½ï¿½Îªï¿½ï¿½Í¸ï¿½ï¿½
+					// ï¿½ï¿½ï¿½ï¿½ï¿½Äµï¿½ï¿½Æµï¿½ï¿½ï¿½Ï¢
 		mycloud.filename = file_name;
 		mycloud.subname = subname;
 		mycloud.dirname = file_name.substr(0, file_name.size() - subname.size());
-		mycloud_vec.push_back(mycloud);  //½«µãÔÆµ¼ÈëµãÔÆÈÝÆ÷
+		mycloud_vec.push_back(mycloud);  //ï¿½ï¿½ï¿½ï¿½ï¿½Æµï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½
 
 
 										 // time off
 		time_cost = timeOff();
-		// Êä³ö´°¿Ú
+		// ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½
 		consoleLog("Open", QString::fromLocal8Bit(mycloud.subname.c_str()), QString::fromLocal8Bit(mycloud.filename.c_str()), "Time cost: " + time_cost + " s, Points: " + QString::number(mycloud.cloud->points.size()));
 
-		//¸üÐÂ×ÊÔ´¹ÜÀíÊ÷
+		//ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½Ô´ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½
 		QTreeWidgetItem *cloudName = new QTreeWidgetItem(QStringList()
 			<< QString::fromLocal8Bit(subname.c_str()));
 		cloudName->setIcon(0, QIcon(":/Resources/images/icon.png"));
 		ui.dataTree->addTopLevelItem(cloudName);
 
-		//setWindowTitle(filename + " - CloudViewer"); //¸üÐÂ±êÌâ
+		//setWindowTitle(filename + " - CloudViewer"); //ï¿½ï¿½ï¿½Â±ï¿½ï¿½ï¿½
 
 		total_points += mycloud.cloud->points.size();
 	}
 	ui.statusBar->showMessage("");
-	showPointcloudAdd();  //¸üÐÂÊÓÍ¼´°¿Ú
+	showPointcloudAdd();  //ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½Í¼ï¿½ï¿½ï¿½ï¿½
 	setPropertyTable();
 
 }
@@ -565,7 +393,7 @@ void CloudViewer::add()
 		std::string file_name = filename.toStdString();
 		std::string subname = getFileName(file_name);
 
-		// ¸üÐÂ×´Ì¬À¸
+		// ï¿½ï¿½ï¿½ï¿½×´Ì¬ï¿½ï¿½
 		ui.statusBar->showMessage(QString::fromLocal8Bit(subname.c_str()) + ": " + QString::number(i) + "/" + QString::number(filenames.size()) + " point cloud loading...");
 
 		int status = -1;
@@ -595,28 +423,28 @@ void CloudViewer::add()
 		}
 		else
 		{
-			//ÌáÊ¾£ºÎÞ·¨¶ÁÈ¡³ýÁË.ply .pcd .objÒÔÍâµÄÎÄ¼þ
+			//ï¿½ï¿½Ê¾ï¿½ï¿½ï¿½Þ·ï¿½ï¿½ï¿½È¡ï¿½ï¿½ï¿½ï¿½.ply .pcd .objï¿½ï¿½ï¿½ï¿½ï¿½ï¿½Ä¼ï¿½
 			QMessageBox::information(this, tr("File format error"), tr("Can't open files except .ply .pcd .obj"));
 			return;
 		}
-		//ÌáÊ¾£ººó×ºÃ»ÎÊÌâ£¬µ«ÎÄ¼þÄÚÈÝÎÞ·¨¶ÁÈ¡
+		//ï¿½ï¿½Ê¾ï¿½ï¿½ï¿½ï¿½×ºÃ»ï¿½ï¿½ï¿½â£¬ï¿½ï¿½ï¿½Ä¼ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½Þ·ï¿½ï¿½ï¿½È¡
 		if (status != 0)
 		{
 			QMessageBox::critical(this, tr("Reading file error"), tr("We can not open the file"));
 			return;
 		}
-		setA(255);  //ÉèÖÃµãÔÆÎª²»Í¸Ã÷
+		setA(255);  //ï¿½ï¿½ï¿½Ãµï¿½ï¿½ï¿½Îªï¿½ï¿½Í¸ï¿½ï¿½
 		mycloud.filename = file_name;
 		mycloud.subname = subname;
 		mycloud.dirname = file_name.substr(0, file_name.size() - subname.size());
-		mycloud_vec.push_back(mycloud);  //½«µãÔÆµ¼ÈëµãÔÆÈÝÆ÷
+		mycloud_vec.push_back(mycloud);  //ï¿½ï¿½ï¿½ï¿½ï¿½Æµï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½
 
 										 // time of
 		time_cost = timeOff();
-		//Êä³ö´°¿Ú
+		//ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½
 		consoleLog("Add", QString::fromLocal8Bit(mycloud.subname.c_str()), QString::fromLocal8Bit(mycloud.filename.c_str()), "Time cost: " + time_cost + " s, Points: " + QString::number(mycloud.cloud->points.size()));
 
-		//ÉèÖÃ×ÊÔ´¹ÜÀíÆ÷
+		//ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½Ô´ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½
 		QTreeWidgetItem *cloudName = new QTreeWidgetItem(QStringList() << QString::fromLocal8Bit(subname.c_str()));
 		cloudName->setIcon(0, QIcon(":/Resources/images/icon.png"));
 		ui.dataTree->addTopLevelItem(cloudName);
@@ -633,21 +461,21 @@ void CloudViewer::add()
 // Clear all point clouds
 void CloudViewer::clear()
 {
-	mycloud_vec.clear();  //´ÓµãÔÆÈÝÆ÷ÖÐÒÆ³ýËùÓÐµãÔÆ
-	viewer->removeAllPointClouds();  //´ÓviewerÖÐÒÆ³ýËùÓÐµãÔÆ
-	viewer->removeAllShapes(); //Õâ¸öremove¸ü³¹µ×
-	ui.dataTree->clear();  //½«dataTreeÇå¿Õ
+	mycloud_vec.clear();  //ï¿½Óµï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½Æ³ï¿½ï¿½ï¿½ï¿½Ðµï¿½ï¿½ï¿½
+	viewer->removeAllPointClouds();  //ï¿½ï¿½viewerï¿½ï¿½ï¿½Æ³ï¿½ï¿½ï¿½ï¿½Ðµï¿½ï¿½ï¿½
+	viewer->removeAllShapes(); //ï¿½ï¿½ï¿½removeï¿½ï¿½ï¿½ï¿½ï¿½ï¿½
+	ui.dataTree->clear();  //ï¿½ï¿½dataTreeï¿½ï¿½ï¿½
 
-	ui.propertyTable->clear();  //Çå¿ÕÊôÐÔ´°¿ÚpropertyTable
+	ui.propertyTable->clear();  //ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½Ô´ï¿½ï¿½ï¿½propertyTable
 	QStringList header;
 	header << "Property" << "Value";
 	ui.propertyTable->setHorizontalHeaderLabels(header);
 
-	//Êä³ö´°¿Ú
+	//ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½
 	consoleLog("Clear", "All point clouds", "", "");
 
-	setWindowTitle("CloudViewer");  //¸üÐÂ´°¿Ú±êÌâ
-	showPointcloud();  //¸üÐÂÏÔÊ¾
+	setWindowTitle("CloudViewer");  //ï¿½ï¿½ï¿½Â´ï¿½ï¿½Ú±ï¿½ï¿½ï¿½
+	showPointcloud();  //ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½Ê¾
 }
 
 
@@ -658,7 +486,7 @@ void CloudViewer::save()
 		QString::fromLocal8Bit(mycloud.dirname.c_str()), tr("Point cloud data(*.pcd *.ply);;Allfile(*.*)"));
 	std::string file_name = save_filename.toStdString();
 	std::string subname = getFileName(file_name);
-	//ÎÄ¼þÃûÎª¿ÕÖ±½Ó·µ»Ø
+	//ï¿½Ä¼ï¿½ï¿½ï¿½Îªï¿½ï¿½Ö±ï¿½Ó·ï¿½ï¿½ï¿½
 	if (save_filename.isEmpty())
 		return;
 
@@ -677,13 +505,13 @@ void CloudViewer::save()
 	{
 		status = pcl::io::savePLYFile(file_name, *(mycloud.cloud));
 	}
-	else //ÌáÊ¾£ºÎÞ·¨±£´æÎª³ýÁË.ply .pcdÒÔÍâµÄÎÄ¼þ
+	else //ï¿½ï¿½Ê¾ï¿½ï¿½ï¿½Þ·ï¿½ï¿½ï¿½ï¿½ï¿½Îªï¿½ï¿½ï¿½ï¿½.ply .pcdï¿½ï¿½ï¿½ï¿½ï¿½ï¿½Ä¼ï¿½
 	{
 		QMessageBox::information(this, tr("File format error"),
 			tr("Can't save files except .ply .pcd"));
 		return;
 	}
-	//ÌáÊ¾£ººó×ºÃ»ÎÊÌâ£¬µ«ÊÇÎÞ·¨±£´æ
+	//ï¿½ï¿½Ê¾ï¿½ï¿½ï¿½ï¿½×ºÃ»ï¿½ï¿½ï¿½â£¬ï¿½ï¿½ï¿½ï¿½ï¿½Þ·ï¿½ï¿½ï¿½ï¿½ï¿½
 	if (status != 0)
 	{
 		QMessageBox::critical(this, tr("Saving file error"),
@@ -691,7 +519,7 @@ void CloudViewer::save()
 		return;
 	}
 
-	//Êä³ö´°¿Ú
+	//ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½
 	consoleLog("Save", QString::fromLocal8Bit(subname.c_str()), save_filename, "Single save");
 
 	setWindowTitle(save_filename + " - CloudViewer");
@@ -706,7 +534,7 @@ void CloudViewer::saveBinary()
 		QString::fromLocal8Bit(mycloud.dirname.c_str()), tr("Point cloud data(*.pcd *.ply);;Allfile(*.*)"));
 	std::string file_name = save_filename.toStdString();
 	std::string subname = getFileName(file_name);
-	//ÎÄ¼þÃûÎª¿ÕÖ±½Ó·µ»Ø
+	//ï¿½Ä¼ï¿½ï¿½ï¿½Îªï¿½ï¿½Ö±ï¿½Ó·ï¿½ï¿½ï¿½
 	if (save_filename.isEmpty())
 		return;
 
@@ -725,13 +553,13 @@ void CloudViewer::saveBinary()
 	{
 		status = pcl::io::savePLYFileBinary(file_name, *(mycloud.cloud));
 	}
-	else //ÌáÊ¾£ºÎÞ·¨±£´æÎª³ýÁË.ply .pcdÒÔÍâµÄÎÄ¼þ
+	else //ï¿½ï¿½Ê¾ï¿½ï¿½ï¿½Þ·ï¿½ï¿½ï¿½ï¿½ï¿½Îªï¿½ï¿½ï¿½ï¿½.ply .pcdï¿½ï¿½ï¿½ï¿½ï¿½ï¿½Ä¼ï¿½
 	{
 		QMessageBox::information(this, tr("File format error"),
 			tr("Can't save files except .ply .pcd"));
 		return;
 	}
-	//ÌáÊ¾£ººó×ºÃ»ÎÊÌâ£¬µ«ÊÇÎÞ·¨±£´æ
+	//ï¿½ï¿½Ê¾ï¿½ï¿½ï¿½ï¿½×ºÃ»ï¿½ï¿½ï¿½â£¬ï¿½ï¿½ï¿½ï¿½ï¿½Þ·ï¿½ï¿½ï¿½ï¿½ï¿½
 	if (status != 0)
 	{
 		QMessageBox::critical(this, tr("Saving file error"),
@@ -739,7 +567,7 @@ void CloudViewer::saveBinary()
 		return;
 	}
 
-	//Êä³ö´°¿Ú
+	//ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½
 	consoleLog("Save as binary", QString::fromLocal8Bit(subname.c_str()), save_filename, "Single save (binary)");
 
 	setWindowTitle(save_filename + " - CloudViewer");
@@ -765,7 +593,7 @@ void CloudViewer::savemulti()
 	int k = 0;
 	for (int i = 0; i != mycloud_vec.size(); i++)
 	{
-		for (int j = 0; j != mycloud_vec[i].cloud->points.size(); j++)          //×¢Òâcloudvec[i]->points.size()ºÍcloudvec[i]->size()µÄÇø±ð
+		for (int j = 0; j != mycloud_vec[i].cloud->points.size(); j++)          //×¢ï¿½ï¿½cloudvec[i]->points.size()ï¿½ï¿½cloudvec[i]->size()ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½
 		{
 			multi_cloud->points[k].x = mycloud_vec[i].cloud->points[j].x;
 			multi_cloud->points[k].y = mycloud_vec[i].cloud->points[j].y;
@@ -776,7 +604,7 @@ void CloudViewer::savemulti()
 			k++;
 		}
 	}
-	//±£´æmulti_cloud
+	//ï¿½ï¿½ï¿½ï¿½multi_cloud
 	int status = -1;
 	if (save_filename.endsWith(".pcd", Qt::CaseInsensitive))
 	{
@@ -797,20 +625,20 @@ void CloudViewer::savemulti()
 			status = pcl::io::savePLYFile(save_filename.toStdString(), *multi_cloud);
 		}
 	}
-	else //ÌáÊ¾£ºÎÞ·¨±£´æÎª³ýÁË.ply .pcdÒÔÍâµÄÎÄ¼þ
+	else //ï¿½ï¿½Ê¾ï¿½ï¿½ï¿½Þ·ï¿½ï¿½ï¿½ï¿½ï¿½Îªï¿½ï¿½ï¿½ï¿½.ply .pcdï¿½ï¿½ï¿½ï¿½ï¿½ï¿½Ä¼ï¿½
 	{
 		QMessageBox::information(this, tr("File format error"), tr("Can't save files except .ply .pcd"));
 		return;
 	}
 
-	//ÌáÊ¾£ººó×ºÃ»ÎÊÌâ£¬µ«ÊÇÎÞ·¨±£´æ
+	//ï¿½ï¿½Ê¾ï¿½ï¿½ï¿½ï¿½×ºÃ»ï¿½ï¿½ï¿½â£¬ï¿½ï¿½ï¿½ï¿½ï¿½Þ·ï¿½ï¿½ï¿½ï¿½ï¿½
 	if (status != 0)
 	{
 		QMessageBox::critical(this, tr("Saving file error"), tr("We can not save the file"));
 		return;
 	}
 
-	// Êä³ö´°¿Ú
+	// ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½
 	if (save_as_binary) {
 		consoleLog("Save as binary", QString::fromLocal8Bit(subname.c_str()), save_filename, "Multi save (binary)");
 	}
@@ -820,7 +648,7 @@ void CloudViewer::savemulti()
 
 
 	save_as_binary = false;
-	//½«±£´æºóµÄ multi_cloud ÉèÖÃÎªµ±Ç° mycloud,ÒÔ±ã±£´æÖ®ºóÖ±½Ó½øÐÐ²Ù×÷
+	//ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ multi_cloud ï¿½ï¿½ï¿½ï¿½Îªï¿½ï¿½Ç° mycloud,ï¿½Ô±ã±£ï¿½ï¿½Ö®ï¿½ï¿½Ö±ï¿½Ó½ï¿½ï¿½Ð²ï¿½ï¿½ï¿½
 	mycloud.cloud = multi_cloud;
 	mycloud.filename = save_filename.toStdString();
 	mycloud.subname = subname;
@@ -832,13 +660,13 @@ void CloudViewer::savemulti()
 
 
 
-//¸ñÊ½×ª»»
+//ï¿½ï¿½Ê½×ªï¿½ï¿½
 void CloudViewer::change()
 {
 
 }
 
-//ÍË³ö³ÌÐò
+//ï¿½Ë³ï¿½ï¿½ï¿½ï¿½ï¿½
 void CloudViewer::exit()
 {
 	this->close();
@@ -849,14 +677,14 @@ void CloudViewer::cube()
 {
 	mycloud.cloud.reset(new PointCloudT);
 	total_points = 0;
-	ui.dataTree->clear();  //Çå¿Õ×ÊÔ´¹ÜÀíÆ÷µÄitem
-	viewer->removeAllPointClouds();  //´ÓviewerÖÐÒÆ³ýËùÓÐµãÔÆ
-	mycloud_vec.clear();  //Çå¿ÕµãÔÆÈÝÆ÷
+	ui.dataTree->clear();  //ï¿½ï¿½ï¿½ï¿½ï¿½Ô´ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½item
+	viewer->removeAllPointClouds();  //ï¿½ï¿½viewerï¿½ï¿½ï¿½Æ³ï¿½ï¿½ï¿½ï¿½Ðµï¿½ï¿½ï¿½
+	mycloud_vec.clear();  //ï¿½ï¿½Õµï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½
 
-	mycloud.cloud->width = 50000;         // ÉèÖÃµãÔÆ¿í
-	mycloud.cloud->height = 1;            // ÉèÖÃµãÔÆ¸ß£¬¸ßÎª1£¬ËµÃ÷ÎªÎÞ×éÖ¯µãÔÆ
+	mycloud.cloud->width = 50000;         // ï¿½ï¿½ï¿½Ãµï¿½ï¿½Æ¿ï¿½
+	mycloud.cloud->height = 1;            // ï¿½ï¿½ï¿½Ãµï¿½ï¿½Æ¸ß£ï¿½ï¿½ï¿½Îª1ï¿½ï¿½Ëµï¿½ï¿½Îªï¿½ï¿½ï¿½ï¿½Ö¯ï¿½ï¿½ï¿½ï¿½
 	mycloud.cloud->is_dense = false;
-	mycloud.cloud->resize(mycloud.cloud->width * mycloud.cloud->height);     // ÖØÖÃµãÔÆ´óÐ¡
+	mycloud.cloud->resize(mycloud.cloud->width * mycloud.cloud->height);     // ï¿½ï¿½ï¿½Ãµï¿½ï¿½Æ´ï¿½Ð¡
 	for (size_t i = 0; i != mycloud.cloud->size(); ++i)
 	{
 		mycloud.cloud->points[i].x = 1024 * rand() / (RAND_MAX + 1.0f);
@@ -866,26 +694,26 @@ void CloudViewer::cube()
 		mycloud.cloud->points[i].g = green;
 		mycloud.cloud->points[i].b = blue;
 	}
-	//ÉèÖÃ×ÊÔ´¹ÜÀíÆ÷
+	//ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½Ô´ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½
 	QTreeWidgetItem *cloudName = new QTreeWidgetItem(QStringList() << QString::fromLocal8Bit("cube"));
 	cloudName->setIcon(0, QIcon(":/Resources/images/icon.png"));
 	ui.dataTree->addTopLevelItem(cloudName);
 
-	// Êä³ö´°¿Ú
+	// ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½
 	consoleLog("Generate cube", "cube", "cube", "");
 
 	mycloud_vec.push_back(mycloud);
 	showPointcloudAdd();
 }
 
-//³õÊ¼»¯
+//ï¿½ï¿½Ê¼ï¿½ï¿½
 void CloudViewer::initial()
 {
-	//½çÃæ³õÊ¼»¯
+	//ï¿½ï¿½ï¿½ï¿½ï¿½Ê¼ï¿½ï¿½
 	setWindowIcon(QIcon(tr(":/Resources/images/icon.png")));
 	setWindowTitle(tr("CloudViewer"));
 
-	//µãÔÆ³õÊ¼»¯
+	//ï¿½ï¿½ï¿½Æ³ï¿½Ê¼ï¿½ï¿½
 	mycloud.cloud.reset(new PointCloudT);
 	mycloud.cloud->resize(1);
 	viewer.reset(new pcl::visualization::PCLVisualizer("viewer", false));
@@ -895,27 +723,27 @@ void CloudViewer::initial()
 	viewer->setupInteractor(ui.screen->GetInteractor(), ui.screen->GetRenderWindow());
 	ui.screen->update();
 
-	ui.propertyTable->setSelectionMode(QAbstractItemView::NoSelection); // ½ûÖ¹µã»÷ÊôÐÔ¹ÜÀíÆ÷µÄ item
-	ui.consoleTable->setSelectionMode(QAbstractItemView::NoSelection);  // ½ûÖ¹µã»÷Êä³ö´°¿ÚµÄ item
-	ui.dataTree->setSelectionMode(QAbstractItemView::ExtendedSelection); // ÔÊÐí dataTree ½øÐÐ¶àÑ¡
+	ui.propertyTable->setSelectionMode(QAbstractItemView::NoSelection); // ï¿½ï¿½Ö¹ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½Ô¹ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ item
+	ui.consoleTable->setSelectionMode(QAbstractItemView::NoSelection);  // ï¿½ï¿½Ö¹ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½Úµï¿½ item
+	ui.dataTree->setSelectionMode(QAbstractItemView::ExtendedSelection); // ï¿½ï¿½ï¿½ï¿½ dataTree ï¿½ï¿½ï¿½Ð¶ï¿½Ñ¡
 
-																		 // ÉèÖÃÄ¬ÈÏÖ÷Ìâ
+																		 // ï¿½ï¿½ï¿½ï¿½Ä¬ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½
 	QString qss = darcula_qss;
 	qApp->setStyleSheet(qss);
 
 	setPropertyTable();
 	setConsoleTable();
 
-	// Êä³ö´°¿Ú
+	// ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½
 	consoleLog("Software start", "CloudViewer", "Welcome to use CloudViewer", "TJ510");
 
 
-	// ÉèÖÃ±³¾°ÑÕÉ«Îª dark
+	// ï¿½ï¿½ï¿½Ã±ï¿½ï¿½ï¿½ï¿½ï¿½É«Îª dark
 	viewer->setBackgroundColor(30 / 255.0, 30 / 255.0, 30 / 255.0);
 
 }
 
-//ÏÔÊ¾µãÔÆ£¬²»ÖØÖÃÏà»ú½Ç¶È
+//ï¿½ï¿½Ê¾ï¿½ï¿½ï¿½Æ£ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½Ç¶ï¿½
 void CloudViewer::showPointcloud()
 {
 	for (int i = 0; i != mycloud_vec.size(); i++)
@@ -926,7 +754,7 @@ void CloudViewer::showPointcloud()
 	ui.screen->update();
 }
 
-//Ìí¼ÓµãÔÆµ½viewer,²¢ÏÔÊ¾µãÔÆ
+//ï¿½ï¿½ï¿½Óµï¿½ï¿½Æµï¿½viewer,ï¿½ï¿½ï¿½ï¿½Ê¾ï¿½ï¿½ï¿½ï¿½
 void CloudViewer::showPointcloudAdd()
 {
 	for (int i = 0; i != mycloud_vec.size(); i++)
@@ -958,33 +786,33 @@ void CloudViewer::setA(unsigned int a)
 	}
 }
 
-//¹ØÓÚ
+//ï¿½ï¿½ï¿½ï¿½
 void CloudViewer::about()
 {
 	AboutWin *aboutwin = new AboutWin(this);
 	aboutwin->setModal(true);
 	aboutwin->show();
 
-	// Êä³ö´°¿Ú
+	// ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½
 	consoleLog("About", "TJ-510", "TJ510", "TJ510");
 }
 
-//°ïÖú
+//ï¿½ï¿½ï¿½ï¿½
 void CloudViewer::help()
 {
 	QDesktopServices::openUrl(QUrl(QLatin1String("http://www.baidu.com")));
 
-	// Êä³ö´°¿Ú
+	// ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½
 	consoleLog("Help", "Cloudviewer help", "none", "none");
 
 	//QMessageBox::information(this, "Help", "we are building help widget...");
 }
 
-//½µÔëËã·¨
-//Í³¼ÆÂË²¨
+//ï¿½ï¿½ï¿½ï¿½ï¿½ã·¨
+//Í³ï¿½ï¿½ï¿½Ë²ï¿½
 //void CloudViewer::statistical(){}
 
-//ÉèÖÃÍ£¿¿´°¿ÚµÄÏÔÊ¾ÓëÒþ²Ø
+//ï¿½ï¿½ï¿½ï¿½Í£ï¿½ï¿½ï¿½ï¿½ï¿½Úµï¿½ï¿½ï¿½Ê¾ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½
 void CloudViewer::data()
 {
 	if (ui.dataAction->isChecked())
@@ -1030,13 +858,13 @@ void CloudViewer::rgbDock()
 	}
 }
 
-//»æÖÆ»ù±¾Í¼ÐÎ
+//ï¿½ï¿½ï¿½Æ»ï¿½ï¿½ï¿½Í¼ï¿½ï¿½
 void CloudViewer::createSphere()
 {
 	mycloud.cloud.reset(new PointCloudT);
-	ui.dataTree->clear();  //Çå¿Õ×ÊÔ´¹ÜÀíÆ÷µÄitem
+	ui.dataTree->clear();  //ï¿½ï¿½ï¿½ï¿½ï¿½Ô´ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½item
 	viewer->removeAllShapes();
-	mycloud_vec.clear();  //Çå¿ÕµãÔÆÈÝÆ÷
+	mycloud_vec.clear();  //ï¿½ï¿½Õµï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½
 
 	pcl::PointXYZ p;
 	p.x = 0; p.y = 0; p.z = 0;
@@ -1045,22 +873,22 @@ void CloudViewer::createSphere()
 	viewer->resetCamera();
 	ui.screen->update();
 
-	// Êä³ö´°¿Ú
+	// ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½
 	consoleLog("Create sphere", "Sphere", "", "Succeeded");
 }
 void CloudViewer::createCylinder()
 {
 	mycloud.cloud.reset(new PointCloudT);
-	ui.dataTree->clear();  //Çå¿Õ×ÊÔ´¹ÜÀíÆ÷µÄitem
+	ui.dataTree->clear();  //ï¿½ï¿½ï¿½ï¿½ï¿½Ô´ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½item
 	viewer->removeAllShapes();
-	mycloud_vec.clear();  //Çå¿ÕµãÔÆÈÝÆ÷
+	mycloud_vec.clear();  //ï¿½ï¿½Õµï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½
 
 	viewer->addCylinder(*(new pcl::ModelCoefficients()), "cylinder");
 
 	viewer->resetCamera();
 	ui.screen->update();
 
-	// Êä³ö´°¿Ú
+	// ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½
 	consoleLog("Create cylinder", "Cylinder", "", "Failed");
 
 }
@@ -1068,7 +896,7 @@ void CloudViewer::createCylinder()
 // Change theme: Windows/Darcula
 void CloudViewer::windowsTheme() {
 	/*
-	QFile qssFile("Resources/qss/Windows.qss"); //×ÊÔ´ÎÄ¼þ":/Darcula.qss"
+	QFile qssFile("Resources/qss/Windows.qss"); //ï¿½ï¿½Ô´ï¿½Ä¼ï¿½":/Darcula.qss"
 	qssFile.open(QFile::ReadOnly);
 	if (qssFile.isOpen())
 	{
@@ -1081,7 +909,7 @@ void CloudViewer::windowsTheme() {
 	QString qss = windows_qss;
 	qApp->setStyleSheet(qss);
 
-	//¸Ä±ä dataTree ×ÖÌåÑÕÉ«£¬ÒÔÊÊÓ¦Ö÷ÌâµÄ±¿°ì·¨
+	//ï¿½Ä±ï¿½ dataTree ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½É«ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½Ó¦ï¿½ï¿½ï¿½ï¿½Ä±ï¿½ï¿½ì·¨
 	QColor light_color(241, 241, 241, 255);
 	QColor dark_color(0, 0, 0, 255);
 	for (int i = 0; i != mycloud_vec.size(); i++) {
@@ -1090,14 +918,14 @@ void CloudViewer::windowsTheme() {
 		}
 	}
 
-	// Êä³ö´°¿Ú
+	// ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½
 	consoleLog("Change theme", "Windows theme", "", "");
 
 	theme_id = 0;
 }
 void CloudViewer::darculaTheme() {
 	/*
-	QFile qssFile("Resources/qss/Darcula.qss"); //×ÊÔ´ÎÄ¼þ":/Darcula.qss"
+	QFile qssFile("Resources/qss/Darcula.qss"); //ï¿½ï¿½Ô´ï¿½Ä¼ï¿½":/Darcula.qss"
 	qssFile.open(QFile::ReadOnly);
 	if (qssFile.isOpen())
 	{
@@ -1112,7 +940,7 @@ void CloudViewer::darculaTheme() {
 	QString qss = darcula_qss;
 	qApp->setStyleSheet(qss);
 
-	//¸Ä±ä dataTree ×ÖÌåÑÕÉ«£¬ÒÔÊÊÓ¦Ö÷ÌâµÄ±¿°ì·¨
+	//ï¿½Ä±ï¿½ dataTree ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½É«ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½Ó¦ï¿½ï¿½ï¿½ï¿½Ä±ï¿½ï¿½ì·¨
 	QColor light_color(241, 241, 241, 255);
 	QColor dark_color(0, 0, 0, 255);
 	for (int i = 0; i != mycloud_vec.size(); i++) {
@@ -1121,31 +949,31 @@ void CloudViewer::darculaTheme() {
 		}
 	}
 
-	// Êä³ö´°¿Ú
+	// ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½
 	consoleLog("Change theme", "Darcula theme", "", "");
 
 	theme_id = 1;
 }
 // Change language: English/Chinese
 void CloudViewer::langEnglish() {
-	// Êä³ö´°¿Ú
+	// ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½
 	consoleLog("Change language", "English", "", "");
 }
 void CloudViewer::langChinese() {
-	// Êä³ö´°¿Ú
+	// ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½
 	consoleLog("Change language", "Chinese", "Doesn't support Chinese temporarily", "");
 }
 
 
 
 /*********************************************/
-/*****************½çÃæ²Ûº¯Êý*****************/
+/*****************ï¿½ï¿½ï¿½ï¿½Ûºï¿½ï¿½ï¿½*****************/
 /********************************************/
 void CloudViewer::colorBtnPressed()
 {
 	QList<QTreeWidgetItem*> itemList = ui.dataTree->selectedItems();
 	int selected_item_count = ui.dataTree->selectedItems().size();
-	// Èç¹ûÎ´Ñ¡ÖÐÈÎºÎµãÔÆ£¬Ôò¶ÔÊÓÍ¼´°¿ÚÖÐµÄËùÓÐµãÔÆ½øÐÐ×ÅÉ«
+	// ï¿½ï¿½ï¿½Î´Ñ¡ï¿½ï¿½ï¿½ÎºÎµï¿½ï¿½Æ£ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½Í¼ï¿½ï¿½ï¿½ï¿½ï¿½Ðµï¿½ï¿½ï¿½ï¿½Ðµï¿½ï¿½Æ½ï¿½ï¿½ï¿½ï¿½ï¿½É«
 	if (selected_item_count == 0) {
 		for (int i = 0; i != mycloud_vec.size(); i++) {
 			for (int j = 0; j != mycloud_vec[i].cloud->points.size(); j++) {
@@ -1155,7 +983,7 @@ void CloudViewer::colorBtnPressed()
 			}
 		}
 
-		// Êä³ö´°¿Ú
+		// ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½
 		consoleLog("Random color", "All point clous", "", "");
 
 	}
@@ -1169,7 +997,7 @@ void CloudViewer::colorBtnPressed()
 			}
 		}
 
-		// Êä³ö´°¿Ú
+		// ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½
 		consoleLog("Random color", "Point clouds selected", "", "");
 	}
 
@@ -1180,7 +1008,7 @@ void CloudViewer::RGBsliderReleased()
 {
 	QList<QTreeWidgetItem*> itemList = ui.dataTree->selectedItems();
 	int selected_item_count = ui.dataTree->selectedItems().size();
-	// Èç¹ûÎ´Ñ¡ÖÐÈÎºÎµãÔÆ£¬Ôò¶ÔÊÓÍ¼´°¿ÚÖÐµÄËùÓÐµãÔÆ½øÐÐ×ÅÉ«
+	// ï¿½ï¿½ï¿½Î´Ñ¡ï¿½ï¿½ï¿½ÎºÎµï¿½ï¿½Æ£ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½Í¼ï¿½ï¿½ï¿½ï¿½ï¿½Ðµï¿½ï¿½ï¿½ï¿½Ðµï¿½ï¿½Æ½ï¿½ï¿½ï¿½ï¿½ï¿½É«
 	if (selected_item_count == 0) {
 		for (int i = 0; i != mycloud_vec.size(); i++) {
 			for (int j = 0; j != mycloud_vec[i].cloud->points.size(); j++) {
@@ -1190,7 +1018,7 @@ void CloudViewer::RGBsliderReleased()
 			}
 		}
 
-		// Êä³ö´°¿Ú
+		// ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½
 		consoleLog("Change cloud color", "All point clouds", QString::number(red) + " " + QString::number(green) + " " + QString::number(blue), "");
 	}
 	else {
@@ -1202,13 +1030,13 @@ void CloudViewer::RGBsliderReleased()
 				mycloud_vec[cloud_id].cloud->points[j].b = blue;
 			}
 		}
-		// Êä³ö´°¿Ú
+		// ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½
 		consoleLog("Change cloud color", "Point clouds selected", QString::number(red) + " " + QString::number(green) + " " + QString::number(blue), "");
 	}
 	showPointcloud();
 }
 
-//ÉèÖÃËùÓÐµãÔÆµÄ³ß´ç
+//ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½Ðµï¿½ï¿½ÆµÄ³ß´ï¿½
 void CloudViewer::psliderReleased()
 {
 	QList<QTreeWidgetItem*> itemList = ui.dataTree->selectedItems();
@@ -1219,7 +1047,7 @@ void CloudViewer::psliderReleased()
 			viewer->setPointCloudRenderingProperties(pcl::visualization::PCL_VISUALIZER_POINT_SIZE,
 				p, "cloud" + QString::number(i).toStdString());
 		}
-		// Êä³ö´°¿Ú
+		// ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½
 		consoleLog("Change cloud size", "All point clouds", "Size: " + QString::number(p), "");
 	}
 	else {
@@ -1229,7 +1057,7 @@ void CloudViewer::psliderReleased()
 			viewer->setPointCloudRenderingProperties(pcl::visualization::PCL_VISUALIZER_POINT_SIZE,
 				p, "cloud" + QString::number(cloud_id).toStdString());
 		}
-		// Êä³ö´°¿Ú
+		// ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½
 		consoleLog("Change cloud size", "Point clouds selected", "Size: " + QString::number(p), "");
 	}
 	ui.screen->update();
@@ -1266,13 +1094,13 @@ void CloudViewer::cooCbxChecked(int value)
 	switch (value)
 	{
 	case 0:
-		viewer->removeCoordinateSystem();  //ÒÆ³ý×ø±êÏµ
-										   // Êä³ö´°¿Ú
+		viewer->removeCoordinateSystem();  //ï¿½Æ³ï¿½ï¿½ï¿½ï¿½ï¿½Ïµ
+										   // ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½
 		consoleLog("Remove coordinate system", "Remove", "", "");
 		break;
 	case 2:
-		viewer->addCoordinateSystem();  //Ìí¼Ó×ø±êÏµ
-										// Êä³ö´°¿Ú
+		viewer->addCoordinateSystem();  //ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½Ïµ
+										// ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½
 		consoleLog("Add coordinate system", "Add", "", "");
 		break;
 	}
@@ -1285,13 +1113,13 @@ void CloudViewer::bgcCbxChecked(int value)
 	{
 	case 0:
 		viewer->setBackgroundColor(30 / 255.0, 30 / 255.0, 30 / 255.0);
-		// Êä³ö´°¿Ú
+		// ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½
 		consoleLog("Change bg color", "Background", "30 30 30", "");
 		break;
 	case 2:
-		//£¡×¢Òâ£ºsetBackgroundColor()½ÓÊÕµÄÊÇ0-1µÄdoubleÐÍ²ÎÊý
+		//ï¿½ï¿½×¢ï¿½â£ºsetBackgroundColor()ï¿½ï¿½ï¿½Õµï¿½ï¿½ï¿½0-1ï¿½ï¿½doubleï¿½Í²ï¿½ï¿½ï¿½
 		viewer->setBackgroundColor(240 / 255.0, 240 / 255.0, 240 / 255.0);
-		// Êä³ö´°¿Ú
+		// ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½
 		consoleLog("Change bg color", "Background", "240 240 240", "");
 		break;
 	}
@@ -1300,15 +1128,15 @@ void CloudViewer::bgcCbxChecked(int value)
 }
 
 
-//Í¨¹ýÑÕÉ«¶Ô»°¿ò¸Ä±äµãÔÆÑÕÉ«
+//Í¨ï¿½ï¿½ï¿½ï¿½É«ï¿½Ô»ï¿½ï¿½ï¿½Ä±ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½É«
 void CloudViewer::pointcolorChanged()
 {
 	QColor color = QColorDialog::getColor(Qt::white, this, "Select color for point cloud");
 
-	if (color.isValid()) //ÅÐ¶ÏËùÑ¡µÄÑÕÉ«ÊÇ·ñÓÐÐ§
+	if (color.isValid()) //ï¿½Ð¶ï¿½ï¿½ï¿½Ñ¡ï¿½ï¿½ï¿½ï¿½É«ï¿½Ç·ï¿½ï¿½ï¿½Ð§
 	{
 		//QAction* action = dynamic_cast<QAction*>(sender());
-		//if (action != ui.pointcolorAction) //¸Ä±äÑÕÉ«µÄÐÅºÅÀ´×ÔÓÚ dataTree
+		//if (action != ui.pointcolorAction) //ï¿½Ä±ï¿½ï¿½ï¿½É«ï¿½ï¿½ï¿½Åºï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ dataTree
 		QList<QTreeWidgetItem*> itemList = ui.dataTree->selectedItems();
 		int selected_item_count = ui.dataTree->selectedItems().size();
 		if (selected_item_count == 0) {
@@ -1319,7 +1147,7 @@ void CloudViewer::pointcolorChanged()
 					mycloud_vec[i].cloud->points[j].b = color.blue();
 				}
 			}
-			// Êä³ö´°¿Ú
+			// ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½
 			consoleLog("Change cloud color", "All point clouds", QString::number(color.red()) + " " + QString::number(color.green()) + " " + QString::number(color.blue()), "");
 		}
 		else {
@@ -1331,10 +1159,10 @@ void CloudViewer::pointcolorChanged()
 					mycloud_vec[cloud_id].cloud->points[j].b = color.blue();
 				}
 			}
-			// Êä³ö´°¿Ú
+			// ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½
 			consoleLog("Change cloud color", "Point clouds selected", QString::number(color.red()) + " " + QString::number(color.green()) + " " + QString::number(color.blue()), "");
 		}
-		//ÑÕÉ«µÄ¸Ä±äÍ¬²½ÖÁRGBÍ£¿¿´°¿Ú
+		//ï¿½ï¿½É«ï¿½Ä¸Ä±ï¿½Í¬ï¿½ï¿½ï¿½ï¿½RGBÍ£ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½
 		ui.rSlider->setValue(color.red());
 		ui.gSlider->setValue(color.green());
 		ui.bSlider->setValue(color.blue());
@@ -1343,7 +1171,7 @@ void CloudViewer::pointcolorChanged()
 	}
 }
 
-//Í¨¹ýÑÕÉ«¶Ô»°¿ò¸Ä±ä±³¾°ÑÕÉ«
+//Í¨ï¿½ï¿½ï¿½ï¿½É«ï¿½Ô»ï¿½ï¿½ï¿½Ä±ä±³ï¿½ï¿½ï¿½ï¿½É«
 void CloudViewer::bgcolorChanged()
 {
 	QColor color = QColorDialog::getColor(Qt::white, this,
@@ -1352,13 +1180,13 @@ void CloudViewer::bgcolorChanged()
 	{
 		viewer->setBackgroundColor(color.red() / 255.0,
 			color.green() / 255.0, color.blue() / 255.0);
-		// Êä³ö´°¿Ú
+		// ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½
 		consoleLog("Change bg color", "Background", QString::number(color.red()) + " " + QString::number(color.green()) + " " + QString::number(color.blue()), "");
 		showPointcloud();
 	}
 }
 
-//ÈýÊÓÍ¼
+//ï¿½ï¿½ï¿½ï¿½Í¼
 void CloudViewer::mainview()
 {
 	viewer->setCameraPosition(0, -1, 0, 0.5, 0.5, 0.5, 0, 0, 1);
@@ -1375,7 +1203,7 @@ void CloudViewer::topview()
 	ui.screen->update();
 }
 
-//ÉèÖÃÊôÐÔ¹ÜÀí´°¿Ú
+//ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½Ô¹ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½
 void CloudViewer::setPropertyTable() {
 
 	QStringList header;
@@ -1395,7 +1223,7 @@ void CloudViewer::setPropertyTable() {
 }
 
 void CloudViewer::setConsoleTable() {
-	// ÉèÖÃÊä³ö´°¿Ú
+	// ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½
 	QStringList header2;
 	header2 << "Time" << "Operation" << "Operation obeject" << "Details" << "Note";
 	ui.consoleTable->setHorizontalHeaderLabels(header2);
@@ -1404,8 +1232,8 @@ void CloudViewer::setConsoleTable() {
 	ui.consoleTable->setColumnWidth(2, 200);
 	ui.consoleTable->setColumnWidth(3, 300);
 
-	//ui.consoleTable->setEditTriggers(QAbstractItemView::NoEditTriggers); //ÉèÖÃ²»¿É±à¼­
-	ui.consoleTable->verticalHeader()->setDefaultSectionSize(22); //ÉèÖÃÐÐ¾à
+	//ui.consoleTable->setEditTriggers(QAbstractItemView::NoEditTriggers); //ï¿½ï¿½ï¿½Ã²ï¿½ï¿½É±à¼­
+	ui.consoleTable->verticalHeader()->setDefaultSectionSize(22); //ï¿½ï¿½ï¿½ï¿½ï¿½Ð¾ï¿½
 
 	ui.consoleTable->setContextMenuPolicy(Qt::CustomContextMenu);
 
@@ -1419,22 +1247,22 @@ void CloudViewer::consoleLog(QString operation, QString subname, QString filenam
 	}
 	int rows = ui.consoleTable->rowCount();
 	ui.consoleTable->setRowCount(++rows);
-	QDateTime time = QDateTime::currentDateTime();//»ñÈ¡ÏµÍ³ÏÖÔÚµÄÊ±¼ä
-	QString time_str = time.toString("MM-dd hh:mm:ss"); //ÉèÖÃÏÔÊ¾¸ñÊ½
+	QDateTime time = QDateTime::currentDateTime();//ï¿½ï¿½È¡ÏµÍ³ï¿½ï¿½ï¿½Úµï¿½Ê±ï¿½ï¿½
+	QString time_str = time.toString("MM-dd hh:mm:ss"); //ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½Ê¾ï¿½ï¿½Ê½
 	ui.consoleTable->setItem(rows - 1, 0, new QTableWidgetItem(time_str));
 	ui.consoleTable->setItem(rows - 1, 1, new QTableWidgetItem(operation));
 	ui.consoleTable->setItem(rows - 1, 2, new QTableWidgetItem(subname));
 	ui.consoleTable->setItem(rows - 1, 3, new QTableWidgetItem(filename));
 	ui.consoleTable->setItem(rows - 1, 4, new QTableWidgetItem(note));
 
-	ui.consoleTable->scrollToBottom(); // »¬¶¯×Ô¶¯¹öµ½×îµ×²¿
+	ui.consoleTable->scrollToBottom(); // ï¿½ï¿½ï¿½ï¿½ï¿½Ô¶ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½×²ï¿½
 }
 
 
-//QTreeWidgetµÄitemµÄµã»÷ÏàÓ¦º¯Êý
+//QTreeWidgetï¿½ï¿½itemï¿½Äµï¿½ï¿½ï¿½ï¿½Ó¦ï¿½ï¿½ï¿½ï¿½
 void CloudViewer::itemSelected(QTreeWidgetItem* item, int count)
 {
-	count = ui.dataTree->indexOfTopLevelItem(item);  //»ñÈ¡itemµÄÐÐºÅ
+	count = ui.dataTree->indexOfTopLevelItem(item);  //ï¿½ï¿½È¡itemï¿½ï¿½ï¿½Ðºï¿½
 
 	
 	for (int i = 0; i != mycloud_vec.size(); i++)
@@ -1443,7 +1271,7 @@ void CloudViewer::itemSelected(QTreeWidgetItem* item, int count)
 		viewer->setPointCloudRenderingProperties(pcl::visualization::PCL_VISUALIZER_POINT_SIZE, 1, "cloud" + QString::number(i).toStdString());
 	}
 
-	//ÌáÈ¡µ±Ç°µãÔÆµÄRGB,µãÔÆÊýÁ¿µÈÐÅÏ¢
+	//ï¿½ï¿½È¡ï¿½ï¿½Ç°ï¿½ï¿½ï¿½Æµï¿½RGB,ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½Ï¢
 	int cloud_size = mycloud_vec[count].cloud->points.size();
 	unsigned int cloud_r = mycloud_vec[count].cloud->points[0].r;
 	unsigned int cloud_g = mycloud_vec[count].cloud->points[0].g;
@@ -1451,7 +1279,7 @@ void CloudViewer::itemSelected(QTreeWidgetItem* item, int count)
 	bool multi_color = true;
 	int point_size = mycloud_vec[count].pointSize;
 
-	for (int i = 0; i != mycloud_vec[count].cloud->points.size(); i++) {    //ÅÐ¶ÏµãÔÆµ¥É«¶àÉ«µÄÌõ¼þ
+	for (int i = 0; i != mycloud_vec[count].cloud->points.size(); i++) {    //ï¿½Ð¶Ïµï¿½ï¿½Æµï¿½É«ï¿½ï¿½É«ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½
 		if (mycloud_vec[count].cloud->points[0].r != mycloud_vec[count].cloud->points[i].r ||
 			mycloud_vec[count].cloud->points[0].g != mycloud_vec[count].cloud->points[i].g ||
 			mycloud_vec[count].cloud->points[0].b != mycloud_vec[count].cloud->points[i].b) {
@@ -1464,7 +1292,7 @@ void CloudViewer::itemSelected(QTreeWidgetItem* item, int count)
 	ui.propertyTable->setItem(2, 1, new QTableWidgetItem(QString::number(total_points)));
 	ui.propertyTable->setItem(3, 1, new QTableWidgetItem(multi_color ? "Multi Color" : (QString::number(cloud_r) + " " + QString::number(cloud_g) + " " + QString::number(cloud_b))));
 
-	//Ñ¡ÖÐitemËù¶ÔÓ¦µÄµãÔÆ³ß´ç±ä´ó
+	//Ñ¡ï¿½ï¿½itemï¿½ï¿½ï¿½ï¿½Ó¦ï¿½Äµï¿½ï¿½Æ³ß´ï¿½ï¿½ï¿½
 	QList<QTreeWidgetItem*> itemList = ui.dataTree->selectedItems();
 	int selected_item_count = ui.dataTree->selectedItems().size();
 	for (int i = 0; i != selected_item_count; i++) {
@@ -1474,7 +1302,7 @@ void CloudViewer::itemSelected(QTreeWidgetItem* item, int count)
 	}
 	//mycloud = mycloud_vec[count];
 
-	//ÐÞ¸ÄBUG µ±ÇÐ»»µ½ÁíÍâµÄÒ»¸öµ¥É«µãÔÆÊ±ÐÞ¸ÄRGB²à±ßÀ¸
+	//ï¿½Þ¸ï¿½BUG ï¿½ï¿½ï¿½Ð»ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½Ò»ï¿½ï¿½ï¿½ï¿½É«ï¿½ï¿½ï¿½ï¿½Ê±ï¿½Þ¸ï¿½RGBï¿½ï¿½ï¿½ï¿½ï¿½
 	if (multi_color == true) {
 		rSliderChanged(mycloud_vec[count].cloud->points[0].r);
 		gSliderChanged(mycloud_vec[count].cloud->points[0].g);
@@ -1484,7 +1312,7 @@ void CloudViewer::itemSelected(QTreeWidgetItem* item, int count)
 	ui.screen->update();
 }
 
-// consoleTable ÓÒ»÷ÏìÓ¦ÊÂ¼þ
+// consoleTable ï¿½Ò»ï¿½ï¿½ï¿½Ó¦ï¿½Â¼ï¿½
 void CloudViewer::popMenuInConsole(const QPoint&) {
 	QAction clearConsoleAction("Clear console", this);
 	QAction enableConsoleAction("Enable console", this);
@@ -1509,29 +1337,29 @@ void CloudViewer::popMenuInConsole(const QPoint&) {
 		menu.actions()[2]->setVisible(false);
 	}
 
-	menu.exec(QCursor::pos()); //ÔÚµ±Ç°Êó±êÎ»ÖÃÏÔÊ¾
+	menu.exec(QCursor::pos()); //ï¿½Úµï¿½Ç°ï¿½ï¿½ï¿½Î»ï¿½ï¿½ï¿½ï¿½Ê¾
 }
-// Çå¿Õ consoleTable
+// ï¿½ï¿½ï¿½ consoleTable
 void CloudViewer::clearConsole() {
 	ui.consoleTable->clearContents();
 	ui.consoleTable->setRowCount(0);
 }
-// ÔÊÐíÊ¹ÓÃ consoleTable
+// ï¿½ï¿½ï¿½ï¿½Ê¹ï¿½ï¿½ consoleTable
 void CloudViewer::enableConsole() {
 	enable_console = true;
 }
-// ½ûÓÃ consoleTable
+// ï¿½ï¿½ï¿½ï¿½ consoleTable
 void CloudViewer::disableConsole() {
 	clearConsole();
 	enable_console = false;
 
 }
 
-//QTreeWidgetµÄitemµÄÓÒ»÷ÏìÓ¦º¯Êý
+//QTreeWidgetï¿½ï¿½itemï¿½ï¿½ï¿½Ò»ï¿½ï¿½ï¿½Ó¦ï¿½ï¿½ï¿½ï¿½
 void CloudViewer::popMenu(const QPoint&)
 {
-	QTreeWidgetItem* curItem = ui.dataTree->currentItem(); //»ñÈ¡µ±Ç°±»µã»÷µÄ½Úµã
-	if (curItem == NULL)return;           //ÕâÖÖÇé¿öÊÇÓÒ¼üµÄÎ»ÖÃ²»ÔÚtreeItemµÄ·¶Î§ÄÚ£¬¼´ÔÚ¿Õ°×Î»ÖÃÓÒ»÷
+	QTreeWidgetItem* curItem = ui.dataTree->currentItem(); //ï¿½ï¿½È¡ï¿½ï¿½Ç°ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½Ä½Úµï¿½
+	if (curItem == NULL)return;           //ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½Ò¼ï¿½ï¿½ï¿½Î»ï¿½Ã²ï¿½ï¿½ï¿½treeItemï¿½Ä·ï¿½Î§ï¿½Ú£ï¿½ï¿½ï¿½ï¿½Ú¿Õ°ï¿½Î»ï¿½ï¿½ï¿½Ò»ï¿½
 	QString name = curItem->text(0);
 	int id = ui.dataTree->indexOfTopLevelItem(curItem);
 	string cloud_id = "cloud" + QString::number(id).toStdString();
@@ -1563,30 +1391,30 @@ void CloudViewer::popMenu(const QPoint&)
 	}
 
 
-	menu.exec(QCursor::pos()); //ÔÚµ±Ç°Êó±êÎ»ÖÃÏÔÊ¾
+	menu.exec(QCursor::pos()); //ï¿½Úµï¿½Ç°ï¿½ï¿½ï¿½Î»ï¿½ï¿½ï¿½ï¿½Ê¾
 }
 void CloudViewer::hideItem()
 {
 	QList<QTreeWidgetItem*> itemList = ui.dataTree->selectedItems();
 	for (int i = 0; i != ui.dataTree->selectedItems().size(); i++) {
-		//TODO hideÖ®ºó£¬item±ä³É»ÒÉ«£¬ÔÙ´ÎÓÒ»÷itemÊ±£¬¡°hideItem¡± Ñ¡Ïî±ä³É ¡°showItem¡±
+		//TODO hideÖ®ï¿½ï¿½itemï¿½ï¿½É»ï¿½É«ï¿½ï¿½ï¿½Ù´ï¿½ï¿½Ò»ï¿½itemÊ±ï¿½ï¿½ï¿½ï¿½hideItemï¿½ï¿½ Ñ¡ï¿½ï¿½ï¿½ï¿½ ï¿½ï¿½showItemï¿½ï¿½
 		//QTreeWidgetItem* curItem = ui.dataTree->currentItem();
 		QTreeWidgetItem* curItem = itemList[i];
 		QString name = curItem->text(0);
 		int id = ui.dataTree->indexOfTopLevelItem(curItem);
 		string cloud_id = "cloud" + QString::number(id).toStdString();
 		//QMessageBox::information(this, "cloud_id", QString::fromLocal8Bit(cloud_id.c_str()));
-		// ½«cloud_idËù¶ÔÓ¦µÄµãÔÆÉèÖÃ³ÉÍ¸Ã÷
+		// ï¿½ï¿½cloud_idï¿½ï¿½ï¿½ï¿½Ó¦ï¿½Äµï¿½ï¿½ï¿½ï¿½ï¿½ï¿½Ã³ï¿½Í¸ï¿½ï¿½
 		viewer->setPointCloudRenderingProperties(pcl::visualization::RenderingProperties::PCL_VISUALIZER_OPACITY, 0.0, cloud_id, 0);
 		QColor item_color = QColor(112, 122, 132, 255);
 		curItem->setTextColor(0, item_color);
 		mycloud_vec[id].visible = false;
 	}
 
-	// Êä³ö´°¿Ú
+	// ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½
 	consoleLog("Hide point clouds", "Point clouds selected", "", "");
 
-	ui.screen->update(); //Ë¢ÐÂÊÓÍ¼´°¿Ú£¬²»ÄÜÊ¡ÂÔ
+	ui.screen->update(); //Ë¢ï¿½ï¿½ï¿½ï¿½Í¼ï¿½ï¿½ï¿½Ú£ï¿½ï¿½ï¿½ï¿½ï¿½Ê¡ï¿½ï¿½
 }
 
 void CloudViewer::showItem()
@@ -1598,7 +1426,7 @@ void CloudViewer::showItem()
 		QString name = curItem->text(0);
 		int id = ui.dataTree->indexOfTopLevelItem(curItem);
 		string cloud_id = "cloud" + QString::number(id).toStdString();
-		// ½«cloud_idËù¶ÔÓ¦µÄµãÔÆÉèÖÃ³ÉÍ¸Ã÷
+		// ï¿½ï¿½cloud_idï¿½ï¿½ï¿½ï¿½Ó¦ï¿½Äµï¿½ï¿½ï¿½ï¿½ï¿½ï¿½Ã³ï¿½Í¸ï¿½ï¿½
 		viewer->setPointCloudRenderingProperties(pcl::visualization::RenderingProperties::PCL_VISUALIZER_OPACITY, 1.0, cloud_id, 0);
 		QColor item_color;
 		if (theme_id == 0) {
@@ -1611,17 +1439,17 @@ void CloudViewer::showItem()
 		mycloud_vec[id].visible = true;
 	}
 
-	// Êä³ö´°¿Ú
+	// ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½
 	consoleLog("Show point clouds", "Point clouds selected", "", "");
 
-	ui.screen->update(); //Ë¢ÐÂÊÓÍ¼´°¿Ú£¬²»ÄÜÊ¡ÂÔ
+	ui.screen->update(); //Ë¢ï¿½ï¿½ï¿½ï¿½Í¼ï¿½ï¿½ï¿½Ú£ï¿½ï¿½ï¿½ï¿½ï¿½Ê¡ï¿½ï¿½
 
 }
 
 void CloudViewer::deleteItem()
 {
 	QList<QTreeWidgetItem*> itemList = ui.dataTree->selectedItems();
-	// ui.dataTree->selectedItems().size() Ëæ×Åµü´ú´ÎÊý¶ø¸Ä±ä£¬Òò´ËÑ­»·Ìõ¼þÒªÉèÖÃÎª¹Ì¶¨´óÐ¡µÄ selected_item_count
+	// ui.dataTree->selectedItems().size() ï¿½ï¿½ï¿½Åµï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½Ä±ä£¬ï¿½ï¿½ï¿½Ñ­ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½Òªï¿½ï¿½ï¿½ï¿½Îªï¿½Ì¶ï¿½ï¿½ï¿½Ð¡ï¿½ï¿½ selected_item_count
 	int selected_item_count = ui.dataTree->selectedItems().size();
 	for (int i = 0; i != selected_item_count; i++) {
 		//QTreeWidgetItem* curItem = ui.dataTree->currentItem();
@@ -1631,7 +1459,7 @@ void CloudViewer::deleteItem()
 		int id = ui.dataTree->indexOfTopLevelItem(curItem);
 		//QMessageBox::information(this, "information", "curItem: " + name + " " + QString::number(id));
 		auto it = mycloud_vec.begin() + ui.dataTree->indexOfTopLevelItem(curItem);
-		// É¾³ýµãÔÆÖ®Ç°£¬½«ÆäµãµÄÊýÄ¿±£´æ
+		// É¾ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½Ö®Ç°ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½Ä¿ï¿½ï¿½ï¿½ï¿½
 		int delete_points = (*it).cloud->points.size();
 		it = mycloud_vec.erase(it);
 		//QMessageBox::information(this, "information", QString::number(delete_points) + " " + QString::number(mycloud_vec.size()));
@@ -1642,7 +1470,7 @@ void CloudViewer::deleteItem()
 		ui.dataTree->takeTopLevelItem(ui.dataTree->indexOfTopLevelItem(curItem));
 	}
 
-	// ÒÆ³ýÖ®ºóÔÙÌí¼Ó£¬±ÜÃâ id ºÍ×ÊÔ´¹ÜÀíÊ÷ÐÐºÅ²»Ò»ÖÂµÄÇé¿ö
+	// ï¿½Æ³ï¿½Ö®ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½Ó£ï¿½ï¿½ï¿½ï¿½ï¿½ id ï¿½ï¿½ï¿½ï¿½Ô´ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ÐºÅ²ï¿½Ò»ï¿½Âµï¿½ï¿½ï¿½ï¿½
 	viewer->removeAllPointClouds();
 	for (int i = 0; i != mycloud_vec.size(); i++)
 	{
@@ -1650,19 +1478,19 @@ void CloudViewer::deleteItem()
 		viewer->updatePointCloud(mycloud_vec[i].cloud, "cloud" + QString::number(i).toStdString());
 	}
 
-	// Êä³ö´°¿Ú
+	// ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½
 	consoleLog("Delete point clouds", "Point clouds selected", "", "");
 
 	ui.screen->update();
 }
 
 
-//·¨Ïß¹À¼Æ¡¢ÇúÃæÖØ½¨¡¢Íø¸ñÃæÆ¬ÏÔÊ¾
+//ï¿½ï¿½ï¿½ß¹ï¿½ï¿½Æ¡ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½Ø½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½Æ¬ï¿½ï¿½Ê¾
 int CloudViewer::convertSurface()
 {
-	/* ÎÊÌâ
-	ºÃÏñ¸Ã·½·¨Ö»ÄÜ´¦ÀíPointXYZµÄµãÔÆ£¬ÓÃPointXZYRGBAµÄµãÔÆ±àÒë»á±¨´í
-	µ÷ÓÃboost::this_thread::sleepºÃÏñÒ²»á±àÒë³ö´í
+	/* ï¿½ï¿½ï¿½ï¿½
+	ï¿½ï¿½ï¿½ï¿½Ã·ï¿½ï¿½ï¿½Ö»ï¿½Ü´ï¿½ï¿½ï¿½PointXYZï¿½Äµï¿½ï¿½Æ£ï¿½ï¿½ï¿½PointXZYRGBAï¿½Äµï¿½ï¿½Æ±ï¿½ï¿½ï¿½á±¨ï¿½ï¿½
+	ï¿½ï¿½ï¿½ï¿½boost::this_thread::sleepï¿½ï¿½ï¿½ï¿½Ò²ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½
 	*/
 	pcl::PointXYZ point;
 	cloud_xyz.reset(new pcl::PointCloud<pcl::PointXYZ>);
@@ -1678,56 +1506,56 @@ int CloudViewer::convertSurface()
 		return -1;
 	}
 
-	/****** ·¨Ïò¹À¼ÆÄ£¿é ******/
-	//´´½¨·¨Ïß¹À¼Æ¶ÔÏó n
+	/****** ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½Ä£ï¿½ï¿½ ******/
+	//ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ß¹ï¿½ï¿½Æ¶ï¿½ï¿½ï¿½ n
 	pcl::NormalEstimation<pcl::PointXYZ, pcl::Normal> n;
-	//´´½¨·¨ÏòÊý¾ÝÖ¸Õë normals
+	//ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½Ö¸ï¿½ï¿½ normals
 	pcl::PointCloud<pcl::Normal>::Ptr normals(new pcl::PointCloud<pcl::Normal>);
-	//´´½¨ kdtree ÓÃÓÚ·¨Ïò¼ÆËãÊ±½üÁÚËÑË÷
+	//ï¿½ï¿½ï¿½ï¿½ kdtree ï¿½ï¿½ï¿½Ú·ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½Ê±ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½
 	pcl::search::KdTree<pcl::PointXYZ>::Ptr tree(new pcl::search::KdTree<pcl::PointXYZ>);
-	tree->setInputCloud(cloud_xyz); //Îª kdtree ÊäÈëµãÔÆ
-	n.setInputCloud(cloud_xyz); //Îª·¨Ïò¹À¼Æ¶ÔÏóÊäÈëµãÔÆ
-	n.setSearchMethod(tree);  //ÉèÖÃ·¨Ïò¹À¼ÆÊ±Ëù²ÉÈ¡µÄËÑË÷·½Ê½Îªkdtree
-	n.setKSearch(20); //ÉèÖÃ·¨Ïò¹À¼ÆÊ±£¬k½üÁÚËÑË÷µÄµãÊý
-	n.compute(*normals); //½øÐÐ·¨Ïò¹À¼Æ
+	tree->setInputCloud(cloud_xyz); //Îª kdtree ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½
+	n.setInputCloud(cloud_xyz); //Îªï¿½ï¿½ï¿½ï¿½ï¿½ï¿½Æ¶ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½
+	n.setSearchMethod(tree);  //ï¿½ï¿½ï¿½Ã·ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½Ê±ï¿½ï¿½ï¿½ï¿½È¡ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½Ê½Îªkdtree
+	n.setKSearch(20); //ï¿½ï¿½ï¿½Ã·ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½Ê±ï¿½ï¿½kï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½Äµï¿½ï¿½ï¿½
+	n.compute(*normals); //ï¿½ï¿½ï¿½Ð·ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½
 
 	QMessageBox::information(this, "information", "Normal estimation finished");
 
-	/****** µãÔÆÊý¾ÝÓë·¨ÏòÊý¾ÝÆ´½Ó ******/
-	//´ÓÕâÖ®ºó³öÏÖÎÊÌâ
+	/****** ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ë·¨ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½Æ´ï¿½ï¿½ ******/
+	//ï¿½ï¿½ï¿½ï¿½Ö®ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½
 
-	//´´½¨Í¬Ê±°üº¬µãºÍ·¨ÏßµÄÊý¾Ý½á¹¹µÄÖ¸Õë
+	//ï¿½ï¿½ï¿½ï¿½Í¬Ê±ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½Í·ï¿½ï¿½ßµï¿½ï¿½ï¿½ï¿½Ý½á¹¹ï¿½ï¿½Ö¸ï¿½ï¿½
 	pcl::PointCloud<pcl::PointNormal>::Ptr cloud_with_normals(new pcl::PointCloud<pcl::PointNormal>);
 
-	//½«ÒÑ»ñµÃµÄµãÊý¾ÝºÍ·¨ÏòÊý¾ÝÆ´½Ó
-	pcl::concatenateFields(*cloud_xyz, *normals, *cloud_with_normals); //ÕâÀï±àÒë³ö´í£¬ÓëcloudµÄÀàÐÍÓÐ¹Ø£¿¸Ä³ÉPointXYZµÄµãÔÆ¾ÍÃ»ÓÐ±¨´íÁË
+	//ï¿½ï¿½ï¿½Ñ»ï¿½ÃµÄµï¿½ï¿½ï¿½ï¿½ÝºÍ·ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½Æ´ï¿½ï¿½
+	pcl::concatenateFields(*cloud_xyz, *normals, *cloud_with_normals); //ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½cloudï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½Ð¹Ø£ï¿½ï¿½Ä³ï¿½PointXYZï¿½Äµï¿½ï¿½Æ¾ï¿½Ã»ï¿½Ð±ï¿½ï¿½ï¿½ï¿½ï¿½
 
-																	   //´´½¨ÁíÒ»¸ökdtreeÓÃÓÚÖØ½¨
+																	   //ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½Ò»ï¿½ï¿½kdtreeï¿½ï¿½ï¿½ï¿½ï¿½Ø½ï¿½
 	pcl::search::KdTree<pcl::PointNormal>::Ptr tree2(new pcl::search::KdTree<pcl::PointNormal>);
-	//ÎªkdtreeÊäÈëµãÔÆÊý¾Ý£¬¸ÃµãÔÆÊý¾ÝÀàÐÍÎªµãºÍ·¨Ïò
+	//Îªkdtreeï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½Ý£ï¿½ï¿½Ãµï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½Îªï¿½ï¿½Í·ï¿½ï¿½ï¿½
 	tree2->setInputCloud(cloud_with_normals);
 
-	/****** ÇúÃæÖØ½¨Ä£¿é ******/
-	//´´½¨Ì°À·Èý½ÇÐÎÍ¶Ó°ÖØ½¨¶ÔÏó
+	/****** ï¿½ï¿½ï¿½ï¿½ï¿½Ø½ï¿½Ä£ï¿½ï¿½ ******/
+	//ï¿½ï¿½ï¿½ï¿½Ì°ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½Í¶Ó°ï¿½Ø½ï¿½ï¿½ï¿½ï¿½ï¿½
 	pcl::GreedyProjectionTriangulation<pcl::PointNormal> gp3;
-	//´´½¨¶à±ßÐÎÍø¸ñ¶ÔÏó£¬ÓÃÀ´´æ´¢ÖØ½¨½á¹û
+	//ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½æ´¢ï¿½Ø½ï¿½ï¿½ï¿½ï¿½
 	pcl::PolygonMesh triangles;
-	//ÉèÖÃ²ÎÊý
-	gp3.setSearchRadius(25); //ÉèÖÃÁ¬½ÓµãÖ®¼ä×î´ó¾àÀë£¬ÓÃÓÚÈ·¶¨k½üÁÚµÄÇò°ë¾¶
-	gp3.setMu(2.5); //ÉèÖÃ×î½üÁÚ¾àÀëµÄ³Ë×Ó£¬ÒÔµÃµ½Ã¿¸öµãµÄ×îÖÕËÑË÷°ë¾¶
-	gp3.setMaximumNearestNeighbors(100); //ÉèÖÃËÑË÷µÄ×î½üÁÚµãµÄ×î´óÊýÁ¿
-	gp3.setMaximumSurfaceAngle(M_PI / 2); //45¶È ×î´óÆ½Ãæ½Ç
-	gp3.setMinimumAngle(M_PI / 18); //10¶È Ã¿¸öÈý½ÇµÄ×î´ó½Ç¶È£¿
-	gp3.setMaximumAngle(2 * M_PI / 3); //120¶È
-	gp3.setNormalConsistency(false); //Èô·¨ÏòÁ¿Ò»ÖÂ£¬ÉèÎªtrue
-									 //ÉèÖÃµãÔÆÊý¾ÝºÍËÑË÷·½Ê½
+	//ï¿½ï¿½ï¿½Ã²ï¿½ï¿½ï¿½
+	gp3.setSearchRadius(25); //ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½Óµï¿½Ö®ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ë£¬ï¿½ï¿½ï¿½ï¿½È·ï¿½ï¿½kï¿½ï¿½ï¿½Úµï¿½ï¿½ï¿½ë¾¶
+	gp3.setMu(2.5); //ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½Ú¾ï¿½ï¿½ï¿½Ä³ï¿½ï¿½Ó£ï¿½ï¿½ÔµÃµï¿½Ã¿ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ë¾¶
+	gp3.setMaximumNearestNeighbors(100); //ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½Úµï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½
+	gp3.setMaximumSurfaceAngle(M_PI / 2); //45ï¿½ï¿½ ï¿½ï¿½ï¿½Æ½ï¿½ï¿½ï¿½
+	gp3.setMinimumAngle(M_PI / 18); //10ï¿½ï¿½ Ã¿ï¿½ï¿½ï¿½ï¿½ï¿½Çµï¿½ï¿½ï¿½ï¿½Ç¶È£ï¿½
+	gp3.setMaximumAngle(2 * M_PI / 3); //120ï¿½ï¿½
+	gp3.setNormalConsistency(false); //ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½Ò»ï¿½Â£ï¿½ï¿½ï¿½Îªtrue
+									 //ï¿½ï¿½ï¿½Ãµï¿½ï¿½ï¿½ï¿½ï¿½ï¿½Ýºï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½Ê½
 	gp3.setInputCloud(cloud_with_normals);
 	gp3.setSearchMethod(tree2);
-	// ¿ªÊ¼ÖØ½¨
+	// ï¿½ï¿½Ê¼ï¿½Ø½ï¿½
 	gp3.reconstruct(triangles);
 	QMessageBox::information(this, "informaiton", "Reconstruction finished");
 
-	//½«ÖØ½¨½á¹û±£´æµ½Ó²ÅÌÎÄ¼þÖÐ£¬ÖØ½¨½á¹ûÒÔVTK¸ñÊ½´æ´¢
+	//ï¿½ï¿½ï¿½Ø½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½æµ½Ó²ï¿½ï¿½ï¿½Ä¼ï¿½ï¿½Ð£ï¿½ï¿½Ø½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½VTKï¿½ï¿½Ê½ï¿½æ´¢
 	pcl::io::saveVTKFile("mymesh.vtk", triangles);
 
 	/*
@@ -1750,15 +1578,15 @@ int CloudViewer::convertSurface()
 	}
 	*/
 
-	/****** Í¼ÐÎÏÔÊ¾Ä£¿é ******/
+	/****** Í¼ï¿½ï¿½ï¿½ï¿½Ê¾Ä£ï¿½ï¿½ ******/
 	QMessageBox::information(this, "informaiton", "Start to show");
-	viewer->addPolygonMesh(triangles, "my"); //ÉèÖÃÒªÏÔÊ¾µÄÍø¸ñ¶ÔÏó
-											 //ÉèÖÃÍø¸ñÄ£ÐÍÏÔÊ¾Ä£Ê½
-	viewer->setRepresentationToSurfaceForAllActors(); //Íø¸ñÄ£ÐÍÒÔÃæÆ¬ÐÎÊ½ÏÔÊ¾
-													  //viewer->setRepresentationToPointsForAllActors(); //Íø¸ñÄ£ÐÍÒÔµãÐÎÊ½ÏÔÊ¾
-													  //viewer->setRepresentationToWireframeForAllActors(); //Íø¸ñÄ£ÐÍÒÔÏß¿òÍ¼Ä£Ê½ÏÔÊ¾
+	viewer->addPolygonMesh(triangles, "my"); //ï¿½ï¿½ï¿½ï¿½Òªï¿½ï¿½Ê¾ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½
+											 //ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½Ä£ï¿½ï¿½ï¿½ï¿½Ê¾Ä£Ê½
+	viewer->setRepresentationToSurfaceForAllActors(); //ï¿½ï¿½ï¿½ï¿½Ä£ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½Æ¬ï¿½ï¿½Ê½ï¿½ï¿½Ê¾
+													  //viewer->setRepresentationToPointsForAllActors(); //ï¿½ï¿½ï¿½ï¿½Ä£ï¿½ï¿½ï¿½Ôµï¿½ï¿½ï¿½Ê½ï¿½ï¿½Ê¾
+													  //viewer->setRepresentationToWireframeForAllActors(); //ï¿½ï¿½ï¿½ï¿½Ä£ï¿½ï¿½ï¿½ï¿½ï¿½ß¿ï¿½Í¼Ä£Ê½ï¿½ï¿½Ê¾
 
-													  // Êä³ö´°¿Ú
+													  // ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½
 	consoleLog("Convert surface", "", "", "");
 
 	viewer->removeAllShapes();
@@ -1773,9 +1601,9 @@ int CloudViewer::convertSurface()
 
 int CloudViewer::convertWireframe()
 {
-	/* ÎÊÌâ
-	ºÃÏñ¸Ã·½·¨Ö»ÄÜ´¦ÀíPointXYZµÄµãÔÆ£¬ÓÃPointXZYRGBAµÄµãÔÆ±àÒë»á±¨´í
-	µ÷ÓÃboost::this_thread::sleepºÃÏñÒ²»á±àÒë³ö´í
+	/* ï¿½ï¿½ï¿½ï¿½
+	ï¿½ï¿½ï¿½ï¿½Ã·ï¿½ï¿½ï¿½Ö»ï¿½Ü´ï¿½ï¿½ï¿½PointXYZï¿½Äµï¿½ï¿½Æ£ï¿½ï¿½ï¿½PointXZYRGBAï¿½Äµï¿½ï¿½Æ±ï¿½ï¿½ï¿½á±¨ï¿½ï¿½
+	ï¿½ï¿½ï¿½ï¿½boost::this_thread::sleepï¿½ï¿½ï¿½ï¿½Ò²ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½
 	*/
 	pcl::PointXYZ point;
 	cloud_xyz.reset(new pcl::PointCloud<pcl::PointXYZ>);
@@ -1792,58 +1620,58 @@ int CloudViewer::convertWireframe()
 	}
 
 
-	/****** ·¨Ïò¹À¼ÆÄ£¿é ******/
-	//´´½¨·¨Ïß¹À¼Æ¶ÔÏó n
+	/****** ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½Ä£ï¿½ï¿½ ******/
+	//ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ß¹ï¿½ï¿½Æ¶ï¿½ï¿½ï¿½ n
 	pcl::NormalEstimation<pcl::PointXYZ, pcl::Normal> n;
-	//´´½¨·¨ÏòÊý¾ÝÖ¸Õë normals
+	//ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½Ö¸ï¿½ï¿½ normals
 	pcl::PointCloud<pcl::Normal>::Ptr normals(new pcl::PointCloud<pcl::Normal>);
-	//´´½¨ kdtree ÓÃÓÚ·¨Ïò¼ÆËãÊ±½üÁÚËÑË÷
+	//ï¿½ï¿½ï¿½ï¿½ kdtree ï¿½ï¿½ï¿½Ú·ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½Ê±ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½
 	pcl::search::KdTree<pcl::PointXYZ>::Ptr tree(new pcl::search::KdTree<pcl::PointXYZ>);
-	tree->setInputCloud(cloud_xyz); //Îª kdtree ÊäÈëµãÔÆ
-	n.setInputCloud(cloud_xyz); //Îª·¨Ïò¹À¼Æ¶ÔÏóÊäÈëµãÔÆ
-	n.setSearchMethod(tree);  //ÉèÖÃ·¨Ïò¹À¼ÆÊ±Ëù²ÉÈ¡µÄËÑË÷·½Ê½Îªkdtree
-	n.setKSearch(20); //ÉèÖÃ·¨Ïò¹À¼ÆÊ±£¬k½üÁÚËÑË÷µÄµãÊý
-	n.compute(*normals); //½øÐÐ·¨Ïò¹À¼Æ
+	tree->setInputCloud(cloud_xyz); //Îª kdtree ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½
+	n.setInputCloud(cloud_xyz); //Îªï¿½ï¿½ï¿½ï¿½ï¿½ï¿½Æ¶ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½
+	n.setSearchMethod(tree);  //ï¿½ï¿½ï¿½Ã·ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½Ê±ï¿½ï¿½ï¿½ï¿½È¡ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½Ê½Îªkdtree
+	n.setKSearch(20); //ï¿½ï¿½ï¿½Ã·ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½Ê±ï¿½ï¿½kï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½Äµï¿½ï¿½ï¿½
+	n.compute(*normals); //ï¿½ï¿½ï¿½Ð·ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½
 
 	QMessageBox::information(this, "information", "Normal estimation finished");
 
-	/****** µãÔÆÊý¾ÝÓë·¨ÏòÊý¾ÝÆ´½Ó ******/
-	//´ÓÕâÖ®ºó³öÏÖÎÊÌâ
+	/****** ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ë·¨ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½Æ´ï¿½ï¿½ ******/
+	//ï¿½ï¿½ï¿½ï¿½Ö®ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½
 
-	//´´½¨Í¬Ê±°üº¬µãºÍ·¨ÏßµÄÊý¾Ý½á¹¹µÄÖ¸Õë
+	//ï¿½ï¿½ï¿½ï¿½Í¬Ê±ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½Í·ï¿½ï¿½ßµï¿½ï¿½ï¿½ï¿½Ý½á¹¹ï¿½ï¿½Ö¸ï¿½ï¿½
 	pcl::PointCloud<pcl::PointNormal>::Ptr cloud_with_normals(new pcl::PointCloud<pcl::PointNormal>);
 
-	//½«ÒÑ»ñµÃµÄµãÊý¾ÝºÍ·¨ÏòÊý¾ÝÆ´½Ó
-	pcl::concatenateFields(*cloud_xyz, *normals, *cloud_with_normals); //ÕâÀï±àÒë³ö´í£¬ÓëcloudµÄÀàÐÍÓÐ¹Ø£¿¸Ä³ÉPointXYZµÄµãÔÆ¾ÍÃ»ÓÐ±¨´íÁË
+	//ï¿½ï¿½ï¿½Ñ»ï¿½ÃµÄµï¿½ï¿½ï¿½ï¿½ÝºÍ·ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½Æ´ï¿½ï¿½
+	pcl::concatenateFields(*cloud_xyz, *normals, *cloud_with_normals); //ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½cloudï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½Ð¹Ø£ï¿½ï¿½Ä³ï¿½PointXYZï¿½Äµï¿½ï¿½Æ¾ï¿½Ã»ï¿½Ð±ï¿½ï¿½ï¿½ï¿½ï¿½
 
-																	   //´´½¨ÁíÒ»¸ökdtreeÓÃÓÚÖØ½¨
+																	   //ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½Ò»ï¿½ï¿½kdtreeï¿½ï¿½ï¿½ï¿½ï¿½Ø½ï¿½
 	pcl::search::KdTree<pcl::PointNormal>::Ptr tree2(new pcl::search::KdTree<pcl::PointNormal>);
-	//ÎªkdtreeÊäÈëµãÔÆÊý¾Ý£¬¸ÃµãÔÆÊý¾ÝÀàÐÍÎªµãºÍ·¨Ïò
+	//Îªkdtreeï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½Ý£ï¿½ï¿½Ãµï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½Îªï¿½ï¿½Í·ï¿½ï¿½ï¿½
 	tree2->setInputCloud(cloud_with_normals);
 
 
 
-	/****** ÇúÃæÖØ½¨Ä£¿é ******/
-	//´´½¨Ì°À·Èý½ÇÐÎÍ¶Ó°ÖØ½¨¶ÔÏó
+	/****** ï¿½ï¿½ï¿½ï¿½ï¿½Ø½ï¿½Ä£ï¿½ï¿½ ******/
+	//ï¿½ï¿½ï¿½ï¿½Ì°ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½Í¶Ó°ï¿½Ø½ï¿½ï¿½ï¿½ï¿½ï¿½
 	pcl::GreedyProjectionTriangulation<pcl::PointNormal> gp3;
-	//´´½¨¶à±ßÐÎÍø¸ñ¶ÔÏó£¬ÓÃÀ´´æ´¢ÖØ½¨½á¹û
+	//ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½æ´¢ï¿½Ø½ï¿½ï¿½ï¿½ï¿½
 	pcl::PolygonMesh triangles;
-	//ÉèÖÃ²ÎÊý
-	gp3.setSearchRadius(25); //ÉèÖÃÁ¬½ÓµãÖ®¼ä×î´ó¾àÀë£¬ÓÃÓÚÈ·¶¨k½üÁÚµÄÇò°ë¾¶
-	gp3.setMu(2.5); //ÉèÖÃ×î½üÁÚ¾àÀëµÄ³Ë×Ó£¬ÒÔµÃµ½Ã¿¸öµãµÄ×îÖÕËÑË÷°ë¾¶
-	gp3.setMaximumNearestNeighbors(100); //ÉèÖÃËÑË÷µÄ×î½üÁÚµãµÄ×î´óÊýÁ¿
-	gp3.setMaximumSurfaceAngle(M_PI / 2); //45¶È ×î´óÆ½Ãæ½Ç
-	gp3.setMinimumAngle(M_PI / 18); //10¶È Ã¿¸öÈý½ÇµÄ×î´ó½Ç¶È£¿
-	gp3.setMaximumAngle(2 * M_PI / 3); //120¶È
-	gp3.setNormalConsistency(false); //Èô·¨ÏòÁ¿Ò»ÖÂ£¬ÉèÎªtrue
-									 //ÉèÖÃµãÔÆÊý¾ÝºÍËÑË÷·½Ê½
+	//ï¿½ï¿½ï¿½Ã²ï¿½ï¿½ï¿½
+	gp3.setSearchRadius(25); //ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½Óµï¿½Ö®ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ë£¬ï¿½ï¿½ï¿½ï¿½È·ï¿½ï¿½kï¿½ï¿½ï¿½Úµï¿½ï¿½ï¿½ë¾¶
+	gp3.setMu(2.5); //ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½Ú¾ï¿½ï¿½ï¿½Ä³ï¿½ï¿½Ó£ï¿½ï¿½ÔµÃµï¿½Ã¿ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ë¾¶
+	gp3.setMaximumNearestNeighbors(100); //ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½Úµï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½
+	gp3.setMaximumSurfaceAngle(M_PI / 2); //45ï¿½ï¿½ ï¿½ï¿½ï¿½Æ½ï¿½ï¿½ï¿½
+	gp3.setMinimumAngle(M_PI / 18); //10ï¿½ï¿½ Ã¿ï¿½ï¿½ï¿½ï¿½ï¿½Çµï¿½ï¿½ï¿½ï¿½Ç¶È£ï¿½
+	gp3.setMaximumAngle(2 * M_PI / 3); //120ï¿½ï¿½
+	gp3.setNormalConsistency(false); //ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½Ò»ï¿½Â£ï¿½ï¿½ï¿½Îªtrue
+									 //ï¿½ï¿½ï¿½Ãµï¿½ï¿½ï¿½ï¿½ï¿½ï¿½Ýºï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½Ê½
 	gp3.setInputCloud(cloud_with_normals);
 	gp3.setSearchMethod(tree2);
-	// ¿ªÊ¼ÖØ½¨
+	// ï¿½ï¿½Ê¼ï¿½Ø½ï¿½
 	gp3.reconstruct(triangles);
 	QMessageBox::information(this, "informaiton", "Reconstruction finished");
 
-	//½«ÖØ½¨½á¹û±£´æµ½Ó²ÅÌÎÄ¼þÖÐ£¬ÖØ½¨½á¹ûÒÔVTK¸ñÊ½´æ´¢
+	//ï¿½ï¿½ï¿½Ø½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½æµ½Ó²ï¿½ï¿½ï¿½Ä¼ï¿½ï¿½Ð£ï¿½ï¿½Ø½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½VTKï¿½ï¿½Ê½ï¿½æ´¢
 	pcl::io::saveVTKFile("mymesh.vtk", triangles);
 
 	/*
@@ -1866,15 +1694,15 @@ int CloudViewer::convertWireframe()
 	}
 	*/
 
-	/****** Í¼ÐÎÏÔÊ¾Ä£¿é ******/
+	/****** Í¼ï¿½ï¿½ï¿½ï¿½Ê¾Ä£ï¿½ï¿½ ******/
 	QMessageBox::information(this, "informaiton", "Start to show");
-	viewer->addPolygonMesh(triangles, "my"); //ÉèÖÃÒªÏÔÊ¾µÄÍø¸ñ¶ÔÏó
-											 //ÉèÖÃÍø¸ñÄ£ÐÍÏÔÊ¾Ä£Ê½
-											 //viewer->setRepresentationToSurfaceForAllActors(); //Íø¸ñÄ£ÐÍÒÔÃæÆ¬ÐÎÊ½ÏÔÊ¾
-											 //viewer->setRepresentationToPointsForAllActors(); //Íø¸ñÄ£ÐÍÒÔµãÐÎÊ½ÏÔÊ¾
-	viewer->setRepresentationToWireframeForAllActors(); //Íø¸ñÄ£ÐÍÒÔÏß¿òÍ¼Ä£Ê½ÏÔÊ¾
+	viewer->addPolygonMesh(triangles, "my"); //ï¿½ï¿½ï¿½ï¿½Òªï¿½ï¿½Ê¾ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½
+											 //ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½Ä£ï¿½ï¿½ï¿½ï¿½Ê¾Ä£Ê½
+											 //viewer->setRepresentationToSurfaceForAllActors(); //ï¿½ï¿½ï¿½ï¿½Ä£ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½Æ¬ï¿½ï¿½Ê½ï¿½ï¿½Ê¾
+											 //viewer->setRepresentationToPointsForAllActors(); //ï¿½ï¿½ï¿½ï¿½Ä£ï¿½ï¿½ï¿½Ôµï¿½ï¿½ï¿½Ê½ï¿½ï¿½Ê¾
+	viewer->setRepresentationToWireframeForAllActors(); //ï¿½ï¿½ï¿½ï¿½Ä£ï¿½ï¿½ï¿½ï¿½ï¿½ß¿ï¿½Í¼Ä£Ê½ï¿½ï¿½Ê¾
 
-														// Êä³ö´°¿Ú
+														// ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½
 	consoleLog("Convert wireframe", "", "", "");
 
 	viewer->removeAllShapes();
@@ -1889,7 +1717,7 @@ int CloudViewer::convertWireframe()
 //Statistical Outlier Removal
 void CloudViewer::statisticalFilter() {
 
-	//ÓÃ»§ÉèÖÃÁÙ½üµãÊý¼°±ê×¼²î³ËÊý
+	//ï¿½Ã»ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½Ù½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½×¼ï¿½ï¿½ï¿½ï¿½ï¿½
 	bool isOK1, isOK2;
 	int par = QInputDialog::getInt(this, "The number of neighbor points",
 		"Please input the number of neighbor points",
@@ -1897,20 +1725,20 @@ void CloudViewer::statisticalFilter() {
 	if (isOK1) {
 		double smt = QInputDialog::getDouble(this, "The standard deviation multiplier", "Please input the standard deviation multiplier", 1.00, 0.01, 10.00, 1, &isOK2);
 		if (isOK2) {
-			//»ñÈ¡.pcdÎÄ¼þ
+			//ï¿½ï¿½È¡.pcdï¿½Ä¼ï¿½
 			QString path = QFileDialog::getOpenFileName(this, tr("Open point cloud file"), QString::fromLocal8Bit(mycloud.dirname.c_str()), tr("Point cloud data(*.pcd);;All file(*.*)"));
 			//Return if filenames is empty
 			if (path.isEmpty())
 				return;
 			string str = path.toStdString();
-			string pureName = str.substr(0, str.rfind("."));//È¥³ýºó×ºÃû
+			string pureName = str.substr(0, str.rfind("."));//È¥ï¿½ï¿½ï¿½ï¿½×ºï¿½ï¿½
 
 			pcl::PointCloud<pcl::PointXYZ>::Ptr cloud(new pcl::PointCloud<pcl::PointXYZ>);
 			pcl::PointCloud<pcl::PointXYZ>::Ptr cloud_filtered(new pcl::PointCloud<pcl::PointXYZ>);
 
 			// Fill in the cloud data
 			pcl::PCDReader reader;
-			//str¼´Îª.pcdÎÄ¼þÂ·¾¶
+			//strï¿½ï¿½Îª.pcdï¿½Ä¼ï¿½Â·ï¿½ï¿½
 			reader.read<pcl::PointXYZ>(str, *cloud);
 
 			// Create the filtering object
@@ -1928,7 +1756,7 @@ void CloudViewer::statisticalFilter() {
 
 //Radius Outlier Removal
 void CloudViewer::radiusFilter() {
-	//ÓÃ»§ÉèÖÃ°ë¾¶¼°ÁÚµã¸öÊý
+	//ï¿½Ã»ï¿½ï¿½ï¿½ï¿½Ã°ë¾¶ï¿½ï¿½ï¿½Úµï¿½ï¿½ï¿½ï¿½
 	bool isOK1, isOK2;
 	double radiusSearch = QInputDialog::getDouble(this, "The standard deviation multiplier", "Please input the standard deviation multiplier", 1.00, 0.01, 10.00, 1, &isOK1);
 	if (isOK1) {
@@ -1942,13 +1770,13 @@ void CloudViewer::radiusFilter() {
 			if (path.isEmpty())
 				return;
 			string str = path.toStdString();
-			string pureName = str.substr(0, str.rfind("."));//È¥³ýºó×ºÃû
+			string pureName = str.substr(0, str.rfind("."));//È¥ï¿½ï¿½ï¿½ï¿½×ºï¿½ï¿½
 			pcl::PointCloud<pcl::PointXYZ>::Ptr cloud(new pcl::PointCloud<pcl::PointXYZ>);
 			pcl::PointCloud<pcl::PointXYZ>::Ptr cloud_filtered(new pcl::PointCloud<pcl::PointXYZ>);
 
 			// Fill in the cloud data
 			pcl::PCDReader reader;
-			//str¼´Îª.pcdÎÄ¼þÂ·¾¶
+			//strï¿½ï¿½Îª.pcdï¿½Ä¼ï¿½Â·ï¿½ï¿½
 			reader.read<pcl::PointXYZ>(str, *cloud);
 
 			// Create the filtering object

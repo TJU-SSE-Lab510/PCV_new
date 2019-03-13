@@ -1189,8 +1189,11 @@
    <property name="text">
     <string>dsmAction</string>
    </property>
+   <property name="iconText">
+    <string>dsmAction</string>
+   </property>
    <property name="toolTip">
-    <string>Translate to dsm</string>
+    <string>生成数字表面模型（DSM）</string>
    </property>
   </action>
   <action name="actionactiondem">
@@ -1202,7 +1205,7 @@
     <string>actiondem</string>
    </property>
    <property name="toolTip">
-    <string>translate to dem</string>
+    <string>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p&gt;生成数字高程模型（DEM）&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</string>
    </property>
   </action>
  </widget>
