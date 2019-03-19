@@ -1533,11 +1533,17 @@ void CloudViewer::popMenu(const QPoint&)
 	QAction showItemAction("Show", this);
 	QAction deleteItemAction("Delete", this);
 	QAction changeColorAction("Change color", this);
+	QMenu menuFilter("Filter", this);
+	QAction statisticalAction("statisticalFilter", this);
+	QAction radiusAction("radiusFilter", this);
 
 	connect(&hideItemAction, &QAction::triggered, this, &CloudViewer::hideItem);
 	connect(&showItemAction, &QAction::triggered, this, &CloudViewer::showItem);
 	connect(&deleteItemAction, &QAction::triggered, this, &CloudViewer::deleteItem);
 	connect(&changeColorAction, &QAction::triggered, this, &CloudViewer::pointcolorChanged);
+	//Filter (connect)
+	connect(&statisticalAction, &QAction::triggered, this, &CloudViewer::statisticalFilter);
+	connect(&radiusAction, &QAction::triggered, this, &CloudViewer::radiusFilter);
 
 	QPoint pos;
 	QMenu menu(ui.dataTree);
@@ -1545,6 +1551,9 @@ void CloudViewer::popMenu(const QPoint&)
 	menu.addAction(&showItemAction);
 	menu.addAction(&deleteItemAction);
 	menu.addAction(&changeColorAction);
+	menu.addMenu(&menuFilter);
+	menuFilter.addAction(&statisticalAction);
+	menuFilter.addAction(&radiusAction);
 
 	if (mycloud_vec[id].visible == true) {
 		menu.actions()[1]->setVisible(false);
@@ -1881,78 +1890,102 @@ int CloudViewer::convertWireframe()
 }
 //Statistical Outlier Removal
 void CloudViewer::statisticalFilter() {
+	QList<QTreeWidgetItem*> itemList = ui.dataTree->selectedItems();
+	for (int i = 0; i != ui.dataTree->selectedItems().size(); i++) {
+		QTreeWidgetItem* curItem = itemList[i];
+		int id = ui.dataTree->indexOfTopLevelItem(curItem);
+		//用户设置临近点数及标准差乘数
+		bool isOK1, isOK2;
+		int par = QInputDialog::getInt(this, "The number of neighbor points",
+			"Please input the number of neighbor points",
+			50, 1, 1000, 10, &isOK1);
+		if (isOK1) {
+			double smt = QInputDialog::getDouble(this, "The standard deviation multiplier", "Please input the standard deviation multiplier", 1.00, 0.01, 10.00, 1, &isOK2);
+			if (isOK2) {
 
-	//用户设置临近点数及标准差乘数
-	bool isOK1, isOK2;
-	int par = QInputDialog::getInt(this, "The number of neighbor points",
-		"Please input the number of neighbor points",
-		50, 1, 1000, 10, &isOK1);
-	if (isOK1) {
-		double smt = QInputDialog::getDouble(this, "The standard deviation multiplier", "Please input the standard deviation multiplier", 1.00, 0.01, 10.00, 1, &isOK2);
-		if (isOK2) {
-			//获取.pcd文件
-			QString path = QFileDialog::getOpenFileName(this, tr("Open point cloud file"), QString::fromLocal8Bit(mycloud.dirname.c_str()), tr("Point cloud data(*.pcd);;All file(*.*)"));
-			//Return if filenames is empty
-			if (path.isEmpty())
-				return;
-			string str = string(path.toLocal8Bit());
-			string pureName = str.substr(0, str.rfind("."));//去除后缀名
+				// 更新状态栏
+				ui.statusBar->showMessage(QString::fromLocal8Bit(mycloud_vec[i].subname.c_str()) + ":removing outliers with StatisticalOutlierRemoval filter...");
 
-			pcl::PointCloud<pcl::PointXYZ>::Ptr cloud(new pcl::PointCloud<pcl::PointXYZ>);
-			pcl::PointCloud<pcl::PointXYZ>::Ptr cloud_filtered(new pcl::PointCloud<pcl::PointXYZ>);
+				PointCloudT::Ptr cloud(new PointCloudT);
+				PointCloudT::Ptr cloud_filtered(new PointCloudT);
 
-			// Fill in the cloud data
-			pcl::PCDReader reader;
-			//str即为.pcd文件路径
-			reader.read<pcl::PointXYZ>(str, *cloud);
+				// Fill in the cloud data
+				cloud = mycloud_vec[i].cloud;
+				total_points -= mycloud_vec[i].cloud->points.size();
 
-			// Create the filtering object
-			pcl::StatisticalOutlierRemoval<pcl::PointXYZ> sor;
-			sor.setInputCloud(cloud);
-			sor.setMeanK(par);
-			sor.setStddevMulThresh(smt);
-			sor.filter(*cloud_filtered);
 
-			pcl::PCDWriter writer;
-			writer.write<pcl::PointXYZ>(pureName + "_statistical.pcd", *cloud_filtered, false);
+				// time start
+				timeStart();
+				// Create the filtering object
+				pcl::StatisticalOutlierRemoval<PointT> sor;
+				sor.setInputCloud(cloud);
+				sor.setMeanK(par);
+				sor.setStddevMulThresh(smt);
+				sor.filter(*cloud_filtered);
+				// time off
+				time_cost = timeOff();
+
+				mycloud_vec[i].cloud = cloud_filtered;
+				total_points += mycloud_vec[i].cloud->points.size();
+
+				ui.statusBar->showMessage("");
+				setPropertyTable();
+				//输出窗口
+				consoleLog("StatisticalFilter", QString::fromLocal8Bit(mycloud_vec[i].subname.c_str()), QString::fromLocal8Bit(mycloud_vec[i].filename.c_str()), "Time cost: " + time_cost + " s, Points: " + QString::number(mycloud_vec[i].cloud->points.size()));
+				ui.screen->update(); //刷新视图窗口，不能省略
+			}
 		}
 	}
 }
 
+
 //Radius Outlier Removal
 void CloudViewer::radiusFilter() {
-	//用户设置半径及邻点个数
-	bool isOK1, isOK2;
-	double radiusSearch = QInputDialog::getDouble(this, "The standard deviation multiplier", "Please input the standard deviation multiplier", 1.00, 0.01, 10.00, 1, &isOK1);
-	if (isOK1) {
-		int MinNeighbor = QInputDialog::getInt(this, "The number of neighbor points",
-			"Please input the number of neighbor points",
-			5, 1, 1000, 10, &isOK2);
-		if (isOK2) {
-			//Get ".pcd" file.
-			QString path = QFileDialog::getOpenFileName(this, tr("Open point cloud file"), QString::fromLocal8Bit(mycloud.dirname.c_str()), tr("Point cloud data(*.pcd);;All file(*.*)"));
-			//Return if filenames is empty
-			if (path.isEmpty())
-				return;
-			string str = string(path.toLocal8Bit());
-			string pureName = str.substr(0, str.rfind("."));//去除后缀名
-			pcl::PointCloud<pcl::PointXYZ>::Ptr cloud(new pcl::PointCloud<pcl::PointXYZ>);
-			pcl::PointCloud<pcl::PointXYZ>::Ptr cloud_filtered(new pcl::PointCloud<pcl::PointXYZ>);
+	QList<QTreeWidgetItem*> itemList = ui.dataTree->selectedItems();
+	for (int i = 0; i != ui.dataTree->selectedItems().size(); i++) {
+		QTreeWidgetItem* curItem = itemList[i];
+		int id = ui.dataTree->indexOfTopLevelItem(curItem);
+		//用户设置半径及邻点个数
+		bool isOK1, isOK2;
+		double radiusSearch = QInputDialog::getDouble(this, "The standard deviation multiplier", "Please input the standard deviation multiplier", 1.00, 0.01, 10.00, 1, &isOK1);
+		if (isOK1) {
+			int MinNeighbor = QInputDialog::getInt(this, "The number of neighbor points",
+				"Please input the number of neighbor points",
+				5, 1, 1000, 10, &isOK2);
+			if (isOK2) {
+				// time start
+				timeStart();
 
-			// Fill in the cloud data
-			pcl::PCDReader reader;
-			//str即为.pcd文件路径
-			reader.read<pcl::PointXYZ>(str, *cloud);
+				// 更新状态栏
+				ui.statusBar->showMessage(QString::fromLocal8Bit(mycloud_vec[i].subname.c_str()) + ":removing outliers with RadiusOutlierRemoval filter...");
 
-			// Create the filtering object
-			pcl::RadiusOutlierRemoval<pcl::PointXYZ> sor;
-			sor.setInputCloud(cloud);
-			sor.setRadiusSearch(radiusSearch);
-			sor.setMinNeighborsInRadius(MinNeighbor);
-			sor.filter(*cloud_filtered);
+				PointCloudT::Ptr cloud(new PointCloudT);
+				PointCloudT::Ptr cloud_filtered(new PointCloudT);
 
-			pcl::PCDWriter writer;
-			writer.write<pcl::PointXYZ>(pureName + "_radius.pcd", *cloud_filtered, false);
+				// Fill in the cloud data
+				cloud = mycloud_vec[i].cloud;
+				total_points -= mycloud_vec[i].cloud->points.size();
+
+				// Create the filtering object
+				pcl::RadiusOutlierRemoval<PointT> sor;
+				sor.setInputCloud(cloud);
+				sor.setRadiusSearch(radiusSearch);
+				sor.setMinNeighborsInRadius(MinNeighbor);
+				sor.filter(*cloud_filtered);
+
+				// time off
+				time_cost = timeOff();
+
+				mycloud_vec[i].cloud = cloud_filtered;
+				total_points += mycloud_vec[i].cloud->points.size();
+
+				ui.statusBar->showMessage("");
+				setPropertyTable();
+				ui.screen->update(); //刷新视图窗口，不能省略
+									 //输出窗口
+				consoleLog("RadiusFilter", QString::fromLocal8Bit(mycloud_vec[i].subname.c_str()), QString::fromLocal8Bit(mycloud_vec[i].filename.c_str()), "Time cost: " + time_cost + " s, Points: " + QString::number(mycloud_vec[i].cloud->points.size()));
+
+			}
 		}
 	}
 }
