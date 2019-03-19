@@ -437,7 +437,7 @@ void CloudViewer::open()
 		timeStart();
 		mycloud.cloud.reset(new PointCloudT); // Reset cloud
 		QString filename = filenames[i];
-		std::string file_name = filename.toStdString();
+		std::string file_name = string(filename.toLocal8Bit()); //直接调用Qstring::.toStdString()会导致中文乱码
 		std::string subname = getFileName(file_name);  //提取全路径中的文件名（带后缀）
 	    //change the global v - rowlynn
 		inputfile = subname;
@@ -449,26 +449,23 @@ void CloudViewer::open()
 		if (filename.endsWith(".pcd", Qt::CaseInsensitive))
 		{
 			status = pcl::io::loadPCDFile(file_name, *(mycloud.cloud));
-			if (mycloud.cloud->points[0].r == 0 && mycloud.cloud->points[0].g == 0 && mycloud.cloud->points[0].b == 0)
-			{
-				setCloudColor(255, 255, 255);
-			}
+			rSliderChanged(mycloud.cloud->points[0].r);
+			gSliderChanged(mycloud.cloud->points[0].g);
+			bSliderChanged(mycloud.cloud->points[0].b);			
 		}
 		else if (filename.endsWith(".ply", Qt::CaseInsensitive))
 		{
 			status = pcl::io::loadPLYFile(file_name, *(mycloud.cloud));
-			if (mycloud.cloud->points[0].r == 0 && mycloud.cloud->points[0].g == 0 && mycloud.cloud->points[0].b == 0)
-			{
-				setCloudColor(255, 255, 255);
-			}
+			rSliderChanged(mycloud.cloud->points[0].r);
+			gSliderChanged(mycloud.cloud->points[0].g);
+			bSliderChanged(mycloud.cloud->points[0].b);
 		}
 		else if (filename.endsWith(".obj", Qt::CaseInsensitive))
 		{
 			status = pcl::io::loadOBJFile(file_name, *(mycloud.cloud));
-			if (mycloud.cloud->points[0].r == 0 && mycloud.cloud->points[0].g == 0 && mycloud.cloud->points[0].b == 0)
-			{
-				setCloudColor(255, 255, 255);
-			}
+			rSliderChanged(mycloud.cloud->points[0].r);
+			gSliderChanged(mycloud.cloud->points[0].g);
+			bSliderChanged(mycloud.cloud->points[0].b);	
 		}
 		else if (filename.endsWith(".las", Qt::CaseInsensitive))
 		{
@@ -562,7 +559,7 @@ void CloudViewer::add()
 		timeStart();
 		mycloud.cloud.reset(new PointCloudT);
 		QString filename = filenames[i];
-		std::string file_name = filename.toStdString();
+		std::string file_name = string(filename.toLocal8Bit());
 		std::string subname = getFileName(file_name);
 
 		// 更新状态栏
@@ -572,26 +569,23 @@ void CloudViewer::add()
 		if (filename.endsWith(".pcd", Qt::CaseInsensitive))
 		{
 			status = pcl::io::loadPCDFile(file_name, *(mycloud.cloud));
-			if (mycloud.cloud->points[0].r == 0 && mycloud.cloud->points[0].g == 0 && mycloud.cloud->points[0].b == 0)
-			{
-				setCloudColor(255, 255, 255);
-			}
+			rSliderChanged(mycloud.cloud->points[0].r);
+			gSliderChanged(mycloud.cloud->points[0].g);
+			bSliderChanged(mycloud.cloud->points[0].b);
 		}
 		else if (filename.endsWith(".ply", Qt::CaseInsensitive))
 		{
 			status = pcl::io::loadPLYFile(file_name, *(mycloud.cloud));
-			if (mycloud.cloud->points[0].r == 0 && mycloud.cloud->points[0].g == 0 && mycloud.cloud->points[0].b == 0)
-			{
-				setCloudColor(255, 255, 255);
-			}
+			rSliderChanged(mycloud.cloud->points[0].r);
+			gSliderChanged(mycloud.cloud->points[0].g);
+			bSliderChanged(mycloud.cloud->points[0].b);
 		}
 		else if (filename.endsWith(".obj", Qt::CaseInsensitive))
 		{
 			status = pcl::io::loadOBJFile(file_name, *(mycloud.cloud));
-			if (mycloud.cloud->points[0].r == 0 && mycloud.cloud->points[0].g == 0 && mycloud.cloud->points[0].b == 0)
-			{
-				setCloudColor(255, 255, 255);
-			}
+			rSliderChanged(mycloud.cloud->points[0].r);
+			gSliderChanged(mycloud.cloud->points[0].g);
+			bSliderChanged(mycloud.cloud->points[0].b);
 		}
 		else
 		{
@@ -656,11 +650,10 @@ void CloudViewer::save()
 {
 	save_filename = QFileDialog::getSaveFileName(this, tr("Save point cloud"),
 		QString::fromLocal8Bit(mycloud.dirname.c_str()), tr("Point cloud data(*.pcd *.ply);;Allfile(*.*)"));
-	std::string file_name = save_filename.toStdString();
-	std::string subname = getFileName(file_name);
-	//文件名为空直接返回
-	if (save_filename.isEmpty())
+	if (save_filename.isEmpty())	//文件名为空直接返回
 		return;
+	std::string file_name = string(save_filename.toLocal8Bit());
+	std::string subname = getFileName(file_name);
 
 	if (mycloud_vec.size() > 1)
 	{
@@ -693,22 +686,22 @@ void CloudViewer::save()
 
 	//输出窗口
 	consoleLog("Save", QString::fromLocal8Bit(subname.c_str()), save_filename, "Single save");
-
 	setWindowTitle(save_filename + " - CloudViewer");
 	QMessageBox::information(this, tr("save point cloud file"),
 		QString::fromLocal8Bit(("Save " + subname + " successfully!").c_str()));
 }
+	
+
 
 // Save point cloud as binary file
 void CloudViewer::saveBinary()
 {
 	save_filename = QFileDialog::getSaveFileName(this, tr("Save point cloud as binary file"),
 		QString::fromLocal8Bit(mycloud.dirname.c_str()), tr("Point cloud data(*.pcd *.ply);;Allfile(*.*)"));
-	std::string file_name = save_filename.toStdString();
-	std::string subname = getFileName(file_name);
-	//文件名为空直接返回
-	if (save_filename.isEmpty())
+	if (save_filename.isEmpty())//文件名为空直接返回
 		return;
+	std::string file_name = string(save_filename.toLocal8Bit());
+	std::string subname = getFileName(file_name);
 
 	if (mycloud_vec.size() > 1)
 	{
@@ -751,7 +744,7 @@ void CloudViewer::saveBinary()
 // Save multi point cloud
 void CloudViewer::savemulti()
 {
-	std::string subname = getFileName(save_filename.toStdString());
+	std::string subname = getFileName(string(save_filename.toLocal8Bit()));
 	PointCloudT::Ptr multi_cloud;
 	multi_cloud.reset(new PointCloudT);
 	multi_cloud->height = 1;
@@ -781,20 +774,20 @@ void CloudViewer::savemulti()
 	if (save_filename.endsWith(".pcd", Qt::CaseInsensitive))
 	{
 		if (save_as_binary) {
-			status = pcl::io::savePCDFileBinary(save_filename.toStdString(), *multi_cloud);
+			status = pcl::io::savePCDFileBinary(string(save_filename.toLocal8Bit()), *multi_cloud);
 		}
 		else {
-			status = pcl::io::savePCDFile(save_filename.toStdString(), *multi_cloud);
+			status = pcl::io::savePCDFile(string(save_filename.toLocal8Bit()), *multi_cloud);
 		}
 
 	}
 	else if (save_filename.endsWith(".ply", Qt::CaseInsensitive))
 	{
 		if (save_as_binary) {
-			status = pcl::io::savePLYFileBinary(save_filename.toStdString(), *multi_cloud);
+			status = pcl::io::savePLYFileBinary(string(save_filename.toLocal8Bit()), *multi_cloud);
 		}
 		else {
-			status = pcl::io::savePLYFile(save_filename.toStdString(), *multi_cloud);
+			status = pcl::io::savePLYFile(string(save_filename.toLocal8Bit()), *multi_cloud);
 		}
 	}
 	else //提示：无法保存为除了.ply .pcd以外的文件
@@ -822,7 +815,7 @@ void CloudViewer::savemulti()
 	save_as_binary = false;
 	//将保存后的 multi_cloud 设置为当前 mycloud,以便保存之后直接进行操作
 	mycloud.cloud = multi_cloud;
-	mycloud.filename = save_filename.toStdString();
+	mycloud.filename = string(save_filename.toLocal8Bit());
 	mycloud.subname = subname;
 
 	setWindowTitle(save_filename + " - CloudViewer");
@@ -920,7 +913,7 @@ void CloudViewer::showPointcloud()
 {
 	for (int i = 0; i != mycloud_vec.size(); i++)
 	{
-		viewer->updatePointCloud(mycloud_vec[i].cloud, "cloud" + QString::number(i).toStdString());
+		viewer->updatePointCloud(mycloud_vec[i].cloud, "cloud" + string(QString::number(i).toLocal8Bit()));
 	}
 	//viewer->resetCamera();
 	ui.screen->update();
@@ -931,8 +924,8 @@ void CloudViewer::showPointcloudAdd()
 {
 	for (int i = 0; i != mycloud_vec.size(); i++)
 	{
-		viewer->addPointCloud(mycloud_vec[i].cloud, "cloud" + QString::number(i).toStdString());
-		viewer->updatePointCloud(mycloud_vec[i].cloud, "cloud" + QString::number(i).toStdString());
+		viewer->addPointCloud(mycloud_vec[i].cloud, "cloud" + string(QString::number(i).toLocal8Bit()));
+		viewer->updatePointCloud(mycloud_vec[i].cloud, "cloud" + string(QString::number(i).toLocal8Bit()));
 	}
 	viewer->resetCamera();
 	ui.screen->update();
@@ -1217,7 +1210,7 @@ void CloudViewer::psliderReleased()
 		for (int i = 0; i != mycloud_vec.size(); i++) {
 			mycloud_vec[i].pointSize = p;
 			viewer->setPointCloudRenderingProperties(pcl::visualization::PCL_VISUALIZER_POINT_SIZE,
-				p, "cloud" + QString::number(i).toStdString());
+				p, "cloud" + string(QString::number(i).toLocal8Bit()));
 		}
 		// 输出窗口
 		consoleLog("Change cloud size", "All point clouds", "Size: " + QString::number(p), "");
@@ -1227,7 +1220,7 @@ void CloudViewer::psliderReleased()
 			int cloud_id = ui.dataTree->indexOfTopLevelItem(itemList[i]);
 			mycloud_vec[cloud_id].pointSize = p;
 			viewer->setPointCloudRenderingProperties(pcl::visualization::PCL_VISUALIZER_POINT_SIZE,
-				p, "cloud" + QString::number(cloud_id).toStdString());
+				p, "cloud" + string(QString::number(cloud_id).toLocal8Bit()));
 		}
 		// 输出窗口
 		consoleLog("Change cloud size", "Point clouds selected", "Size: " + QString::number(p), "");
@@ -1439,8 +1432,8 @@ void CloudViewer::itemSelected(QTreeWidgetItem* item, int count)
 	
 	for (int i = 0; i != mycloud_vec.size(); i++)
 	{
-		viewer->updatePointCloud(mycloud_vec[i].cloud, "cloud" + QString::number(i).toStdString());
-		viewer->setPointCloudRenderingProperties(pcl::visualization::PCL_VISUALIZER_POINT_SIZE, 1, "cloud" + QString::number(i).toStdString());
+		viewer->updatePointCloud(mycloud_vec[i].cloud, "cloud" + string(QString::number(i).toLocal8Bit()));
+		viewer->setPointCloudRenderingProperties(pcl::visualization::PCL_VISUALIZER_POINT_SIZE, 1, "cloud" + string(QString::number(i).toLocal8Bit()));
 	}
 
 	//提取当前点云的RGB,点云数量等信息
@@ -1470,7 +1463,7 @@ void CloudViewer::itemSelected(QTreeWidgetItem* item, int count)
 	for (int i = 0; i != selected_item_count; i++) {
 		int cloud_id = ui.dataTree->indexOfTopLevelItem(itemList[i]);
 		viewer->setPointCloudRenderingProperties(pcl::visualization::PCL_VISUALIZER_POINT_SIZE,
-			mycloud_vec[cloud_id].pointSize, "cloud" + QString::number(cloud_id).toStdString());
+			mycloud_vec[cloud_id].pointSize, "cloud" + string(QString::number(cloud_id).toLocal8Bit()));
 	}
 	//mycloud = mycloud_vec[count];
 
@@ -1534,7 +1527,7 @@ void CloudViewer::popMenu(const QPoint&)
 	if (curItem == NULL)return;           //这种情况是右键的位置不在treeItem的范围内，即在空白位置右击
 	QString name = curItem->text(0);
 	int id = ui.dataTree->indexOfTopLevelItem(curItem);
-	string cloud_id = "cloud" + QString::number(id).toStdString();
+	string cloud_id = "cloud" + string(QString::number(id).toLocal8Bit());
 
 	QAction hideItemAction("Hide", this);
 	QAction showItemAction("Show", this);
@@ -1574,7 +1567,7 @@ void CloudViewer::hideItem()
 		QTreeWidgetItem* curItem = itemList[i];
 		QString name = curItem->text(0);
 		int id = ui.dataTree->indexOfTopLevelItem(curItem);
-		string cloud_id = "cloud" + QString::number(id).toStdString();
+		string cloud_id = "cloud" + string(QString::number(id).toLocal8Bit());
 		//QMessageBox::information(this, "cloud_id", QString::fromLocal8Bit(cloud_id.c_str()));
 		// 将cloud_id所对应的点云设置成透明
 		viewer->setPointCloudRenderingProperties(pcl::visualization::RenderingProperties::PCL_VISUALIZER_OPACITY, 0.0, cloud_id, 0);
@@ -1597,7 +1590,7 @@ void CloudViewer::showItem()
 		QTreeWidgetItem* curItem = itemList[i];
 		QString name = curItem->text(0);
 		int id = ui.dataTree->indexOfTopLevelItem(curItem);
-		string cloud_id = "cloud" + QString::number(id).toStdString();
+		string cloud_id = "cloud" + string(QString::number(id).toLocal8Bit());
 		// 将cloud_id所对应的点云设置成透明
 		viewer->setPointCloudRenderingProperties(pcl::visualization::RenderingProperties::PCL_VISUALIZER_OPACITY, 1.0, cloud_id, 0);
 		QColor item_color;
@@ -1646,8 +1639,8 @@ void CloudViewer::deleteItem()
 	viewer->removeAllPointClouds();
 	for (int i = 0; i != mycloud_vec.size(); i++)
 	{
-		viewer->addPointCloud(mycloud_vec[i].cloud, "cloud" + QString::number(i).toStdString());
-		viewer->updatePointCloud(mycloud_vec[i].cloud, "cloud" + QString::number(i).toStdString());
+		viewer->addPointCloud(mycloud_vec[i].cloud, "cloud" + string(QString::number(i).toLocal8Bit()));
+		viewer->updatePointCloud(mycloud_vec[i].cloud, "cloud" + string(QString::number(i).toLocal8Bit()));
 	}
 
 	// 输出窗口
@@ -1902,7 +1895,7 @@ void CloudViewer::statisticalFilter() {
 			//Return if filenames is empty
 			if (path.isEmpty())
 				return;
-			string str = path.toStdString();
+			string str = string(path.toLocal8Bit());
 			string pureName = str.substr(0, str.rfind("."));//去除后缀名
 
 			pcl::PointCloud<pcl::PointXYZ>::Ptr cloud(new pcl::PointCloud<pcl::PointXYZ>);
@@ -1941,7 +1934,7 @@ void CloudViewer::radiusFilter() {
 			//Return if filenames is empty
 			if (path.isEmpty())
 				return;
-			string str = path.toStdString();
+			string str = string(path.toLocal8Bit());
 			string pureName = str.substr(0, str.rfind("."));//去除后缀名
 			pcl::PointCloud<pcl::PointXYZ>::Ptr cloud(new pcl::PointCloud<pcl::PointXYZ>);
 			pcl::PointCloud<pcl::PointXYZ>::Ptr cloud_filtered(new pcl::PointCloud<pcl::PointXYZ>);

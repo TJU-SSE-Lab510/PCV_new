@@ -818,12 +818,13 @@ public:
         statisticalAction->setText(QApplication::translate("CloudViewerClass", "statisticalFilter", Q_NULLPTR));
         radiusAction->setText(QApplication::translate("CloudViewerClass", "radiusFilter", Q_NULLPTR));
         actiondsmAction->setText(QApplication::translate("CloudViewerClass", "dsmAction", Q_NULLPTR));
+        actiondsmAction->setIconText(QApplication::translate("CloudViewerClass", "dsmAction", Q_NULLPTR));
 #ifndef QT_NO_TOOLTIP
-        actiondsmAction->setToolTip(QApplication::translate("CloudViewerClass", "Translate to dsm", Q_NULLPTR));
+        actiondsmAction->setToolTip(QApplication::translate("CloudViewerClass", "\347\224\237\346\210\220\346\225\260\345\255\227\350\241\250\351\235\242\346\250\241\345\236\213\357\274\210DSM\357\274\211", Q_NULLPTR));
 #endif // QT_NO_TOOLTIP
         actionactiondem->setText(QApplication::translate("CloudViewerClass", "actiondem", Q_NULLPTR));
 #ifndef QT_NO_TOOLTIP
-        actionactiondem->setToolTip(QApplication::translate("CloudViewerClass", "translate to dem", Q_NULLPTR));
+        actionactiondem->setToolTip(QApplication::translate("CloudViewerClass", "<html><head/><body><p>\347\224\237\346\210\220\346\225\260\345\255\227\351\253\230\347\250\213\346\250\241\345\236\213\357\274\210DEM\357\274\211</p></body></html>", Q_NULLPTR));
 #endif // QT_NO_TOOLTIP
         RGBDock->setWindowTitle(QApplication::translate("CloudViewerClass", "RGB", Q_NULLPTR));
         label_1->setText(QApplication::translate("CloudViewerClass", "Red", Q_NULLPTR));

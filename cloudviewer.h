@@ -73,6 +73,12 @@ VTK_MODULE_INIT(vtkInteractionStyle);
 #include <string>
 #include <limits>
 #include <fstream>
+#include <direct.h>  //rowlynn-for mkdir v2
+#include <windows.h> //rowlynn-for mkdir v2
+
+#include <iomanip>  //rowlynn-for pcd2las v2
+#include <sstream>  //rowlynn-for pcd2las v2
+#include <cmath>    //rowlynn-for pcd2las v2
 
 typedef pcl::PointXYZRGBA PointT;
 typedef pcl::PointCloud<PointT> PointCloudT;
