@@ -40,9 +40,6 @@ CloudViewer::CloudViewer(QWidget *parent)
 	// Translation
 	QObject::connect(ui.actiondsmAction, &QAction::triggered, this, &CloudViewer::todsm);
 	QObject::connect(ui.actionactiondem, &QAction::triggered, this, &CloudViewer::todem);
-	//Filter (connect)
-	QObject::connect(ui.statisticalAction, &QAction::triggered, this, &CloudViewer::statisticalFilter);
-	QObject::connect(ui.radiusAction, &QAction::triggered, this, &CloudViewer::radiusFilter);
 	// Option (connect)
 	QObject::connect(ui.windowsThemeAction, &QAction::triggered, this, &CloudViewer::windowsTheme);
 	QObject::connect(ui.darculaThemeAction, &QAction::triggered, this, &CloudViewer::darculaTheme);
