@@ -69,8 +69,6 @@ public:
     QAction *actionX;
     QAction *actionY;
     QAction *actionZ;
-    QAction *statisticalAction;
-    QAction *radiusAction;
     QAction *actiondsmAction;
     QAction *actionactiondem;
     QWidget *centralWidget;
@@ -125,7 +123,6 @@ public:
     QMenu *menuAngle_view;
     QMenu *menuView_2;
     QMenu *menuProcess;
-    QMenu *menuFilter;
 
     void setupUi(QMainWindow *CloudViewerClass)
     {
@@ -281,10 +278,6 @@ public:
         QIcon icon21;
         icon21.addFile(QStringLiteral("Resources/images/z.PNG"), QSize(), QIcon::Normal, QIcon::Off);
         actionZ->setIcon(icon21);
-        statisticalAction = new QAction(CloudViewerClass);
-        statisticalAction->setObjectName(QStringLiteral("statisticalAction"));
-        radiusAction = new QAction(CloudViewerClass);
-        radiusAction->setObjectName(QStringLiteral("radiusAction"));
         actiondsmAction = new QAction(CloudViewerClass);
         actiondsmAction->setObjectName(QStringLiteral("actiondsmAction"));
         QIcon icon22;
@@ -643,7 +636,7 @@ public:
         CloudViewerClass->addDockWidget(static_cast<Qt::DockWidgetArea>(8), consoleDock);
         menuBar = new QMenuBar(CloudViewerClass);
         menuBar->setObjectName(QStringLiteral("menuBar"));
-        menuBar->setGeometry(QRect(0, 0, 1501, 23));
+        menuBar->setGeometry(QRect(0, 0, 1501, 26));
         QFont font4;
         font4.setFamily(QString::fromUtf8("\345\276\256\350\275\257\351\233\205\351\273\221"));
         menuBar->setFont(font4);
@@ -678,8 +671,6 @@ public:
         menuView_2->setObjectName(QStringLiteral("menuView_2"));
         menuProcess = new QMenu(menuBar);
         menuProcess->setObjectName(QStringLiteral("menuProcess"));
-        menuFilter = new QMenu(menuBar);
-        menuFilter->setObjectName(QStringLiteral("menuFilter"));
         CloudViewerClass->setMenuBar(menuBar);
 
         mainToolBar->addAction(openAction);
@@ -713,7 +704,6 @@ public:
         menuBar->addAction(menuView_2->menuAction());
         menuBar->addAction(menuGenerate->menuAction());
         menuBar->addAction(menuProcess->menuAction());
-        menuBar->addAction(menuFilter->menuAction());
         menuBar->addAction(menuOption->menuAction());
         menuBar->addAction(menuAbout->menuAction());
         menuFile->addAction(openAction);
@@ -748,8 +738,6 @@ public:
         menuView_2->addAction(RGBAction);
         menuProcess->addAction(meshsurfaceAction);
         menuProcess->addAction(wireframeAction);
-        menuFilter->addAction(statisticalAction);
-        menuFilter->addAction(radiusAction);
 
         retranslateUi(CloudViewerClass);
 
@@ -815,8 +803,6 @@ public:
         actionX->setText(QApplication::translate("CloudViewerClass", "X", Q_NULLPTR));
         actionY->setText(QApplication::translate("CloudViewerClass", "Y", Q_NULLPTR));
         actionZ->setText(QApplication::translate("CloudViewerClass", "Z", Q_NULLPTR));
-        statisticalAction->setText(QApplication::translate("CloudViewerClass", "statisticalFilter", Q_NULLPTR));
-        radiusAction->setText(QApplication::translate("CloudViewerClass", "radiusFilter", Q_NULLPTR));
         actiondsmAction->setText(QApplication::translate("CloudViewerClass", "dsmAction", Q_NULLPTR));
         actiondsmAction->setIconText(QApplication::translate("CloudViewerClass", "dsmAction", Q_NULLPTR));
 #ifndef QT_NO_TOOLTIP
@@ -864,7 +850,6 @@ public:
         menuAngle_view->setTitle(QApplication::translate("CloudViewerClass", "Angle view", Q_NULLPTR));
         menuView_2->setTitle(QApplication::translate("CloudViewerClass", "View", Q_NULLPTR));
         menuProcess->setTitle(QApplication::translate("CloudViewerClass", "Process", Q_NULLPTR));
-        menuFilter->setTitle(QApplication::translate("CloudViewerClass", "Filter", Q_NULLPTR));
     } // retranslateUi
 
 };
