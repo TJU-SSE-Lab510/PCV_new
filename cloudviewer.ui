@@ -91,6 +91,7 @@
    <addaction name="separator"/>
    <addaction name="actiondsmAction"/>
    <addaction name="actionactiondem"/>
+   <addaction name="actionshowdem"/>
    <addaction name="helpAction"/>
    <addaction name="aboutAction"/>
    <addaction name="actionX"/>
@@ -746,7 +747,7 @@
      <x>0</x>
      <y>0</y>
      <width>1501</width>
-     <height>26</height>
+     <height>23</height>
     </rect>
    </property>
    <property name="font">
@@ -1188,6 +1189,18 @@
    </property>
    <property name="toolTip">
     <string>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p&gt;生成数字高程模型（DEM）&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</string>
+   </property>
+  </action>
+  <action name="actionshowdem">
+   <property name="icon">
+    <iconset resource="cloudviewer.qrc">
+     <normaloff>:/Resources/images/showdem.png</normaloff>:/Resources/images/showdem.png</iconset>
+   </property>
+   <property name="text">
+    <string>showdem</string>
+   </property>
+   <property name="toolTip">
+    <string>显示地形点</string>
    </property>
   </action>
  </widget>
