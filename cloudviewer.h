@@ -208,6 +208,7 @@ private:
 	//add by rowlynn-to dsm&dem
 	void todsm();
 	void todem();
+	void showdem();
 };
 
 #endif // CLOUDVIEWER_H
