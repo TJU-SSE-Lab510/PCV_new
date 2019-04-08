@@ -6,8 +6,8 @@
    <rect>
     <x>0</x>
     <y>0</y>
-    <width>1501</width>
-    <height>749</height>
+    <width>1800</width>
+    <height>1250</height>
    </rect>
   </property>
   <property name="sizePolicy">
@@ -91,6 +91,7 @@
    <addaction name="separator"/>
    <addaction name="actiondsmAction"/>
    <addaction name="actionactiondem"/>
+   <addaction name="actionshowdem"/>
    <addaction name="helpAction"/>
    <addaction name="aboutAction"/>
    <addaction name="actionX"/>
@@ -112,7 +113,7 @@
     </size>
    </property>
    <property name="windowTitle">
-    <string>RGB</string>
+    <string>RGB颜色管理器</string>
    </property>
    <attribute name="dockWidgetArea">
     <number>2</number>
@@ -138,7 +139,7 @@
             </font>
            </property>
            <property name="text">
-            <string>Red</string>
+            <string>红</string>
            </property>
           </widget>
          </item>
@@ -226,7 +227,7 @@
             </font>
            </property>
            <property name="text">
-            <string>Green</string>
+            <string>绿</string>
            </property>
           </widget>
          </item>
@@ -293,7 +294,7 @@
             </font>
            </property>
            <property name="text">
-            <string>Blue</string>
+            <string>蓝</string>
            </property>
           </widget>
          </item>
@@ -360,7 +361,7 @@
             </font>
            </property>
            <property name="text">
-            <string>Point Size</string>
+            <string>点云大小</string>
            </property>
           </widget>
          </item>
@@ -425,7 +426,7 @@
           <string notr="true"/>
          </property>
          <property name="text">
-          <string>Color</string>
+          <string>随机点云颜色</string>
          </property>
         </widget>
        </item>
@@ -440,7 +441,7 @@
         </font>
        </property>
        <property name="text">
-        <string>Coordinate</string>
+        <string>显示坐标系</string>
        </property>
       </widget>
      </item>
@@ -453,7 +454,7 @@
         </font>
        </property>
        <property name="text">
-        <string>Backgronud:Dark/Light</string>
+        <string>背景：黑色/白色</string>
        </property>
       </widget>
      </item>
@@ -480,7 +481,7 @@
     </font>
    </property>
    <property name="windowTitle">
-    <string>PointCloud</string>
+    <string>点云文件栏</string>
    </property>
    <attribute name="dockWidgetArea">
     <number>1</number>
@@ -506,7 +507,7 @@
        </property>
        <column>
         <property name="text">
-         <string>Point Cloud File</string>
+         <string>点云文件</string>
         </property>
        </column>
       </widget>
@@ -528,7 +529,7 @@
     </font>
    </property>
    <property name="windowTitle">
-    <string>Properties</string>
+    <string>点云属性栏</string>
    </property>
    <attribute name="dockWidgetArea">
     <number>1</number>
@@ -629,7 +630,7 @@
        <row/>
        <column>
         <property name="text">
-         <string>Property</string>
+         <string>属性</string>
         </property>
         <property name="textAlignment">
          <set>AlignLeading|AlignVCenter</set>
@@ -637,7 +638,7 @@
        </column>
        <column>
         <property name="text">
-         <string>Value</string>
+         <string>值</string>
         </property>
         <property name="textAlignment">
          <set>AlignLeading|AlignVCenter</set>
@@ -662,7 +663,7 @@
     </size>
    </property>
    <property name="windowTitle">
-    <string>Console</string>
+    <string>控制台</string>
    </property>
    <attribute name="dockWidgetArea">
     <number>8</number>
@@ -697,7 +698,7 @@
        </attribute>
        <column>
         <property name="text">
-         <string>Time</string>
+         <string>时间</string>
         </property>
         <property name="textAlignment">
          <set>AlignLeading|AlignVCenter</set>
@@ -705,7 +706,7 @@
        </column>
        <column>
         <property name="text">
-         <string>Operation</string>
+         <string>操作</string>
         </property>
         <property name="textAlignment">
          <set>AlignLeading|AlignVCenter</set>
@@ -713,7 +714,7 @@
        </column>
        <column>
         <property name="text">
-         <string>Operation obeject</string>
+         <string>操作对象</string>
         </property>
         <property name="textAlignment">
          <set>AlignLeading|AlignVCenter</set>
@@ -721,7 +722,7 @@
        </column>
        <column>
         <property name="text">
-         <string>Details</string>
+         <string>细节</string>
         </property>
         <property name="textAlignment">
          <set>AlignLeading|AlignVCenter</set>
@@ -729,7 +730,7 @@
        </column>
        <column>
         <property name="text">
-         <string>Note</string>
+         <string>备注</string>
         </property>
         <property name="textAlignment">
          <set>AlignLeading|AlignVCenter</set>
@@ -745,8 +746,8 @@
     <rect>
      <x>0</x>
      <y>0</y>
-     <width>1501</width>
-     <height>26</height>
+     <width>1800</width>
+     <height>45</height>
     </rect>
    </property>
    <property name="font">
@@ -756,7 +757,7 @@
    </property>
    <widget class="QMenu" name="menuFile">
     <property name="title">
-     <string>File</string>
+     <string>文件</string>
     </property>
     <addaction name="openAction"/>
     <addaction name="addAction"/>
@@ -768,11 +769,11 @@
    </widget>
    <widget class="QMenu" name="menuGenerate">
     <property name="title">
-     <string>Generate</string>
+     <string>生成</string>
     </property>
     <widget class="QMenu" name="menuBasic_shapes">
      <property name="title">
-      <string>Basic shapes</string>
+      <string>基本形状</string>
      </property>
      <property name="icon">
       <iconset resource="cloudviewer.qrc">
@@ -786,7 +787,7 @@
    </widget>
    <widget class="QMenu" name="menuAbout">
     <property name="title">
-     <string>About</string>
+     <string>关于</string>
     </property>
     <addaction name="helpAction"/>
     <addaction name="aboutAction"/>
@@ -794,11 +795,11 @@
    </widget>
    <widget class="QMenu" name="menuOption">
     <property name="title">
-     <string>Option</string>
+     <string>选项</string>
     </property>
     <widget class="QMenu" name="themeAction">
      <property name="title">
-      <string>Theme</string>
+      <string>主题</string>
      </property>
      <property name="icon">
       <iconset resource="cloudviewer.qrc">
@@ -809,7 +810,7 @@
     </widget>
     <widget class="QMenu" name="langAction">
      <property name="title">
-      <string>Language</string>
+      <string>语言</string>
      </property>
      <property name="icon">
       <iconset resource="cloudviewer.qrc">
@@ -823,11 +824,11 @@
    </widget>
    <widget class="QMenu" name="menuView">
     <property name="title">
-     <string>Display</string>
+     <string>显示</string>
     </property>
     <widget class="QMenu" name="menuAngle_view">
      <property name="title">
-      <string>Angle view</string>
+      <string>三视图</string>
      </property>
      <addaction name="mainviewAction"/>
      <addaction name="leftviewAction"/>
@@ -839,7 +840,7 @@
    </widget>
    <widget class="QMenu" name="menuView_2">
     <property name="title">
-     <string>View</string>
+     <string>视图</string>
     </property>
     <addaction name="dataAction"/>
     <addaction name="propertyAction"/>
@@ -848,7 +849,7 @@
    </widget>
    <widget class="QMenu" name="menuProcess">
     <property name="title">
-     <string>Process</string>
+     <string>处理</string>
     </property>
     <addaction name="meshsurfaceAction"/>
     <addaction name="wireframeAction"/>
@@ -867,10 +868,10 @@
      <normaloff>:/Resources/images/open.png</normaloff>:/Resources/images/open.png</iconset>
    </property>
    <property name="text">
-    <string>Open</string>
+    <string>打开点云文件</string>
    </property>
    <property name="statusTip">
-    <string>open a exsting file</string>
+    <string>打开点云文件</string>
    </property>
    <property name="shortcut">
     <string>Ctrl+O</string>
@@ -882,10 +883,10 @@
      <normaloff>:/Resources/images/save.png</normaloff>:/Resources/images/save.png</iconset>
    </property>
    <property name="text">
-    <string>Save</string>
+    <string>保存点云文件</string>
    </property>
    <property name="statusTip">
-    <string>save the file</string>
+    <string>保存点云文件</string>
    </property>
    <property name="shortcut">
     <string>Ctrl+S</string>
@@ -902,10 +903,10 @@
      <normaloff>:/Resources/images/cube.png</normaloff>:/Resources/images/cube.png</iconset>
    </property>
    <property name="text">
-    <string>Generate cube</string>
+    <string>生成立方体</string>
    </property>
    <property name="statusTip">
-    <string>generate a cube point cloud</string>
+    <string>生成一个立方体点云</string>
    </property>
   </action>
   <action name="helpAction">
@@ -914,10 +915,10 @@
      <normaloff>:/Resources/images/help.png</normaloff>:/Resources/images/help.png</iconset>
    </property>
    <property name="text">
-    <string>Help</string>
+    <string>帮助</string>
    </property>
    <property name="statusTip">
-    <string>show help information</string>
+    <string>显示帮助信息</string>
    </property>
   </action>
   <action name="aboutAction">
@@ -926,10 +927,10 @@
      <normaloff>:/Resources/images/about.png</normaloff>:/Resources/images/about.png</iconset>
    </property>
    <property name="text">
-    <string>About</string>
+    <string>关于</string>
    </property>
    <property name="statusTip">
-    <string>show some information of the software</string>
+    <string>显示软件信息</string>
    </property>
   </action>
   <action name="changeAction">
@@ -938,10 +939,10 @@
      <normaloff>:/Resources/images/change.png</normaloff>:/Resources/images/change.png</iconset>
    </property>
    <property name="text">
-    <string>Change</string>
+    <string>变化页面</string>
    </property>
    <property name="statusTip">
-    <string>change the format of the file</string>
+    <string>改版文件格式</string>
    </property>
   </action>
   <action name="exitAction">
@@ -950,7 +951,7 @@
      <normaloff>:/Resources/images/exit.png</normaloff>:/Resources/images/exit.png</iconset>
    </property>
    <property name="text">
-    <string>Exit</string>
+    <string>退出程序</string>
    </property>
    <property name="shortcut">
     <string>Ctrl+Q</string>
@@ -962,7 +963,10 @@
      <normaloff>:/Resources/images/pointcolor.png</normaloff>:/Resources/images/pointcolor.png</iconset>
    </property>
    <property name="text">
-    <string>Point cloud color</string>
+    <string>选择点云颜色</string>
+   </property>
+   <property name="statusTip">
+    <string>选择点云颜色</string>
    </property>
   </action>
   <action name="bgcolorAction">
@@ -971,7 +975,10 @@
      <normaloff>:/Resources/images/bgcolor.png</normaloff>:/Resources/images/bgcolor.png</iconset>
    </property>
    <property name="text">
-    <string>Background color</string>
+    <string>选择背景颜色</string>
+   </property>
+   <property name="statusTip">
+    <string>选择背景颜色</string>
    </property>
   </action>
   <action name="mainviewAction">
@@ -980,7 +987,10 @@
      <normaloff>:/Resources/images/zhengshi.png</normaloff>:/Resources/images/zhengshi.png</iconset>
    </property>
    <property name="text">
-    <string>Main view</string>
+    <string>主视图</string>
+   </property>
+   <property name="statusTip">
+    <string>主视图</string>
    </property>
   </action>
   <action name="leftviewAction">
@@ -989,7 +999,10 @@
      <normaloff>:/Resources/images/zuoshi.png</normaloff>:/Resources/images/zuoshi.png</iconset>
    </property>
    <property name="text">
-    <string>Left view</string>
+    <string>左视图</string>
+   </property>
+   <property name="statusTip">
+    <string>左视图</string>
    </property>
   </action>
   <action name="topviewAction">
@@ -998,7 +1011,10 @@
      <normaloff>:/Resources/images/fushi.png</normaloff>:/Resources/images/fushi.png</iconset>
    </property>
    <property name="text">
-    <string>Top view</string>
+    <string>俯视图</string>
+   </property>
+   <property name="statusTip">
+    <string>俯视图</string>
    </property>
   </action>
   <action name="dataAction">
@@ -1009,7 +1025,7 @@
     <bool>true</bool>
    </property>
    <property name="text">
-    <string>Data Manager</string>
+    <string>点云文件栏</string>
    </property>
   </action>
   <action name="propertyAction">
@@ -1020,7 +1036,7 @@
     <bool>true</bool>
    </property>
    <property name="text">
-    <string>Property Manager</string>
+    <string>点云属性栏</string>
    </property>
   </action>
   <action name="consoleAction">
@@ -1031,7 +1047,7 @@
     <bool>true</bool>
    </property>
    <property name="text">
-    <string>Console</string>
+    <string>控制台</string>
    </property>
   </action>
   <action name="RGBAction">
@@ -1042,7 +1058,7 @@
     <bool>true</bool>
    </property>
    <property name="text">
-    <string>RGB Manager</string>
+    <string>颜色管理器</string>
    </property>
   </action>
   <action name="clearAction">
@@ -1051,7 +1067,10 @@
      <normaloff>:/Resources/images/clear.png</normaloff>:/Resources/images/clear.png</iconset>
    </property>
    <property name="text">
-    <string>Clear</string>
+    <string>清除点云文件</string>
+   </property>
+   <property name="statusTip">
+    <string>清除点云文件</string>
    </property>
   </action>
   <action name="addAction">
@@ -1060,7 +1079,10 @@
      <normaloff>:/Resources/images/add.png</normaloff>:/Resources/images/add.png</iconset>
    </property>
    <property name="text">
-    <string>Add</string>
+    <string>添加点云文件</string>
+   </property>
+   <property name="statusTip">
+    <string>添加点云文件</string>
    </property>
   </action>
   <action name="sphereAction">
@@ -1069,7 +1091,7 @@
      <normaloff>:/Resources/images/sphere.png</normaloff>:/Resources/images/sphere.png</iconset>
    </property>
    <property name="text">
-    <string>Sphere</string>
+    <string>球体</string>
    </property>
   </action>
   <action name="cylinderAction">
@@ -1078,7 +1100,7 @@
      <normaloff>:/Resources/images/cylinder.png</normaloff>:/Resources/images/cylinder.png</iconset>
    </property>
    <property name="text">
-    <string>Cylinder</string>
+    <string>圆柱</string>
    </property>
   </action>
   <action name="meshsurfaceAction">
@@ -1087,7 +1109,10 @@
      <normaloff>:/Resources/images/mesh.png</normaloff>:/Resources/images/mesh.png</iconset>
    </property>
    <property name="text">
-    <string>Surface</string>
+    <string>生成网格曲面</string>
+   </property>
+   <property name="statusTip">
+    <string>生成网格曲面</string>
    </property>
   </action>
   <action name="wireframeAction">
@@ -1096,27 +1121,30 @@
      <normaloff>:/Resources/images/frame.png</normaloff>:/Resources/images/frame.png</iconset>
    </property>
    <property name="text">
-    <string>Wireframe</string>
+    <string>生成线框图</string>
+   </property>
+   <property name="statusTip">
+    <string>生成线框图</string>
    </property>
   </action>
   <action name="windowsThemeAction">
    <property name="text">
-    <string>Windows</string>
+    <string>白色</string>
    </property>
   </action>
   <action name="darculaThemeAction">
    <property name="text">
-    <string>Darcula</string>
+    <string>黑色</string>
    </property>
   </action>
   <action name="englishAction">
    <property name="text">
-    <string>English</string>
+    <string>英语</string>
    </property>
   </action>
   <action name="chineseAction">
    <property name="text">
-    <string>Chinese</string>
+    <string>汉语</string>
    </property>
   </action>
   <action name="saveBinaryAction">
@@ -1125,10 +1153,10 @@
      <normaloff>:/Resources/images/saveBinary.png</normaloff>:/Resources/images/saveBinary.png</iconset>
    </property>
    <property name="text">
-    <string>Save as binary</string>
+    <string>以二进制格式保存点云文件</string>
    </property>
    <property name="statusTip">
-    <string>Save point cloud as binary file</string>
+    <string>二进制保存点云文件</string>
    </property>
   </action>
   <action name="actionaaa">
@@ -1144,6 +1172,9 @@
    <property name="text">
     <string>X</string>
    </property>
+   <property name="statusTip">
+    <string>X轴等高变色</string>
+   </property>
   </action>
   <action name="actionY">
    <property name="icon">
@@ -1153,6 +1184,9 @@
    <property name="text">
     <string>Y</string>
    </property>
+   <property name="statusTip">
+    <string>Y轴等高变色</string>
+   </property>
   </action>
   <action name="actionZ">
    <property name="icon">
@@ -1161,6 +1195,9 @@
    </property>
    <property name="text">
     <string>Z</string>
+   </property>
+   <property name="statusTip">
+    <string>Z轴等高变色</string>
    </property>
   </action>
   <action name="actiondsmAction">
@@ -1177,6 +1214,9 @@
    <property name="toolTip">
     <string>生成数字表面模型（DSM）</string>
    </property>
+   <property name="statusTip">
+    <string>DSM</string>
+   </property>
   </action>
   <action name="actionactiondem">
    <property name="icon">
@@ -1188,6 +1228,18 @@
    </property>
    <property name="toolTip">
     <string>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p&gt;生成数字高程模型（DEM）&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</string>
+   </property>
+   <property name="statusTip">
+    <string>DEM</string>
+   </property>
+  </action>
+  <action name="actionshowdem">
+   <property name="icon">
+    <iconset>
+     <normaloff>Resources/images/showdem.png</normaloff>Resources/images/showdem.png</iconset>
+   </property>
+   <property name="text">
+    <string>showdem</string>
    </property>
   </action>
  </widget>
