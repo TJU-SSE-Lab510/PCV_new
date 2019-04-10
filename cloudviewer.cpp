@@ -2028,7 +2028,7 @@ void CloudViewer::statisticalFilter() {
 				//输出窗口
 				consoleLog(QString::fromLocal8Bit("统计滤波器"), QString::fromLocal8Bit(mycloud_vec[i].subname.c_str()),
 					QString::fromLocal8Bit(mycloud_vec[i].filename.c_str()), QString::fromLocal8Bit("时间花费: ") + time_cost + QString::fromLocal8Bit(" s, 点的个数: ") + QString::number(mycloud_vec[i].cloud->points.size()));
-				ui.screen->update(); //刷新视图窗口，不能省略
+				showPointcloud(); //刷新视图窗口，不能省略
 			}
 		}
 	}
@@ -2077,11 +2077,9 @@ void CloudViewer::radiusFilter() {
 
 				ui.statusBar->showMessage("");
 				setPropertyTable();
-				ui.screen->update(); //刷新视图窗口，不能省略
-									 //输出窗口
 				consoleLog(QString::fromLocal8Bit("半径滤波器"), QString::fromLocal8Bit(mycloud_vec[i].subname.c_str()), QString::fromLocal8Bit(mycloud_vec[i].filename.c_str())
 					, QString::fromLocal8Bit("时间花费: ") + time_cost + QString::fromLocal8Bit(" s, 点的个数: ") + QString::number(mycloud_vec[i].cloud->points.size()));
-
+				showPointcloud(); //刷新视图窗口，不能省略
 			}
 		}
 	}
