@@ -46,11 +46,12 @@ CloudViewer::CloudViewer(QWidget *parent)
 	QObject::connect(ui.darculaThemeAction, &QAction::triggered, this, &CloudViewer::darculaTheme);
 	QObject::connect(ui.englishAction, &QAction::triggered, this, &CloudViewer::langEnglish);
 	QObject::connect(ui.chineseAction, &QAction::triggered, this, &CloudViewer::langChinese);
-	//Operations (connect)
-//	QObject::connect(ui.registerAction, &QAction::triggered, this, &CloudViewer::registering);
 	// About (connect)
 	QObject::connect(ui.aboutAction, &QAction::triggered, this, &CloudViewer::about);
 	QObject::connect(ui.helpAction, &QAction::triggered, this, &CloudViewer::help);
+	// Regist (connect)
+	QObject::connect(ui.actionICP, &QAction::triggered, this, &CloudViewer::registeringICP);
+	QObject::connect(ui.actionNDT, &QAction::triggered, this, &CloudViewer::registeringNDT);
 
 	/***** Slots connection of RGB widget *****/
 	// Random color (connect)
@@ -2080,6 +2081,116 @@ void CloudViewer::radiusFilter() {
 				consoleLog(QString::fromLocal8Bit("半径滤波器"), QString::fromLocal8Bit(mycloud_vec[i].subname.c_str()), QString::fromLocal8Bit(mycloud_vec[i].filename.c_str())
 					, QString::fromLocal8Bit("时间花费: ") + time_cost + QString::fromLocal8Bit(" s, 点的个数: ") + QString::number(mycloud_vec[i].cloud->points.size()));
 				showPointcloud(); //刷新视图窗口，不能省略
+			}
+		}
+	}
+}
+
+//registration
+//ICP配准
+void CloudViewer::registeringICP() {
+	QList<QTreeWidgetItem*> itemList = ui.dataTree->selectedItems();
+	PointCloudT::Ptr cloud_in(new PointCloudT);  //源点云
+	PointCloudT::Ptr cloud_target(new PointCloudT);   //目标点云
+	QStringList items;
+	int pos = 0;
+	bool in_ok;
+	bool out_ok;
+	for (int i = 0; i < mycloud_vec.size(); i++) {
+		items << QString::fromLocal8Bit(mycloud_vec[i].subname.c_str());
+	}
+	if(mycloud_vec.size()<2){
+		QMessageBox::warning(NULL, "warning", "You have to open at least 2 files!");
+	}
+	else {
+		QString item_in = QInputDialog::getItem(this, QString::fromLocal8Bit("请选择源点云"),
+			QString::fromLocal8Bit("源点云:"), items, 0, false, &in_ok);
+		if (in_ok && !item_in.isEmpty()) {
+			for (int i = 0; i < mycloud_vec.size(); i++) {
+				if (QString::fromLocal8Bit(mycloud_vec[i].subname.c_str()) == item_in) {
+					cloud_in = mycloud_vec[i].cloud;
+					items.removeAt(i);
+					pos = i;
+				}
+			}
+			QString item_out = QInputDialog::getItem(this, QString::fromLocal8Bit("请选择目标点云"),
+				QString::fromLocal8Bit("目标点云:"), items, 0, false, &in_ok);
+			if (out_ok && !item_out.isEmpty()) {
+				for (int i = 0; i < mycloud_vec.size(); i++) {
+					if (QString::fromLocal8Bit(mycloud_vec[i].subname.c_str()) == item_out) {
+						cloud_target = mycloud_vec[i].cloud;
+						pcl::IterativeClosestPoint<PointT, PointT> icp;
+						icp.setInputSource(cloud_in);   //设置源点云
+						icp.setInputTarget(cloud_target);    //设置目标点云
+						PointCloudT::Ptr Final(new PointCloudT);
+						icp.align(*Final);        //变换后源点云
+						QMessageBox::about(NULL, tr("Result"), tr("has converged:%1 \nscore:%2\n").arg(icp.hasConverged()).arg(icp.getFitnessScore()));
+						mycloud_vec[pos].cloud = Final;       
+						showPointcloud();           //配准完成刷新ui窗口
+					}
+				}
+			}
+		}
+	}
+}
+//NDT配准
+void CloudViewer::registeringNDT() {
+	QList<QTreeWidgetItem*> itemList = ui.dataTree->selectedItems();
+	PointCloudT::Ptr cloud_in(new PointCloudT);  //源点云
+	PointCloudT::Ptr cloud_target(new PointCloudT);   //目标点云
+	PointCloudT::Ptr filtered_cloud(new PointCloudT);    //过滤后的源点云
+	QStringList items;
+	int pos = 0;
+	bool in_ok;
+	bool out_ok;
+	for (int i = 0; i < mycloud_vec.size(); i++) {
+		items << QString::fromLocal8Bit(mycloud_vec[i].subname.c_str());
+	}
+	if(mycloud_vec.size()<2){
+		QMessageBox::warning(NULL, "warning", "You have to open at least 2 files!");
+	}
+	else {
+		QString item_in = QInputDialog::getItem(this, QString::fromLocal8Bit("请选择源点云"),
+			QString::fromLocal8Bit("源点云:"), items, 0, false, &in_ok);
+		if (in_ok && !item_in.isEmpty()) {
+			for (int i = 0; i < mycloud_vec.size(); i++) {
+				if (QString::fromLocal8Bit(mycloud_vec[i].subname.c_str()) == item_in) {
+					cloud_in = mycloud_vec[i].cloud;
+					items.removeAt(i);
+					pcl::ApproximateVoxelGrid<PointT> approximate_voxel_filter;
+					approximate_voxel_filter.setLeafSize(0.2, 0.2, 0.2);
+					approximate_voxel_filter.setInputCloud(cloud_in);
+					approximate_voxel_filter.filter(*filtered_cloud);
+					pos = i;
+				}
+			}
+			QString item_out = QInputDialog::getItem(this, QString::fromLocal8Bit("请选择目标点云"),
+				QString::fromLocal8Bit("目标点云:"), items, 0, false, &in_ok);
+			if (out_ok && !item_out.isEmpty()) {
+				for (int i = 0; i < mycloud_vec.size(); i++) {
+					if (QString::fromLocal8Bit(mycloud_vec[i].subname.c_str()) == item_out) {
+						cloud_target = mycloud_vec[i].cloud;
+						//初始化正态分布变换（NDT）
+						pcl::NormalDistributionsTransform<PointT, PointT> ndt;
+						//设置依赖尺度NDT参数
+						//为终止条件设置最小转换差异
+						ndt.setTransformationEpsilon(0.01);
+						//为More-Thuente线搜索设置最大步长
+						ndt.setStepSize(0.1);
+						//设置NDT网格结构的分辨率（VoxelGridCovariance）
+						ndt.setResolution(1.0);
+						//设置匹配迭代的最大次数
+						ndt.setMaximumIterations(35);
+						ndt.setInputCloud(filtered_cloud);
+						ndt.setInputTarget(cloud_target);
+						PointCloudT::Ptr output_cloud(new PointCloudT);
+						ndt.align(*output_cloud);        //变换后源点云,此处output_cloud不能作为最终的源点云变换，因为上面对源点云进行了滤波处理
+						QMessageBox::about(NULL, tr("Result"), tr("has converged:%1 \nscore:%2\n").arg(ndt.hasConverged()).arg(ndt.getFitnessScore()));
+						//使用创建的变换对未过滤的输入点云进行变换
+						pcl::transformPointCloud(*cloud_in, *output_cloud, ndt.getFinalTransformation());
+						showPointcloud();           //配准完成刷新ui窗口
+					}
+				}
 			}
 		}
 	}

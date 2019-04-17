@@ -747,7 +747,7 @@
      <x>0</x>
      <y>0</y>
      <width>1800</width>
-     <height>45</height>
+     <height>26</height>
     </rect>
    </property>
    <property name="font">
@@ -854,6 +854,14 @@
     <addaction name="meshsurfaceAction"/>
     <addaction name="wireframeAction"/>
    </widget>
+   <widget class="QMenu" name="menu">
+    <property name="title">
+     <string>配准</string>
+    </property>
+    <addaction name="separator"/>
+    <addaction name="actionICP"/>
+    <addaction name="actionNDT"/>
+   </widget>
    <addaction name="menuFile"/>
    <addaction name="menuView"/>
    <addaction name="menuView_2"/>
@@ -861,6 +869,7 @@
    <addaction name="menuProcess"/>
    <addaction name="menuOption"/>
    <addaction name="menuAbout"/>
+   <addaction name="menu"/>
   </widget>
   <action name="openAction">
    <property name="icon">
@@ -1240,6 +1249,16 @@
    </property>
    <property name="text">
     <string>showdem</string>
+   </property>
+  </action>
+  <action name="actionICP">
+   <property name="text">
+    <string>ICP</string>
+   </property>
+  </action>
+  <action name="actionNDT">
+   <property name="text">
+    <string>NDT</string>
    </property>
   </action>
  </widget>
