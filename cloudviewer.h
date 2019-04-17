@@ -22,9 +22,13 @@ VTK_MODULE_INIT(vtkInteractionStyle);
 #include <pcl/search/kdtree.h>
 #include <pcl/surface/gp3.h>
 #include <pcl/registration/icp.h>
+#include <pcl/registration/ndt.h>
 
 #include <pcl/filters/statistical_outlier_removal.h>
 #include <pcl/filters/radius_outlier_removal.h>
+#include <pcl/filters/approximate_voxel_grid.h>              //体素滤波在NDT配准中使用以提高匹配速度
+
+#include <pcl/common/transforms.h>
 
 #include <QtWidgets/QMainWindow>
 #include "GBK.h"
@@ -154,7 +158,8 @@ private:
 	void statisticalFilter();  //统计滤波
 	void radiusFilter();
 	//Operations
-	void registering();//配准
+	void registeringICP();//ICP配准
+	void registeringNDT();//NDT配准
 	// Option menu slots
 	void windowsTheme();
 	void darculaTheme();
