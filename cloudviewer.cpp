@@ -2044,7 +2044,7 @@ void CloudViewer::radiusFilter() {
 		int id = ui.dataTree->indexOfTopLevelItem(curItem);
 		//用户设置半径及邻点个数
 		bool isOK1, isOK2;
-		double radiusSearch = QInputDialog::getDouble(this, QString::fromLocal8Bit("标准差乘数"), QString::fromLocal8Bit("请输入标准差乘数"), 1.00, 0.01, 10.00, 1, &isOK1);
+		double radiusSearch = QInputDialog::getDouble(this, QString::fromLocal8Bit("标准差乘数"), QString::fromLocal8Bit("请输入标准差乘数"), 1.00, 0.01, 10.00, 2, &isOK1);
 		if (isOK1) {
 			int MinNeighbor = QInputDialog::getInt(this, QString::fromLocal8Bit("近邻的点数"),
 				QString::fromLocal8Bit("请输入近邻点数"),
@@ -2100,7 +2100,7 @@ void CloudViewer::registeringICP() {
 		items << QString::fromLocal8Bit(mycloud_vec[i].subname.c_str());
 	}
 	if(mycloud_vec.size()<2){
-		QMessageBox::warning(NULL, "warning", "You have to open at least 2 files!");
+		QMessageBox::warning(NULL, QString::fromLocal8Bit("警告"), QString::fromLocal8Bit("至少需要添加两个点云文件！"));
 	}
 	else {
 		QString item_in = QInputDialog::getItem(this, QString::fromLocal8Bit("请选择源点云"),
@@ -2114,7 +2114,7 @@ void CloudViewer::registeringICP() {
 				}
 			}
 			QString item_out = QInputDialog::getItem(this, QString::fromLocal8Bit("请选择目标点云"),
-				QString::fromLocal8Bit("目标点云:"), items, 0, false, &in_ok);
+				QString::fromLocal8Bit("目标点云:"), items, 0, false, &out_ok);
 			if (out_ok && !item_out.isEmpty()) {
 				for (int i = 0; i < mycloud_vec.size(); i++) {
 					if (QString::fromLocal8Bit(mycloud_vec[i].subname.c_str()) == item_out) {
@@ -2143,11 +2143,12 @@ void CloudViewer::registeringNDT() {
 	int pos = 0;
 	bool in_ok;
 	bool out_ok;
+	bool ep, step, res, times;
 	for (int i = 0; i < mycloud_vec.size(); i++) {
 		items << QString::fromLocal8Bit(mycloud_vec[i].subname.c_str());
 	}
 	if(mycloud_vec.size()<2){
-		QMessageBox::warning(NULL, "warning", "You have to open at least 2 files!");
+		QMessageBox::warning(NULL, QString::fromLocal8Bit("警告"), QString::fromLocal8Bit("至少需要添加两个点云文件！"));
 	}
 	else {
 		QString item_in = QInputDialog::getItem(this, QString::fromLocal8Bit("请选择源点云"),
@@ -2165,30 +2166,46 @@ void CloudViewer::registeringNDT() {
 				}
 			}
 			QString item_out = QInputDialog::getItem(this, QString::fromLocal8Bit("请选择目标点云"),
-				QString::fromLocal8Bit("目标点云:"), items, 0, false, &in_ok);
+				QString::fromLocal8Bit("目标点云:"), items, 0, false, &out_ok);
 			if (out_ok && !item_out.isEmpty()) {
-				for (int i = 0; i < mycloud_vec.size(); i++) {
-					if (QString::fromLocal8Bit(mycloud_vec[i].subname.c_str()) == item_out) {
-						cloud_target = mycloud_vec[i].cloud;
-						//初始化正态分布变换（NDT）
-						pcl::NormalDistributionsTransform<PointT, PointT> ndt;
-						//设置依赖尺度NDT参数
-						//为终止条件设置最小转换差异
-						ndt.setTransformationEpsilon(0.01);
-						//为More-Thuente线搜索设置最大步长
-						ndt.setStepSize(0.1);
+				//为终止条件设置最小转换差异
+				double transEpsilion = QInputDialog::getDouble(this, QString::fromLocal8Bit("最小转换差异"), QString::fromLocal8Bit("请设置最小转换差异"), 0.01, 0.01, 2.00, 2, &ep);
+				if (ep) {
+					//为More-Thuente线搜索设置最大步长
+					double maxStep = QInputDialog::getDouble(this, QString::fromLocal8Bit("最大步长"), QString::fromLocal8Bit("请设置More-Thuente线搜索最大步长"), 0.10, 0.01, 5.00, 2, &step);
+					if (step) {
 						//设置NDT网格结构的分辨率（VoxelGridCovariance）
-						ndt.setResolution(1.0);
-						//设置匹配迭代的最大次数
-						ndt.setMaximumIterations(35);
-						ndt.setInputCloud(filtered_cloud);
-						ndt.setInputTarget(cloud_target);
-						PointCloudT::Ptr output_cloud(new PointCloudT);
-						ndt.align(*output_cloud);        //变换后源点云,此处output_cloud不能作为最终的源点云变换，因为上面对源点云进行了滤波处理
-						QMessageBox::about(NULL, tr("Result"), tr("has converged:%1 \nscore:%2\n").arg(ndt.hasConverged()).arg(ndt.getFitnessScore()));
-						//使用创建的变换对未过滤的输入点云进行变换
-						pcl::transformPointCloud(*cloud_in, *output_cloud, ndt.getFinalTransformation());
-						showPointcloud();           //配准完成刷新ui窗口
+						double resolution = QInputDialog::getDouble(this, QString::fromLocal8Bit("分辨率"), QString::fromLocal8Bit("请设置NDT网格结构分辨率"), 1.00, 0.01, 10.00, 2, &res);
+						if (res) {
+							//设置匹配迭代的最大次数
+							int num = QInputDialog::getInt(this, QString::fromLocal8Bit("迭代次数"), QString::fromLocal8Bit("请设置匹配迭代的最大次数"), 35, 1, 100, 1, &times);
+							if (times) {
+								for (int i = 0; i < mycloud_vec.size(); i++) {
+									if (QString::fromLocal8Bit(mycloud_vec[i].subname.c_str()) == item_out) {
+										cloud_target = mycloud_vec[i].cloud;
+										//初始化正态分布变换（NDT）
+										pcl::NormalDistributionsTransform<PointT, PointT> ndt;
+										//设置依赖尺度NDT参数
+										//为终止条件设置最小转换差异
+										ndt.setTransformationEpsilon(transEpsilion);
+										//为More-Thuente线搜索设置最大步长
+										ndt.setStepSize(maxStep);
+										//设置NDT网格结构的分辨率（VoxelGridCovariance）
+										ndt.setResolution(resolution);
+										//设置匹配迭代的最大次数
+										ndt.setMaximumIterations(num);
+										ndt.setInputCloud(filtered_cloud);
+										ndt.setInputTarget(cloud_target);
+										PointCloudT::Ptr output_cloud(new PointCloudT);
+										ndt.align(*output_cloud);        //变换后源点云,此处output_cloud不能作为最终的源点云变换，因为上面对源点云进行了滤波处理
+										QMessageBox::about(NULL, tr("Result"), tr("has converged:%1 \nscore:%2\n").arg(ndt.hasConverged()).arg(ndt.getFitnessScore()));
+										//使用创建的变换对未过滤的输入点云进行变换
+										pcl::transformPointCloud(*cloud_in, *output_cloud, ndt.getFinalTransformation());
+										showPointcloud();           //配准完成刷新ui窗口
+									}
+								}
+							}
+						}
 					}
 				}
 			}
