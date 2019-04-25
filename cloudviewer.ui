@@ -91,6 +91,8 @@
    <addaction name="separator"/>
    <addaction name="actiondsmAction"/>
    <addaction name="actionactiondem"/>
+   <addaction name="actioncsf"/>
+   <addaction name="actionsetpara"/>
    <addaction name="actionshowdem"/>
    <addaction name="helpAction"/>
    <addaction name="aboutAction"/>
@@ -747,7 +749,7 @@
      <x>0</x>
      <y>0</y>
      <width>1800</width>
-     <height>26</height>
+     <height>23</height>
     </rect>
    </property>
    <property name="font">
@@ -1259,6 +1261,30 @@
   <action name="actionNDT">
    <property name="text">
     <string>NDT</string>
+   </property>
+  </action>
+  <action name="actioncsf">
+   <property name="icon">
+    <iconset resource="cloudviewer.qrc">
+     <normaloff>:/Resources/images/csf.png</normaloff>:/Resources/images/csf.png</iconset>
+   </property>
+   <property name="text">
+    <string>csf</string>
+   </property>
+   <property name="toolTip">
+    <string>提取地形点</string>
+   </property>
+  </action>
+  <action name="actionsetpara">
+   <property name="icon">
+    <iconset resource="cloudviewer.qrc">
+     <normaloff>:/Resources/images/csfpara.png</normaloff>:/Resources/images/csfpara.png</iconset>
+   </property>
+   <property name="text">
+    <string>setpara</string>
+   </property>
+   <property name="toolTip">
+    <string>设置CSF参数</string>
    </property>
   </action>
  </widget>

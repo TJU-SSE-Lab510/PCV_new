@@ -41,6 +41,8 @@ CloudViewer::CloudViewer(QWidget *parent)
 	QObject::connect(ui.actiondsmAction, &QAction::triggered, this, &CloudViewer::todsm);
 	QObject::connect(ui.actionactiondem, &QAction::triggered, this, &CloudViewer::todem);
 	QObject::connect(ui.actionshowdem, &QAction::triggered, this, &CloudViewer::showdem);
+	QObject::connect(ui.actioncsf, &QAction::triggered, this, &CloudViewer::showcsf);
+	QObject::connect(ui.actionsetpara, &QAction::triggered, this, &CloudViewer::setpara);
 	// Option (connect)
 	QObject::connect(ui.windowsThemeAction, &QAction::triggered, this, &CloudViewer::windowsTheme);
 	QObject::connect(ui.darculaThemeAction, &QAction::triggered, this, &CloudViewer::darculaTheme);
@@ -90,6 +92,13 @@ CloudViewer::~CloudViewer()
 //global v -by rowlynn
 string inputfile;
 string inputroutine;
+vector<int> gi;
+int finishcsf;
+MyCloud mycloud2;
+extern QString globaliter;
+extern QString globalri;
+extern QString globalts;
+extern int finish_para;
 
 int makedir() //v2
 {
@@ -120,7 +129,7 @@ void CloudViewer::todem()
 	if (purename.empty())
 	{
 		isfile = 0;
-		QMessageBox::information(this, "DEM", "You should open a file!");
+		QMessageBox::warning(NULL, QString::fromLocal8Bit("DEM"), QString::fromLocal8Bit("尚未打开点云文件！"));
 	}
 	else
 	{
@@ -215,7 +224,7 @@ void CloudViewer::todsm()
 	if (purename.empty())
 	{
 		isfile = 0;
-		QMessageBox::information(this, "DSM", "You should open a file!");
+		QMessageBox::warning(NULL, QString::fromLocal8Bit("DSM"), QString::fromLocal8Bit("尚未打开点云文件！"));
 	}
 	else
 	{
@@ -289,7 +298,7 @@ void CloudViewer::showdem()
 	if (purename.empty())
 	{
 		isfile = 0;
-		QMessageBox::information(this, "DEM", "You should open a file!");
+		QMessageBox::warning(NULL, QString::fromLocal8Bit("DEM"), QString::fromLocal8Bit("尚未打开点云文件！"));
 	}
 	else
 	{
@@ -408,6 +417,202 @@ void CloudViewer::showdem()
 		showPointcloud();
 	}
 	//QMessageBox::information(this, "SHOWDSM", "SHOW DEM");
+}
+
+void getgroundpoint(csf::PointCloud pc)
+{
+
+	//some original value
+
+	string sinter;
+	string sri;
+	string sts;
+	globaliter;
+	globalri;
+	globalts;
+	cout << "";
+	if (globaliter > "0")
+	{
+		sinter = globaliter.toStdString();
+	}
+	else
+	{
+		globaliter = "100";
+		sinter = globaliter.toStdString();
+	}
+
+	if (globalri > "0")
+	{
+		sri = globalri.toStdString();
+	}
+	else
+	{
+		globalri = "3";
+		sri = globalri.toStdString();
+	}
+
+	if (globalts > "0")
+	{
+		sts = globalts.toStdString();
+	}
+	else
+	{
+		globalts = "0.65";
+		sts = globalts.toStdString();
+	}
+
+	//get the ground point
+	CSF *csf = new CSF;
+	(*csf).setPointCloud(pc);
+	//(*csf).readPointsFromFile("samp311.txt"); //it won't work for samp311(guess:the file is too big)
+
+	//set the parameters
+
+	(*csf).params.bSloopSmooth = false;
+	(*csf).params.cloth_resolution = 0.5; //default=0.5 when this is 0.001 the process will break
+										  //=0.5 the 28kb work
+										  //=5 the 41kb work
+	(*csf).params.rigidness = atof(sri.c_str()); //default=3 break:0.03
+	(*csf).params.time_step = atof(sts.c_str()); //default=0.65 break:1000 not break:0.001
+												 //if it is too big(100),the tree will remain
+												 //if it is too small(0.3),the tree will remain
+	(*csf).params.class_threshold = 1; //default=0.5 break=5 when 5 , it will be useless
+									   //mount.las---best :2
+	(*csf).params.interations = atoi(sinter.c_str()); //default=500
+													  //100 is the min value that can have the good result
+													  //result remains the same for 100-500
+	cout << "";
+
+
+	//do the filtering&get the indexes of the ground points
+	std::vector<int> groundIndexes;
+	std::vector<int> offGroundIndexes;
+	(*csf).do_filtering(groundIndexes, offGroundIndexes);
+	//(*csf).savePoints(groundIndexes, "ground.txt");
+
+	//create the new cloud
+	//the indexes is saved in offGroundIndexes
+	gi = groundIndexes;
+	cout << "";
+	//clear the vector
+	getchar();
+	delete csf;
+	//groundIndexes.clear();
+	//offGroundIndexes.clear();
+
+
+	getchar();
+	finishcsf = 1;
+	ExitThread(0);
+}
+
+string doubleToString(double num)
+{
+	char str[256];
+	sprintf(str, "%lf", num);
+	string result = str;
+	return result;
+}
+
+void CloudViewer::setpara()
+{
+
+	csfwin *CsfWin;
+	CsfWin = new csfwin;
+	CsfWin->show();
+}
+void CloudViewer::showcsf()
+{
+	//get the oripoint
+	using namespace std;
+	using namespace pdal;
+	finish_para = 0;
+
+	//测试赋值结果+执行接下来的部分
+	int aa = 0;
+	//the function will be excuted twice
+	for (aa = 0; aa < 1; aa++)
+	{
+		string purename = inputfile.substr(0, inputfile.rfind(".")); //without the format:purename
+		int isfile = 0;
+		finishcsf = 0;
+		mycloud2 = mycloud;
+		csf::PointCloud oricloud;
+		csf::Point oripoint;
+
+		if (purename.empty())
+		{
+			isfile = 0;
+			QMessageBox::warning(NULL, QString::fromLocal8Bit("CSF"), QString::fromLocal8Bit("尚未打开点云文件！"));
+
+		}
+		else
+		{
+
+			//执行自窗口赋值程序
+			//打开窗口
+
+			//showwin();
+			isfile = 1;
+			//translate the in-memory pcd into las and save it
+
+			for (size_t i = 0; i < mycloud.cloud->points.size(); i++)
+			{
+				long double x = mycloud.cloud->points[i].x;
+				long double y = mycloud.cloud->points[i].y;
+				long double z = mycloud.cloud->points[i].z;
+
+				string tempx = doubleToString(x);
+				string tempy = doubleToString(y);
+				string tempz = doubleToString(z);
+
+				oripoint.x = atof(tempx.c_str());
+				oripoint.y = atof(tempy.c_str());
+				oripoint.z = atof(tempz.c_str());
+				oricloud.push_back(oripoint);
+			}
+			/*
+			csf::PointCloud temp2;
+			temp2=oricloud;
+			*/
+			cout << "";
+		}
+
+		if (isfile == 1)
+		{
+			MyCloud gpcloud = mycloud;
+			//get the ground point
+			//times1
+			std::thread t(getgroundpoint, oricloud);
+			t.detach();
+
+
+			Sleep(500);  //if this step is not added , the function wouldn't be excuted
+						 //wait(int *status);
+			while (1)
+			{
+				if ((finishcsf == 1)) { goto nextstep; }
+				finishcsf;
+				cout << "";
+			}
+
+		nextstep:
+			for (int i = 0; i != gi.size(); i++)
+			{
+				gpcloud.cloud->points[i] = mycloud.cloud->points[gi[i]];
+			}
+			//mycloud = gpcloud;
+			mycloud = gpcloud;
+
+
+		}
+	}
+
+	//get the filename and the routine
+
+	showPointcloud();
+	//cout << "";
+
 }
 
 void CloudViewer::Xchange() {
