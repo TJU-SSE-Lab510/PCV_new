@@ -35,6 +35,7 @@ VTK_MODULE_INIT(vtkInteractionStyle);
 #include "ui_cloudviewer.h"
 #include "AboutWin.h"
 #include "Tools.h"
+#include "csfwin.h"  //v6
 
 #include <vector>
 #include <QtWidgets/QMainWindow>
@@ -84,11 +85,22 @@ VTK_MODULE_INIT(vtkInteractionStyle);
 #include <sstream>  //rowlynn-for pcd2las v2
 #include <cmath>    //rowlynn-for pcd2las v2
 
+#include <cstdlib> //v5
+#include <cstring> //v5
+#include <cstdlib>
+#include <stdlib.h>
+#include <thread>
+#include "CSF.h"   //v5
+
 typedef pcl::PointXYZRGBA PointT;
 typedef pcl::PointCloud<PointT> PointCloudT;
 
 extern string inputfile; //global v-rowlynn
 extern string inputroutine;
+
+extern vector<int> gi; //v5
+extern int finishcsf; //v5
+extern MyCloud mycloud2; //v5
 
 class CloudViewer : public QMainWindow
 {
@@ -214,6 +226,8 @@ private:
 	void todsm();
 	void todem();
 	void showdem();
+	void showcsf();  //v5
+	void setpara();
 };
 
 #endif // CLOUDVIEWER_H
