@@ -70,6 +70,15 @@
     <ClCompile Include="MyCloud.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
+    <ClCompile Include="csfwin.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="GeneratedFiles\Debug\moc_csfwin.cpp">
+      <Filter>Generated Files\Debug</Filter>
+    </ClCompile>
+    <ClCompile Include="GeneratedFiles\Release\moc_csfwin.cpp">
+      <Filter>Generated Files\Release</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <CustomBuild Include="cloudviewer.h">
@@ -87,6 +96,12 @@
     <CustomBuild Include="AboutWin.h">
       <Filter>Header Files</Filter>
     </CustomBuild>
+    <CustomBuild Include="csfwin.h">
+      <Filter>Header Files</Filter>
+    </CustomBuild>
+    <CustomBuild Include="csfwin.ui">
+      <Filter>Form Files</Filter>
+    </CustomBuild>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="GeneratedFiles\ui_cloudviewer.h">
@@ -103,6 +118,9 @@
     </ClInclude>
     <ClInclude Include="MyCloud.h">
       <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="GeneratedFiles\ui_csfwin.h">
+      <Filter>Generated Files</Filter>
     </ClInclude>
   </ItemGroup>
   <ItemGroup>

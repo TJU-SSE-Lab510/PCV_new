@@ -30,5 +30,7 @@
         <file>Resources/images/saveBinary.png</file>
         <file>Resources/images/showdem.png</file>
         <file>Resources/images/showdsm.png</file>
+        <file>Resources/images/csf.png</file>
+        <file>Resources/images/csfpara.png</file>
     </qresource>
 </RCC>
