@@ -31,13 +31,12 @@ public:
     QLineEdit *i_timestep;
     QLabel *label_3;
     QLineEdit *i_iter;
-    QPushButton *para_default;
 
     void setupUi(QWidget *csfwin)
     {
         if (csfwin->objectName().isEmpty())
             csfwin->setObjectName(QStringLiteral("csfwin"));
-        csfwin->resize(342, 257);
+        csfwin->resize(342, 230);
         para_push = new QPushButton(csfwin);
         para_push->setObjectName(QStringLiteral("para_push"));
         para_push->setGeometry(QRect(120, 170, 111, 21));
@@ -65,9 +64,6 @@ public:
         i_iter = new QLineEdit(csfwin);
         i_iter->setObjectName(QStringLiteral("i_iter"));
         i_iter->setGeometry(QRect(120, 120, 113, 20));
-        para_default = new QPushButton(csfwin);
-        para_default->setObjectName(QStringLiteral("para_default"));
-        para_default->setGeometry(QRect(120, 210, 111, 23));
 
         retranslateUi(csfwin);
 
@@ -81,7 +77,6 @@ public:
         label->setText(QApplication::translate("csfwin", "\345\270\203\346\226\231\345\210\232\345\272\246", Q_NULLPTR));
         label_2->setText(QApplication::translate("csfwin", "\351\207\215\345\212\233\345\217\202\346\225\260", Q_NULLPTR));
         label_3->setText(QApplication::translate("csfwin", "\350\277\255\344\273\243\346\254\241\346\225\260", Q_NULLPTR));
-        para_default->setText(QApplication::translate("csfwin", "\346\201\242\345\244\215\351\273\230\350\256\244\345\217\202\346\225\260", Q_NULLPTR));
     } // retranslateUi
 
 };

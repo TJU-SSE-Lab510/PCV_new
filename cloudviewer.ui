@@ -91,7 +91,6 @@
    <addaction name="separator"/>
    <addaction name="actiondsmAction"/>
    <addaction name="actionactiondem"/>
-   <addaction name="actiondembycsf"/>
    <addaction name="actioncsf"/>
    <addaction name="actionsetpara"/>
    <addaction name="actionshowdem"/>
@@ -1286,18 +1285,6 @@
    </property>
    <property name="toolTip">
     <string>设置CSF参数</string>
-   </property>
-  </action>
-  <action name="actiondembycsf">
-   <property name="icon">
-    <iconset resource="cloudviewer.qrc">
-     <normaloff>:/Resources/images/demcsf.png</normaloff>:/Resources/images/demcsf.png</iconset>
-   </property>
-   <property name="text">
-    <string>dembycsf</string>
-   </property>
-   <property name="toolTip">
-    <string>通过布料模拟算法方式生成DEM</string>
    </property>
   </action>
  </widget>
