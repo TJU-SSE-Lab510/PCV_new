@@ -43,6 +43,7 @@ CloudViewer::CloudViewer(QWidget *parent)
 	QObject::connect(ui.actionshowdem, &QAction::triggered, this, &CloudViewer::showdem);
 	QObject::connect(ui.actioncsf, &QAction::triggered, this, &CloudViewer::showcsf);
 	QObject::connect(ui.actionsetpara, &QAction::triggered, this, &CloudViewer::setpara);
+	QObject::connect(ui.actiondembycsf, &QAction::triggered, this, &CloudViewer::dembycsf);
 	// Option (connect)
 	QObject::connect(ui.windowsThemeAction, &QAction::triggered, this, &CloudViewer::windowsTheme);
 	QObject::connect(ui.darculaThemeAction, &QAction::triggered, this, &CloudViewer::darculaTheme);
@@ -99,6 +100,7 @@ extern QString globaliter;
 extern QString globalri;
 extern QString globalts;
 extern int finish_para;
+vector<string> filelist2; //v6
 
 int makedir() //v2
 {
@@ -123,64 +125,76 @@ void CloudViewer::todem()
 	char charfile[100] = {}; //the filename of the input
 	string purename = inputfile.substr(0, inputfile.rfind(".")); //without the format:purename
 	int isfile = 0;
+	QList<QTreeWidgetItem*> itemList = ui.dataTree->selectedItems();
+	int selected_item_count = ui.dataTree->selectedItems().size();
 	//create the result folder
 	makedir();
-
-	if (purename.empty())
+	if (filelist2.size() == 0)
 	{
 		isfile = 0;
-		QMessageBox::warning(NULL, QString::fromLocal8Bit("DEM"), QString::fromLocal8Bit("尚未打开点云文件！"));
+		QMessageBox::warning(NULL, QString::fromLocal8Bit("DEM-I"), QString::fromLocal8Bit("尚未打开点云文件！"));
 	}
-	else
+
+	//如果没有选中任何点云文件
+	if (selected_item_count == 0)
 	{
-		isfile = 1;
-		//translate the in-memory pcd into las and save it
-		char strOutLasName[] = "temp2.las";
-
-		std::ofstream ofs(strOutLasName, ios::out | ios::binary);
-
-		liblas::Header header;
-		header.SetVersionMajor(1);
-		header.SetVersionMinor(2);
-		header.SetDataFormatId(liblas::PointFormatName::ePointFormat3);
-		header.SetScale(0.01, 0.01, 0.01);  //slove the long double problem
-
-											//дliblas,
-		liblas::Writer writer(ofs, header);
-		liblas::Point point(&header);
-
-		for (size_t i = 0; i < mycloud.cloud->points.size(); i++)
+		for (int a = 0; a != mycloud_vec.size(); a++)
 		{
-			long double x = mycloud.cloud->points[i].x;
-			long double y = mycloud.cloud->points[i].y;
-			long double z = mycloud.cloud->points[i].z;
-			point.SetCoordinates(x, y, z);
+			if (filelist2.size() == 0)
+			{
+				isfile = 0;
+			}
+			else
+			{
+				purename = filelist2[a].substr(0, filelist2[a].rfind("."));
+				isfile = 1;
+				//translate the in-memory pcd into las and save it
+				char strOutLasName[] = "temp2.las";
 
-			uint32_t red = (uint32_t)mycloud.cloud->points[i].r;
-			uint32_t green = (uint32_t)mycloud.cloud->points[i].g;
-			uint32_t blue = (uint32_t)mycloud.cloud->points[i].b;
+				std::ofstream ofs(strOutLasName, ios::out | ios::binary);
 
-			liblas::Color pointColor(red, green, blue);
-			point.SetColor(pointColor);
-			writer.WritePoint(point);
-		}
-		long double minPt[3] = { 9999999, 9999999, 9999999 };
-		long double maxPt[3] = { 0, 0, 0 };
-		header.SetPointRecordsCount(mycloud.cloud->points.size());
-		header.SetPointRecordsByReturnCount(0, mycloud.cloud->points.size());
-		header.SetMax(maxPt[0], maxPt[1], maxPt[2]);
-		header.SetMin(minPt[0], minPt[1], minPt[2]);
-		writer.SetHeader(header);
+				liblas::Header header;
+				header.SetVersionMajor(1);
+				header.SetVersionMinor(2);
+				header.SetDataFormatId(liblas::PointFormatName::ePointFormat3);
+				header.SetScale(0.01, 0.01, 0.01);  //slove the long double problem
 
-	}
+													//дliblas,
+				liblas::Writer writer(ofs, header);
+				liblas::Point point(&header);
 
-	if (isfile == 1) //the las file will be broken if we don' t use the 'isfile' judge number
-	{
-		//CopyFile(L"temp.las", L"temp2.las", FALSE);
-		PipelineManager mgr;
-		std::stringstream ss22;
-		//the DSM will be blank if resolution is too big (eg. > 0.2)
-		ss22 << R"({
+				for (size_t i = 0; i < mycloud_vec[a].cloud->points.size(); i++)
+				{
+					long double x = mycloud_vec[a].cloud->points[i].x;
+					long double y = mycloud_vec[a].cloud->points[i].y;
+					long double z = mycloud_vec[a].cloud->points[i].z;
+					point.SetCoordinates(x, y, z);
+
+					uint32_t red = (uint32_t)mycloud_vec[a].cloud->points[i].r;
+					uint32_t green = (uint32_t)mycloud_vec[a].cloud->points[i].g;
+					uint32_t blue = (uint32_t)mycloud_vec[a].cloud->points[i].b;
+
+					liblas::Color pointColor(red, green, blue);
+					point.SetColor(pointColor);
+					writer.WritePoint(point);
+				}
+				long double minPt[3] = { 9999999, 9999999, 9999999 };
+				long double maxPt[3] = { 0, 0, 0 };
+				header.SetPointRecordsCount(mycloud_vec[a].cloud->points.size());
+				header.SetPointRecordsByReturnCount(0, mycloud_vec[a].cloud->points.size());
+				header.SetMax(maxPt[0], maxPt[1], maxPt[2]);
+				header.SetMin(minPt[0], minPt[1], minPt[2]);
+				writer.SetHeader(header);
+
+			}
+
+			if (isfile == 1) //the las file will be broken if we don' t use the 'isfile' judge number
+			{
+				//CopyFile(L"temp.las", L"temp2.las", FALSE);
+				PipelineManager mgr;
+				std::stringstream ss22;
+				//the DSM will be blank if resolution is too big (eg. > 0.2)
+				ss22 << R"({
   "pipeline":["temp2.las",
     {
       "type":"filters.assign",
@@ -199,13 +213,112 @@ void CloudViewer::todem()
     },
     {
       "resolution": 0.3,
-      "radius": 3,
+      "radius": 2,
       "filename":".\\result\\)" << purename << R"(-DEM.tif"}]})";
-		mgr.readPipeline(ss22);
-		mgr.execute();
-		remove("temp2.las");
-		QMessageBox::information(this, "DEM", "The DEM file is in the result folder");
+				mgr.readPipeline(ss22);
+				mgr.execute();
+				remove("temp2.las");
+
+			}
+
+			getchar();
+		}
 	}
+	//如果选中了某个点云文件
+	else
+	{
+		for (int b = 0; b != selected_item_count; b++)
+		{
+			int cloud_id = ui.dataTree->indexOfTopLevelItem(itemList[b]);
+
+			{
+				if (filelist2.size() == 0)
+				{
+					isfile = 0;
+				}
+				else
+				{
+					purename = filelist2[cloud_id].substr(0, filelist2[cloud_id].rfind("."));
+					isfile = 1;
+					//translate the in-memory pcd into las and save it
+					char strOutLasName[] = "temp2.las";
+
+					std::ofstream ofs(strOutLasName, ios::out | ios::binary);
+
+					liblas::Header header;
+					header.SetVersionMajor(1);
+					header.SetVersionMinor(2);
+					header.SetDataFormatId(liblas::PointFormatName::ePointFormat3);
+					header.SetScale(0.01, 0.01, 0.01);  //slove the long double problem
+
+														//дliblas,
+					liblas::Writer writer(ofs, header);
+					liblas::Point point(&header);
+
+					for (size_t i = 0; i < mycloud_vec[cloud_id].cloud->points.size(); i++)
+					{
+						long double x = mycloud_vec[cloud_id].cloud->points[i].x;
+						long double y = mycloud_vec[cloud_id].cloud->points[i].y;
+						long double z = mycloud_vec[cloud_id].cloud->points[i].z;
+						point.SetCoordinates(x, y, z);
+
+						uint32_t red = (uint32_t)mycloud_vec[cloud_id].cloud->points[i].r;
+						uint32_t green = (uint32_t)mycloud_vec[cloud_id].cloud->points[i].g;
+						uint32_t blue = (uint32_t)mycloud_vec[cloud_id].cloud->points[i].b;
+
+						liblas::Color pointColor(red, green, blue);
+						point.SetColor(pointColor);
+						writer.WritePoint(point);
+					}
+					long double minPt[3] = { 9999999, 9999999, 9999999 };
+					long double maxPt[3] = { 0, 0, 0 };
+					header.SetPointRecordsCount(mycloud_vec[cloud_id].cloud->points.size());
+					header.SetPointRecordsByReturnCount(0, mycloud_vec[cloud_id].cloud->points.size());
+					header.SetMax(maxPt[0], maxPt[1], maxPt[2]);
+					header.SetMin(minPt[0], minPt[1], minPt[2]);
+					writer.SetHeader(header);
+
+				}
+
+				if (isfile == 1) //the las file will be broken if we don' t use the 'isfile' judge number
+				{
+					//CopyFile(L"temp.las", L"temp2.las", FALSE);
+					PipelineManager mgr;
+					std::stringstream ss22;
+					//the DSM will be blank if resolution is too big (eg. > 0.2)
+					ss22 << R"({
+  "pipeline":["temp2.las",
+    {
+      "type":"filters.assign",
+      "assignment": [ "NumberOfReturns[:]=1", "ReturnNumber[:]=1" ]
+   },
+    {
+      "type":"filters.smrf",
+      "scalar":1.2,
+      "slope":0.2,
+      "threshold":0.45,
+      "window":16.0
+    },
+    {
+      "type":"filters.range",
+      "limits":"Classification[2:2]"
+    },
+    {
+      "resolution": 0.3,
+      "radius": 2,
+      "filename":".\\result\\)" << purename << R"(-DEM.tif"}]})";
+					mgr.readPipeline(ss22);
+					mgr.execute();
+					remove("temp2.las");
+
+				}
+
+				getchar();
+			}
+		}
+	}
+	if (isfile == 1)QMessageBox::information(this, "DEM-I", QString::fromLocal8Bit("成功生成数字高程模型"));
+
 }
 
 void CloudViewer::todsm()
@@ -218,69 +331,155 @@ void CloudViewer::todsm()
 	char charfile[100] = {}; //the filename of the input
 	string purename = inputfile.substr(0, inputfile.rfind(".")); //without the format:purename
 	int isfile = 0;
+	QList<QTreeWidgetItem*> itemList = ui.dataTree->selectedItems();
+	int selected_item_count = ui.dataTree->selectedItems().size();
 	//create the result folder
 	makedir();
-
-	if (purename.empty())
+	if (filelist2.size() == 0)
 	{
 		isfile = 0;
 		QMessageBox::warning(NULL, QString::fromLocal8Bit("DSM"), QString::fromLocal8Bit("尚未打开点云文件！"));
 	}
+	if (selected_item_count == 0)
+	{
+		for (int a = 0; a != mycloud_vec.size(); a++)
+		{
+			if (filelist2.size() == 0)
+			{
+				isfile = 0;
+			}
+			else
+			{
+				purename = filelist2[a].substr(0, filelist2[a].rfind("."));
+				isfile = 1;
+				//translate the in-memory pcd into las and save it
+				char strOutLasName[] = "temp.las";
+
+				std::ofstream ofs(strOutLasName, ios::out | ios::binary);
+
+				liblas::Header header;
+				header.SetVersionMajor(1);
+				header.SetVersionMinor(2);
+				header.SetDataFormatId(liblas::PointFormatName::ePointFormat3);
+				header.SetScale(0.01, 0.01, 0.01);  //slove the long double problem
+
+													//дliblas,
+				liblas::Writer writer(ofs, header);
+				liblas::Point point(&header);
+
+				for (size_t i = 0; i < mycloud_vec[a].cloud->points.size(); i++)
+				{
+					long double x = mycloud_vec[a].cloud->points[i].x;
+					long double y = mycloud_vec[a].cloud->points[i].y;
+					long double z = mycloud_vec[a].cloud->points[i].z;
+					point.SetCoordinates(x, y, z);
+
+					uint32_t red = (uint32_t)mycloud_vec[a].cloud->points[i].r;
+					uint32_t green = (uint32_t)mycloud_vec[a].cloud->points[i].g;
+					uint32_t blue = (uint32_t)mycloud_vec[a].cloud->points[i].b;
+
+					liblas::Color pointColor(red, green, blue);
+					point.SetColor(pointColor);
+					writer.WritePoint(point);
+				}
+				long double minPt[3] = { 9999999, 9999999, 9999999 };
+				long double maxPt[3] = { 0, 0, 0 };
+				header.SetPointRecordsCount(mycloud_vec[a].cloud->points.size());
+				header.SetPointRecordsByReturnCount(0, mycloud_vec[a].cloud->points.size());
+				header.SetMax(maxPt[0], maxPt[1], maxPt[2]);
+				header.SetMin(minPt[0], minPt[1], minPt[2]);
+				writer.SetHeader(header);
+
+			}
+
+			if (isfile == 1) //the las file will be broken if we don' t use the 'isfile' judge number
+			{
+				//CopyFile(L"temp.las", L"temp2.las", FALSE);
+				PipelineManager mgr;
+				std::stringstream ss2;
+				//the DSM will be blank if resolution is too big (eg. > 0.2)
+				ss2 << R"({"pipeline":["temp.las",{"resolution": 0.09,"radius": 0.6,"filename":".\\result\\)" << purename << R"(-DSM.tif"}]})";
+				mgr.readPipeline(ss2);
+				mgr.execute();
+				remove("temp.las");
+
+			}
+		}
+	}
 	else
 	{
-		isfile = 1;
-		//translate the in-memory pcd into las and save it
-		char strOutLasName[] = "temp.las";
-
-		std::ofstream ofs(strOutLasName, ios::out | ios::binary);
-
-		liblas::Header header;
-		header.SetVersionMajor(1);
-		header.SetVersionMinor(2);
-		header.SetDataFormatId(liblas::PointFormatName::ePointFormat3);
-		header.SetScale(0.01, 0.01, 0.01);  //slove the long double problem
-
-											//дliblas,
-		liblas::Writer writer(ofs, header);
-		liblas::Point point(&header);
-
-		for (size_t i = 0; i < mycloud.cloud->points.size(); i++)
+		for (int b = 0; b != selected_item_count; b++)
 		{
-			long double x = mycloud.cloud->points[i].x;
-			long double y = mycloud.cloud->points[i].y;
-			long double z = mycloud.cloud->points[i].z;
-			point.SetCoordinates(x, y, z);
+			int cloud_id = ui.dataTree->indexOfTopLevelItem(itemList[b]);
 
-			uint32_t red = (uint32_t)mycloud.cloud->points[i].r;
-			uint32_t green = (uint32_t)mycloud.cloud->points[i].g;
-			uint32_t blue = (uint32_t)mycloud.cloud->points[i].b;
 
-			liblas::Color pointColor(red, green, blue);
-			point.SetColor(pointColor);
-			writer.WritePoint(point);
+			{
+				if (filelist2.size() == 0)
+				{
+					isfile = 0;
+				}
+				else
+				{
+					purename = filelist2[cloud_id].substr(0, filelist2[cloud_id].rfind("."));
+					isfile = 1;
+					//translate the in-memory pcd into las and save it
+					char strOutLasName[] = "temp.las";
+
+					std::ofstream ofs(strOutLasName, ios::out | ios::binary);
+
+					liblas::Header header;
+					header.SetVersionMajor(1);
+					header.SetVersionMinor(2);
+					header.SetDataFormatId(liblas::PointFormatName::ePointFormat3);
+					header.SetScale(0.01, 0.01, 0.01);  //slove the long double problem
+
+														//дliblas,
+					liblas::Writer writer(ofs, header);
+					liblas::Point point(&header);
+
+					for (size_t i = 0; i < mycloud_vec[cloud_id].cloud->points.size(); i++)
+					{
+						long double x = mycloud_vec[cloud_id].cloud->points[i].x;
+						long double y = mycloud_vec[cloud_id].cloud->points[i].y;
+						long double z = mycloud_vec[cloud_id].cloud->points[i].z;
+						point.SetCoordinates(x, y, z);
+
+						uint32_t red = (uint32_t)mycloud_vec[cloud_id].cloud->points[i].r;
+						uint32_t green = (uint32_t)mycloud_vec[cloud_id].cloud->points[i].g;
+						uint32_t blue = (uint32_t)mycloud_vec[cloud_id].cloud->points[i].b;
+
+						liblas::Color pointColor(red, green, blue);
+						point.SetColor(pointColor);
+						writer.WritePoint(point);
+					}
+					long double minPt[3] = { 9999999, 9999999, 9999999 };
+					long double maxPt[3] = { 0, 0, 0 };
+					header.SetPointRecordsCount(mycloud_vec[cloud_id].cloud->points.size());
+					header.SetPointRecordsByReturnCount(0, mycloud_vec[cloud_id].cloud->points.size());
+					header.SetMax(maxPt[0], maxPt[1], maxPt[2]);
+					header.SetMin(minPt[0], minPt[1], minPt[2]);
+					writer.SetHeader(header);
+
+				}
+
+				if (isfile == 1) //the las file will be broken if we don' t use the 'isfile' judge number
+				{
+					//CopyFile(L"temp.las", L"temp2.las", FALSE);
+					PipelineManager mgr;
+					std::stringstream ss2;
+					//the DSM will be blank if resolution is too big (eg. > 0.2)
+					ss2 << R"({"pipeline":["temp.las",{"resolution": 0.09,"radius": 0.6,"filename":".\\result\\)" << purename << R"(-DSM.tif"}]})";
+					mgr.readPipeline(ss2);
+					mgr.execute();
+					remove("temp.las");
+
+				}
+			}
+
 		}
-		long double minPt[3] = { 9999999, 9999999, 9999999 };
-		long double maxPt[3] = { 0, 0, 0 };
-		header.SetPointRecordsCount(mycloud.cloud->points.size());
-		header.SetPointRecordsByReturnCount(0, mycloud.cloud->points.size());
-		header.SetMax(maxPt[0], maxPt[1], maxPt[2]);
-		header.SetMin(minPt[0], minPt[1], minPt[2]);
-		writer.SetHeader(header);
-
 	}
 
-	if (isfile == 1) //the las file will be broken if we don' t use the 'isfile' judge number
-	{
-		//CopyFile(L"temp.las", L"temp2.las", FALSE);
-		PipelineManager mgr;
-		std::stringstream ss2;
-		//the DSM will be blank if resolution is too big (eg. > 0.2)
-		ss2 << R"({"pipeline":["temp.las",{"resolution": 0.19,"radius": 0.6,"filename":".\\result\\)" << purename << R"(-DSM.tif"}]})";
-		mgr.readPipeline(ss2);
-		mgr.execute();
-		remove("temp.las");
-		QMessageBox::information(this, "DSM", "The DSM file is in the result folder");
-	}
+	if (isfile == 1)QMessageBox::information(this, "DSM", QString::fromLocal8Bit("成功生成数字表面模型"));
 }
 
 void CloudViewer::showdem()
@@ -292,64 +491,77 @@ void CloudViewer::showdem()
 	char charfile[100] = {}; //the filename of the input
 	string purename = inputfile.substr(0, inputfile.rfind(".")); //without the format:purename
 	int isfile = 0;
-	//create the result folder
-	makedir();
 
-	if (purename.empty())
+	//judge "select item"
+	QList<QTreeWidgetItem*> itemList = ui.dataTree->selectedItems();
+	int selected_item_count = ui.dataTree->selectedItems().size();
+
+	//判断点云文件是否打开
+	if (filelist2.size() == 0)
 	{
 		isfile = 0;
 		QMessageBox::warning(NULL, QString::fromLocal8Bit("DEM"), QString::fromLocal8Bit("尚未打开点云文件！"));
 	}
-	else
+
+	if (selected_item_count == 0)
 	{
-		isfile = 1;
-		//translate the in-memory pcd into las and save it
-		char strOutLasName[] = "temp2.las";
-
-		std::ofstream ofs(strOutLasName, ios::out | ios::binary);
-
-		liblas::Header header;
-		header.SetVersionMajor(1);
-		header.SetVersionMinor(2);
-		header.SetDataFormatId(liblas::PointFormatName::ePointFormat3);
-		header.SetScale(0.01, 0.01, 0.01);  //slove the long double problem
-
-											//дliblas,
-		liblas::Writer writer(ofs, header);
-		liblas::Point point(&header);
-
-		for (size_t i = 0; i < mycloud.cloud->points.size(); i++)
+		for (int a = 0; a != mycloud_vec.size(); a++)
 		{
-			long double x = mycloud.cloud->points[i].x;
-			long double y = mycloud.cloud->points[i].y;
-			long double z = mycloud.cloud->points[i].z;
-			point.SetCoordinates(x, y, z);
+			if (filelist2.size() == 0)
+			{
+				isfile = 0;
+				//QMessageBox::warning(NULL, QString::fromLocal8Bit("DEM"), QString::fromLocal8Bit("尚未打开点云文件！"));
+			}
+			else
+			{
+				isfile = 1;
+				//translate the in-memory pcd into las and save it
+				char strOutLasName[] = "temp2.las";
 
-			uint32_t red = (uint32_t)mycloud.cloud->points[i].r;
-			uint32_t green = (uint32_t)mycloud.cloud->points[i].g;
-			uint32_t blue = (uint32_t)mycloud.cloud->points[i].b;
+				std::ofstream ofs(strOutLasName, ios::out | ios::binary);
 
-			liblas::Color pointColor(red, green, blue);
-			point.SetColor(pointColor);
-			writer.WritePoint(point);
-		}
-		long double minPt[3] = { 9999999, 9999999, 9999999 };
-		long double maxPt[3] = { 0, 0, 0 };
-		header.SetPointRecordsCount(mycloud.cloud->points.size());
-		header.SetPointRecordsByReturnCount(0, mycloud.cloud->points.size());
-		header.SetMax(maxPt[0], maxPt[1], maxPt[2]);
-		header.SetMin(minPt[0], minPt[1], minPt[2]);
-		writer.SetHeader(header);
+				liblas::Header header;
+				header.SetVersionMajor(1);
+				header.SetVersionMinor(2);
+				header.SetDataFormatId(liblas::PointFormatName::ePointFormat3);
+				header.SetScale(0.01, 0.01, 0.01);  //slove the long double problem
 
-	}
+													//дliblas,
+				liblas::Writer writer(ofs, header);
+				liblas::Point point(&header);
 
-	if (isfile == 1) //the las file will be broken if we don' t use the 'isfile' judge number
-	{
-		//CopyFile(L"temp.las", L"temp2.las", FALSE);
-		PipelineManager mgr;
-		std::stringstream ss22;
-		//the DSM will be blank if resolution is too big (eg. > 0.2)
-		ss22 << R"({
+				for (size_t i = 0; i < mycloud_vec[a].cloud->points.size(); i++)
+				{
+					long double x = mycloud_vec[a].cloud->points[i].x;
+					long double y = mycloud_vec[a].cloud->points[i].y;
+					long double z = mycloud_vec[a].cloud->points[i].z;
+					point.SetCoordinates(x, y, z);
+
+					uint32_t red = (uint32_t)mycloud_vec[a].cloud->points[i].r;
+					uint32_t green = (uint32_t)mycloud_vec[a].cloud->points[i].g;
+					uint32_t blue = (uint32_t)mycloud_vec[a].cloud->points[i].b;
+
+					liblas::Color pointColor(red, green, blue);
+					point.SetColor(pointColor);
+					writer.WritePoint(point);
+				}
+				long double minPt[3] = { 9999999, 9999999, 9999999 };
+				long double maxPt[3] = { 0, 0, 0 };
+				header.SetPointRecordsCount(mycloud_vec[a].cloud->points.size());
+				header.SetPointRecordsByReturnCount(0, mycloud_vec[a].cloud->points.size());
+				header.SetMax(maxPt[0], maxPt[1], maxPt[2]);
+				header.SetMin(minPt[0], minPt[1], minPt[2]);
+				writer.SetHeader(header);
+
+			}
+
+			if (isfile == 1) //the las file will be broken if we don' t use the 'isfile' judge number
+			{
+				//CopyFile(L"temp.las", L"temp2.las", FALSE);
+				PipelineManager mgr;
+				std::stringstream ss22;
+				//the DSM will be blank if resolution is too big (eg. > 0.2)
+				ss22 << R"({
   "pipeline":["temp2.las",
     {
       "type":"filters.assign",
@@ -370,51 +582,181 @@ void CloudViewer::showdem()
       "type":"writers.las",
       "filename":"temp_dem.las"
     }]})";
-		mgr.readPipeline(ss22);
-		mgr.execute();
-		remove("temp2.las");
+				mgr.readPipeline(ss22);
+				mgr.execute();
+				remove("temp2.las");
 
 
 
-		// Opening  the las file
-		string file_name = "temp_dem.las";
-		std::ifstream ifs(file_name.c_str(), std::ios::in | std::ios::binary);
-		liblas::ReaderFactory f;
-		liblas::Reader reader = f.CreateWithStream(ifs); // reading las file
-		unsigned long int nbPoints = reader.GetHeader().GetPointRecordsCount();
+				// Opening  the las file
+				string file_name = "temp_dem.las";
+				std::ifstream ifs(file_name.c_str(), std::ios::in | std::ios::binary);
+				liblas::ReaderFactory f;
+				liblas::Reader reader = f.CreateWithStream(ifs); // reading las file
+				unsigned long int nbPoints = reader.GetHeader().GetPointRecordsCount();
 
-		// Fill in the cloud data
-		mycloud.cloud->width = nbPoints;				// This means that the point cloud is "unorganized"
-		mycloud.cloud->height = 1;						// (i.e. not a depth map)
-		mycloud.cloud->is_dense = false;
-		mycloud.cloud->points.resize(mycloud.cloud->width * mycloud.cloud->height);
+				// Fill in the cloud data
+				mycloud_vec[a].cloud->width = nbPoints;				// This means that the point cloud is "unorganized"
+				mycloud_vec[a].cloud->height = 1;						// (i.e. not a depth map)
+				mycloud_vec[a].cloud->is_dense = false;
+				mycloud_vec[a].cloud->points.resize(mycloud_vec[a].cloud->width * mycloud_vec[a].cloud->height);
 
-		int i = 0;				// counter
-		uint16_t r1, g1, b1;	// RGB variables for .las (16-bit coded)
-		int r2, g2, b2;			// RGB variables for converted values (see below)
+				int i = 0;				// counter
+				uint16_t r1, g1, b1;	// RGB variables for .las (16-bit coded)
+				int r2, g2, b2;			// RGB variables for converted values (see below)
 
-		while (reader.ReadNextPoint())
-		{
-			// get XYZ information
-			mycloud.cloud->points[i].x = (reader.GetPoint().GetX());
-			mycloud.cloud->points[i].y = (reader.GetPoint().GetY());
-			mycloud.cloud->points[i].z = (reader.GetPoint().GetZ());
+				while (reader.ReadNextPoint())
+				{
+					// get XYZ information
+					mycloud_vec[a].cloud->points[i].x = (reader.GetPoint().GetX());
+					mycloud_vec[a].cloud->points[i].y = (reader.GetPoint().GetY());
+					mycloud_vec[a].cloud->points[i].z = (reader.GetPoint().GetZ());
 
-			// get RGB information. Note: in liblas, the "Color" class can be accessed from within the "Point" class, thus the triple gets
-			r1 = (reader.GetPoint().GetColor().GetRed());
-			g1 = (reader.GetPoint().GetColor().GetGreen());
-			b1 = (reader.GetPoint().GetColor().GetBlue());
+					// get RGB information. Note: in liblas, the "Color" class can be accessed from within the "Point" class, thus the triple gets
+					r1 = (reader.GetPoint().GetColor().GetRed());
+					g1 = (reader.GetPoint().GetColor().GetGreen());
+					b1 = (reader.GetPoint().GetColor().GetBlue());
 
-			// .las stores RGB color in 16-bit (0-65535) while .pcd demands an 8-bit value (0-255). Let's convert them!
-			mycloud.cloud->points[i].r = ceil(((float)r1 / 65536)*(float)256);
-			mycloud.cloud->points[i].g = ceil(((float)g1 / 65536)*(float)256);
-			mycloud.cloud->points[i].b = ceil(((float)b1 / 65536)*(float)256);
+					// .las stores RGB color in 16-bit (0-65535) while .pcd demands an 8-bit value (0-255). Let's convert them!
+					mycloud_vec[a].cloud->points[i].r = ceil(((float)r1 / 65536)*(float)256);
+					mycloud_vec[a].cloud->points[i].g = ceil(((float)g1 / 65536)*(float)256);
+					mycloud_vec[a].cloud->points[i].b = ceil(((float)b1 / 65536)*(float)256);
 
-			i++; // ...moving on
+					i++; // ...moving on
+				}
+				ifs.close();
+				remove("temp_dem.las");
+				showPointcloud();
+			}
 		}
-		ifs.close();
-		remove("temp_dem.las");
-		showPointcloud();
+	}
+	else  //选中了某个点云
+	{
+		for (int b = 0; b != selected_item_count; b++)
+		{
+			int cloud_id = ui.dataTree->indexOfTopLevelItem(itemList[b]);
+			if (filelist2.size() == 0)
+			{
+				isfile = 0;
+			}
+			else
+			{
+				isfile = 1;
+				//translate the in-memory pcd into las and save it
+				char strOutLasName[] = "temp2.las";
+
+				std::ofstream ofs(strOutLasName, ios::out | ios::binary);
+
+				liblas::Header header;
+				header.SetVersionMajor(1);
+				header.SetVersionMinor(2);
+				header.SetDataFormatId(liblas::PointFormatName::ePointFormat3);
+				header.SetScale(0.01, 0.01, 0.01);  //slove the long double problem
+
+													//дliblas,
+				liblas::Writer writer(ofs, header);
+				liblas::Point point(&header);
+
+				for (size_t i = 0; i < mycloud_vec[cloud_id].cloud->points.size(); i++)
+				{
+					long double x = mycloud_vec[cloud_id].cloud->points[i].x;
+					long double y = mycloud_vec[cloud_id].cloud->points[i].y;
+					long double z = mycloud_vec[cloud_id].cloud->points[i].z;
+					point.SetCoordinates(x, y, z);
+
+					uint32_t red = (uint32_t)mycloud_vec[cloud_id].cloud->points[i].r;
+					uint32_t green = (uint32_t)mycloud_vec[cloud_id].cloud->points[i].g;
+					uint32_t blue = (uint32_t)mycloud_vec[cloud_id].cloud->points[i].b;
+
+					liblas::Color pointColor(red, green, blue);
+					point.SetColor(pointColor);
+					writer.WritePoint(point);
+				}
+				long double minPt[3] = { 9999999, 9999999, 9999999 };
+				long double maxPt[3] = { 0, 0, 0 };
+				header.SetPointRecordsCount(mycloud_vec[cloud_id].cloud->points.size());
+				header.SetPointRecordsByReturnCount(0, mycloud_vec[cloud_id].cloud->points.size());
+				header.SetMax(maxPt[0], maxPt[1], maxPt[2]);
+				header.SetMin(minPt[0], minPt[1], minPt[2]);
+				writer.SetHeader(header);
+
+			}
+
+			if (isfile == 1) //the las file will be broken if we don' t use the 'isfile' judge number
+			{
+				//CopyFile(L"temp.las", L"temp2.las", FALSE);
+				PipelineManager mgr;
+				std::stringstream ss22;
+				//the DSM will be blank if resolution is too big (eg. > 0.2)
+				ss22 << R"({
+  "pipeline":["temp2.las",
+    {
+      "type":"filters.assign",
+      "assignment": [ "NumberOfReturns[:]=1", "ReturnNumber[:]=1" ]
+   },
+    {
+      "type":"filters.smrf",
+      "scalar":1.2,
+      "slope":0.2,
+      "threshold":0.45,
+      "window":16.0
+    },
+    {
+      "type":"filters.range",
+      "limits":"Classification[2:2]"
+    },
+    {
+      "type":"writers.las",
+      "filename":"temp_dem.las"
+    }]})";
+				mgr.readPipeline(ss22);
+				mgr.execute();
+				remove("temp2.las");
+
+
+
+				// Opening  the las file
+				string file_name = "temp_dem.las";
+				std::ifstream ifs(file_name.c_str(), std::ios::in | std::ios::binary);
+				liblas::ReaderFactory f;
+				liblas::Reader reader = f.CreateWithStream(ifs); // reading las file
+				unsigned long int nbPoints = reader.GetHeader().GetPointRecordsCount();
+
+				// Fill in the cloud data
+				mycloud_vec[cloud_id].cloud->width = nbPoints;				// This means that the point cloud is "unorganized"
+				mycloud_vec[cloud_id].cloud->height = 1;						// (i.e. not a depth map)
+				mycloud_vec[cloud_id].cloud->is_dense = false;
+				mycloud_vec[cloud_id].cloud->points.resize(mycloud_vec[cloud_id].cloud->width * mycloud_vec[cloud_id].cloud->height);
+
+				int i = 0;				// counter
+				uint16_t r1, g1, b1;	// RGB variables for .las (16-bit coded)
+				int r2, g2, b2;			// RGB variables for converted values (see below)
+
+				while (reader.ReadNextPoint())
+				{
+					// get XYZ information
+					mycloud_vec[cloud_id].cloud->points[i].x = (reader.GetPoint().GetX());
+					mycloud_vec[cloud_id].cloud->points[i].y = (reader.GetPoint().GetY());
+					mycloud_vec[cloud_id].cloud->points[i].z = (reader.GetPoint().GetZ());
+
+					// get RGB information. Note: in liblas, the "Color" class can be accessed from within the "Point" class, thus the triple gets
+					r1 = (reader.GetPoint().GetColor().GetRed());
+					g1 = (reader.GetPoint().GetColor().GetGreen());
+					b1 = (reader.GetPoint().GetColor().GetBlue());
+
+					// .las stores RGB color in 16-bit (0-65535) while .pcd demands an 8-bit value (0-255). Let's convert them!
+					mycloud_vec[cloud_id].cloud->points[i].r = ceil(((float)r1 / 65536)*(float)256);
+					mycloud_vec[cloud_id].cloud->points[i].g = ceil(((float)g1 / 65536)*(float)256);
+					mycloud_vec[cloud_id].cloud->points[i].b = ceil(((float)b1 / 65536)*(float)256);
+
+					i++; // ...moving on
+				}
+				ifs.close();
+				remove("temp_dem.las");
+				showPointcloud();
+			}
+			//QMessageBox::information(this, "SHOWDSM", "SHOW DEM");
+		}
 	}
 	//QMessageBox::information(this, "SHOWDSM", "SHOW DEM");
 }
@@ -441,7 +783,8 @@ void getgroundpoint(csf::PointCloud pc)
 		sinter = globaliter.toStdString();
 	}
 
-	if (globalri > "0")
+	//if ((globalri == "1")|| (globalri == "2") || (globalri == "3"))
+	if (globalri>"0")
 	{
 		sri = globalri.toStdString();
 	}
@@ -521,98 +864,489 @@ void CloudViewer::setpara()
 	CsfWin = new csfwin;
 	CsfWin->show();
 }
+
 void CloudViewer::showcsf()
 {
 	//get the oripoint
 	using namespace std;
 	using namespace pdal;
 	finish_para = 0;
+	QList<QTreeWidgetItem*> itemList = ui.dataTree->selectedItems();
+	int selected_item_count = ui.dataTree->selectedItems().size();
 
-	//测试赋值结果+执行接下来的部分
-	int aa = 0;
-	//the function will be excuted twice
-	for (aa = 0; aa < 1; aa++)
+	//判断是否有打开文件
+	string purename = inputfile.substr(0, inputfile.rfind(".")); //without the format:purename
+	int isfile = 0;
+	if (filelist2.size() == 0)
 	{
-		string purename = inputfile.substr(0, inputfile.rfind(".")); //without the format:purename
-		int isfile = 0;
-		finishcsf = 0;
-		mycloud2 = mycloud;
-		csf::PointCloud oricloud;
-		csf::Point oripoint;
+		isfile = 0;
+		QMessageBox::warning(NULL, QString::fromLocal8Bit("CSF"), QString::fromLocal8Bit("尚未打开点云文件！"));
 
-		if (purename.empty())
+	}
+
+	//正式执行
+	//没有选择文件
+	if (selected_item_count == 0)
+	{
+		for (int a = 0; a != mycloud_vec.size(); a++)
 		{
-			isfile = 0;
-			QMessageBox::warning(NULL, QString::fromLocal8Bit("CSF"), QString::fromLocal8Bit("尚未打开点云文件！"));
+			finishcsf = 0;
+			mycloud2 = mycloud_vec[a];
+			csf::PointCloud oricloud;
+			csf::Point oripoint;
 
-		}
-		else
-		{
-
-			//执行自窗口赋值程序
-			//打开窗口
-
-			//showwin();
-			isfile = 1;
-			//translate the in-memory pcd into las and save it
-
-			for (size_t i = 0; i < mycloud.cloud->points.size(); i++)
+			if (filelist2.size() == 0)
 			{
-				long double x = mycloud.cloud->points[i].x;
-				long double y = mycloud.cloud->points[i].y;
-				long double z = mycloud.cloud->points[i].z;
-
-				string tempx = doubleToString(x);
-				string tempy = doubleToString(y);
-				string tempz = doubleToString(z);
-
-				oripoint.x = atof(tempx.c_str());
-				oripoint.y = atof(tempy.c_str());
-				oripoint.z = atof(tempz.c_str());
-				oricloud.push_back(oripoint);
+				isfile = 0;
 			}
-			/*
-			csf::PointCloud temp2;
-			temp2=oricloud;
-			*/
-			cout << "";
-		}
-
-		if (isfile == 1)
-		{
-			MyCloud gpcloud = mycloud;
-			//get the ground point
-			//times1
-			std::thread t(getgroundpoint, oricloud);
-			t.detach();
-
-
-			Sleep(500);  //if this step is not added , the function wouldn't be excuted
-						 //wait(int *status);
-			while (1)
+			else
 			{
-				if ((finishcsf == 1)) { goto nextstep; }
-				finishcsf;
+
+				//执行自窗口赋值程序
+				//打开窗口
+
+				//showwin();
+				isfile = 1;
+				//translate the in-memory pcd into las and save it
+
+				for (size_t i = 0; i < mycloud_vec[a].cloud->points.size(); i++)
+				{
+					long double x = mycloud_vec[a].cloud->points[i].x;
+					long double y = mycloud_vec[a].cloud->points[i].y;
+					long double z = mycloud_vec[a].cloud->points[i].z;
+
+					string tempx = doubleToString(x);
+					string tempy = doubleToString(y);
+					string tempz = doubleToString(z);
+
+					oripoint.x = atof(tempx.c_str());
+					oripoint.y = atof(tempy.c_str());
+					oripoint.z = atof(tempz.c_str());
+					oricloud.push_back(oripoint);
+				}
+
 				cout << "";
 			}
 
-		nextstep:
-			for (int i = 0; i != gi.size(); i++)
+			if (isfile == 1)
 			{
-				gpcloud.cloud->points[i] = mycloud.cloud->points[gi[i]];
+				MyCloud gpcloud = mycloud_vec[a];
+				//get the ground point
+				//times1
+				std::thread t(getgroundpoint, oricloud);
+				t.detach();
+
+
+				Sleep(500);  //if this step is not added , the function wouldn't be excuted
+							 //wait(int *status);
+				while (1)
+				{
+					if ((finishcsf == 1)) { goto nextstep; }
+					finishcsf;
+					cout << "";
+				}
+
+			nextstep:
+				for (int i = 0; i != gi.size(); i++)
+				{
+					gpcloud.cloud->points[i] = mycloud_vec[a].cloud->points[gi[i]];
+				}
+				//mycloud = gpcloud;
+				mycloud_vec[a] = gpcloud;
+
+
 			}
-			//mycloud = gpcloud;
-			mycloud = gpcloud;
+
+			showPointcloud();
+
+		}
+
+	}
+	else  //如果选中了某个文件
+	{
+		for (int b = 0; b != selected_item_count; b++)
+		{
+			int cloud_id = ui.dataTree->indexOfTopLevelItem(itemList[b]);
+			{
+				finishcsf = 0;
+				mycloud2 = mycloud_vec[cloud_id];
+				csf::PointCloud oricloud;
+				csf::Point oripoint;
+
+				if (filelist2.size() == 0)
+				{
+					isfile = 0;
+				}
+				else
+				{
+
+					//执行自窗口赋值程序
+					//打开窗口
+
+					//showwin();
+					isfile = 1;
+					//translate the in-memory pcd into las and save it
+
+					for (size_t i = 0; i < mycloud_vec[cloud_id].cloud->points.size(); i++)
+					{
+						long double x = mycloud_vec[cloud_id].cloud->points[i].x;
+						long double y = mycloud_vec[cloud_id].cloud->points[i].y;
+						long double z = mycloud_vec[cloud_id].cloud->points[i].z;
+
+						string tempx = doubleToString(x);
+						string tempy = doubleToString(y);
+						string tempz = doubleToString(z);
+
+						oripoint.x = atof(tempx.c_str());
+						oripoint.y = atof(tempy.c_str());
+						oripoint.z = atof(tempz.c_str());
+						oricloud.push_back(oripoint);
+					}
+
+					cout << "";
+				}
+
+				if (isfile == 1)
+				{
+					MyCloud gpcloud = mycloud_vec[cloud_id];
+					//get the ground point
+					//times1
+					std::thread t(getgroundpoint, oricloud);
+					t.detach();
 
 
+					Sleep(500);  //if this step is not added , the function wouldn't be excuted
+								 //wait(int *status);
+					while (1)
+					{
+						if ((finishcsf == 1)) { goto nextstep23; }
+						finishcsf;
+						cout << "";
+					}
+
+				nextstep23:
+					for (int i = 0; i != gi.size(); i++)
+					{
+						gpcloud.cloud->points[i] = mycloud_vec[cloud_id].cloud->points[gi[i]];
+					}
+					//mycloud = gpcloud;
+					mycloud_vec[cloud_id] = gpcloud;
+
+
+				}
+
+				showPointcloud();
+
+			}
 		}
 	}
 
+
+}
+
+void CloudViewer::dembycsf()
+{
+	using namespace std;
+	using namespace pdal;
+
 	//get the filename and the routine
+	char charfile[100] = {}; //the filename of the input
+	string purename = inputfile.substr(0, inputfile.rfind(".")); //without the format:purename
+	int isfile = 0;
+	finish_para = 0;
+	QList<QTreeWidgetItem*> itemList = ui.dataTree->selectedItems();
+	int selected_item_count = ui.dataTree->selectedItems().size();
+	//create the result folder
+	makedir();
+	if (filelist2.size() == 0)
+	{
+		isfile = 0;
+		QMessageBox::warning(NULL, QString::fromLocal8Bit("DEM-II"), QString::fromLocal8Bit("尚未打开点云文件！"));
+	}
 
-	showPointcloud();
-	//cout << "";
+	//如果没有选中任何点云文件
+	if (selected_item_count == 0)
+	{
+		for (int a = 0; a != mycloud_vec.size(); a++)
+		{
+			if (filelist2.size() == 0)
+			{
+				isfile = 0;
+			}
+			else
+			{
+				//改变信号量
+				isfile = 1;
+				//CSF
+				//定义参数
+				finishcsf = 0;
+				mycloud2 = mycloud_vec[a];
+				csf::PointCloud oricloud;
+				csf::Point oripoint;
 
+				//生成坐标结构体
+				for (size_t i = 0; i < mycloud_vec[a].cloud->points.size(); i++)
+				{
+					long double x = mycloud_vec[a].cloud->points[i].x;
+					long double y = mycloud_vec[a].cloud->points[i].y;
+					long double z = mycloud_vec[a].cloud->points[i].z;
+
+					string tempx = doubleToString(x);
+					string tempy = doubleToString(y);
+					string tempz = doubleToString(z);
+
+					oripoint.x = atof(tempx.c_str());
+					oripoint.y = atof(tempy.c_str());
+					oripoint.z = atof(tempz.c_str());
+					oricloud.push_back(oripoint);
+				}
+
+				MyCloud gpcloud = mycloud_vec[a];
+				//get the ground point
+				//times1
+				std::thread t(getgroundpoint, oricloud);
+				t.detach();
+
+
+				Sleep(500);  //if this step is not added , the function wouldn't be excuted
+							 //wait(int *status);
+				while (1)
+				{
+					if ((finishcsf == 1)) { goto nextstep; }
+					finishcsf;
+					cout << "";
+				}
+
+			nextstep:
+				for (int i = 0; i != gi.size(); i++)
+				{
+					gpcloud.cloud->points[i] = mycloud_vec[a].cloud->points[gi[i]];
+				}
+				//mycloud = gpcloud;
+				mycloud_vec[a] = gpcloud;
+
+				//转换并生成las中间文件
+				purename = filelist2[a].substr(0, filelist2[a].rfind("."));
+
+				//translate the in-memory pcd into las and save it
+				char strOutLasName[] = "temp2.las";
+
+				std::ofstream ofs(strOutLasName, ios::out | ios::binary);
+
+				liblas::Header header;
+				header.SetVersionMajor(1);
+				header.SetVersionMinor(2);
+				header.SetDataFormatId(liblas::PointFormatName::ePointFormat3);
+				header.SetScale(0.01, 0.01, 0.01);  //slove the long double problem
+
+													//дliblas,
+				liblas::Writer writer(ofs, header);
+				liblas::Point point(&header);
+
+				for (size_t i = 0; i < mycloud_vec[a].cloud->points.size(); i++)
+				{
+					long double x = mycloud_vec[a].cloud->points[i].x;
+					long double y = mycloud_vec[a].cloud->points[i].y;
+					long double z = mycloud_vec[a].cloud->points[i].z;
+					point.SetCoordinates(x, y, z);
+
+					uint32_t red = (uint32_t)mycloud_vec[a].cloud->points[i].r;
+					uint32_t green = (uint32_t)mycloud_vec[a].cloud->points[i].g;
+					uint32_t blue = (uint32_t)mycloud_vec[a].cloud->points[i].b;
+
+					liblas::Color pointColor(red, green, blue);
+					point.SetColor(pointColor);
+					writer.WritePoint(point);
+				}
+				long double minPt[3] = { 9999999, 9999999, 9999999 };
+				long double maxPt[3] = { 0, 0, 0 };
+				header.SetPointRecordsCount(mycloud_vec[a].cloud->points.size());
+				header.SetPointRecordsByReturnCount(0, mycloud_vec[a].cloud->points.size());
+				header.SetMax(maxPt[0], maxPt[1], maxPt[2]);
+				header.SetMin(minPt[0], minPt[1], minPt[2]);
+				writer.SetHeader(header);
+
+			}
+
+			if (isfile == 1) //the las file will be broken if we don' t use the 'isfile' judge number
+			{
+				//处理生成tif
+
+				PipelineManager mgr;
+				std::stringstream ss22;
+				//the DSM will be blank if resolution is too big (eg. > 0.2)
+				ss22 << R"({
+  "pipeline":["temp2.las",
+    {
+      "type":"filters.assign",
+      "assignment": [ "NumberOfReturns[:]=1", "ReturnNumber[:]=1" ]
+   },
+    {
+      "type":"filters.smrf",
+      "scalar":1.2,
+      "slope":0.2,
+      "threshold":0.45,
+      "window":16.0
+    },
+    {
+      "type":"filters.range",
+      "limits":"Classification[2:2]"
+    },
+    {
+      "resolution": 0.3,
+      "radius": 2,
+      "filename":".\\result\\)" << purename << R"(-DEM.tif"}]})";
+				mgr.readPipeline(ss22);
+				mgr.execute();
+				remove("temp2.las");
+
+			}
+
+			getchar();
+		}
+	}
+	//如果选中了某个点云文件
+	else
+	{
+		for (int b = 0; b != selected_item_count; b++)
+		{
+			int cloud_id = ui.dataTree->indexOfTopLevelItem(itemList[b]);
+
+			{
+				finishcsf = 0;
+				mycloud2 = mycloud_vec[cloud_id];
+				csf::PointCloud oricloud;
+				csf::Point oripoint;
+
+				if (filelist2.size() == 0)
+				{
+					isfile = 0;
+				}
+				else
+				{
+					purename = filelist2[cloud_id].substr(0, filelist2[cloud_id].rfind("."));
+					isfile = 1;
+
+					//CSF
+					for (size_t i = 0; i < mycloud_vec[cloud_id].cloud->points.size(); i++)
+					{
+						long double x = mycloud_vec[cloud_id].cloud->points[i].x;
+						long double y = mycloud_vec[cloud_id].cloud->points[i].y;
+						long double z = mycloud_vec[cloud_id].cloud->points[i].z;
+
+						string tempx = doubleToString(x);
+						string tempy = doubleToString(y);
+						string tempz = doubleToString(z);
+
+						oripoint.x = atof(tempx.c_str());
+						oripoint.y = atof(tempy.c_str());
+						oripoint.z = atof(tempz.c_str());
+						oricloud.push_back(oripoint);
+					}
+
+					MyCloud gpcloud = mycloud_vec[cloud_id];
+					//get the ground point
+					//times1
+					std::thread t(getgroundpoint, oricloud);
+					t.detach();
+
+
+					Sleep(500);  //if this step is not added , the function wouldn't be excuted
+								 //wait(int *status);
+					while (1)
+					{
+						if ((finishcsf == 1)) { goto nextstep23; }
+						finishcsf;
+						cout << "";
+					}
+
+				nextstep23:
+					for (int i = 0; i != gi.size(); i++)
+					{
+						gpcloud.cloud->points[i] = mycloud_vec[cloud_id].cloud->points[gi[i]];
+					}
+					//mycloud = gpcloud;
+					mycloud_vec[cloud_id] = gpcloud;
+
+
+					//translate the in-memory pcd into las and save it
+					char strOutLasName[] = "temp2.las";
+
+					std::ofstream ofs(strOutLasName, ios::out | ios::binary);
+
+					liblas::Header header;
+					header.SetVersionMajor(1);
+					header.SetVersionMinor(2);
+					header.SetDataFormatId(liblas::PointFormatName::ePointFormat3);
+					header.SetScale(0.01, 0.01, 0.01);  //slove the long double problem
+
+														//дliblas,
+					liblas::Writer writer(ofs, header);
+					liblas::Point point(&header);
+
+					for (size_t i = 0; i < mycloud_vec[cloud_id].cloud->points.size(); i++)
+					{
+						long double x = mycloud_vec[cloud_id].cloud->points[i].x;
+						long double y = mycloud_vec[cloud_id].cloud->points[i].y;
+						long double z = mycloud_vec[cloud_id].cloud->points[i].z;
+						point.SetCoordinates(x, y, z);
+
+						uint32_t red = (uint32_t)mycloud_vec[cloud_id].cloud->points[i].r;
+						uint32_t green = (uint32_t)mycloud_vec[cloud_id].cloud->points[i].g;
+						uint32_t blue = (uint32_t)mycloud_vec[cloud_id].cloud->points[i].b;
+
+						liblas::Color pointColor(red, green, blue);
+						point.SetColor(pointColor);
+						writer.WritePoint(point);
+					}
+					long double minPt[3] = { 9999999, 9999999, 9999999 };
+					long double maxPt[3] = { 0, 0, 0 };
+					header.SetPointRecordsCount(mycloud_vec[cloud_id].cloud->points.size());
+					header.SetPointRecordsByReturnCount(0, mycloud_vec[cloud_id].cloud->points.size());
+					header.SetMax(maxPt[0], maxPt[1], maxPt[2]);
+					header.SetMin(minPt[0], minPt[1], minPt[2]);
+					writer.SetHeader(header);
+
+				}
+
+				if (isfile == 1) //the las file will be broken if we don' t use the 'isfile' judge number
+				{
+					//CopyFile(L"temp.las", L"temp2.las", FALSE);
+					PipelineManager mgr;
+					std::stringstream ss22;
+					//the DSM will be blank if resolution is too big (eg. > 0.2)
+					ss22 << R"({
+  "pipeline":["temp2.las",
+    {
+      "type":"filters.assign",
+      "assignment": [ "NumberOfReturns[:]=1", "ReturnNumber[:]=1" ]
+   },
+    {
+      "type":"filters.smrf",
+      "scalar":1.2,
+      "slope":0.2,
+      "threshold":0.45,
+      "window":16.0
+    },
+    {
+      "type":"filters.range",
+      "limits":"Classification[2:2]"
+    },
+    {
+      "resolution": 0.3,
+      "radius": 2,
+      "filename":".\\result\\)" << purename << R"(-DEM.tif"}]})";
+					mgr.readPipeline(ss22);
+					mgr.execute();
+					remove("temp2.las");
+
+				}
+
+				getchar();
+			}
+		}
+	}
+	if (isfile == 1)QMessageBox::information(this, "DEM-II", QString::fromLocal8Bit("成功生成数字高程模型"));
 }
 
 void CloudViewer::Xchange() {
@@ -681,6 +1415,8 @@ void CloudViewer::open()
 	if (filenames.isEmpty())
 		return;
 
+	//v6 clear filelist2;
+	filelist2.clear();
 	// Clear cache
 	mycloud_vec.clear();
 	total_points = 0;
@@ -698,6 +1434,7 @@ void CloudViewer::open()
 													   //change the global v - rowlynn
 		inputfile = subname;
 		inputroutine = file_name;
+		filelist2.push_back(inputfile);  //v6
 		//更新状态栏
 		ui.statusBar->showMessage(QString::fromLocal8Bit(subname.c_str()) + ": " + QString::number(i) + "/" + QString::number(filenames.size()) + QString::fromLocal8Bit(" 点云文件载入中..."));
 
@@ -823,6 +1560,11 @@ void CloudViewer::add()
 		std::string file_name = string(filename.toLocal8Bit());
 		std::string subname = getFileName(file_name);
 
+		//change the global v - rowlynn
+		inputfile = subname;  //v6
+		inputroutine = file_name;    //v6
+		filelist2.push_back(inputfile);  //v6
+
 		// 更新状态栏
 		ui.statusBar->showMessage(QString::fromLocal8Bit(subname.c_str()) + ": " + QString::number(i) + "/" + QString::number(filenames.size()) + QString::fromLocal8Bit(" 点云文件载入中..."));
 
@@ -933,6 +1675,7 @@ void CloudViewer::clear()
 	viewer->removeAllPointClouds();  //从viewer中移除所有点云
 	viewer->removeAllShapes(); //这个remove更彻底
 	ui.dataTree->clear();  //将dataTree清空
+	filelist2.clear();  //v6
 
 	ui.propertyTable->clear();  //清空属性窗口propertyTable
 	QStringList header;
@@ -1932,6 +2675,8 @@ void CloudViewer::deleteItem()
 		QTreeWidgetItem* curItem = itemList[i];
 		QString name = curItem->text(0);
 		int id = ui.dataTree->indexOfTopLevelItem(curItem);
+		//v6 filelist2
+		filelist2.erase(filelist2.begin() + id);
 		//QMessageBox::information(this, "information", "curItem: " + name + " " + QString::number(id));
 		auto it = mycloud_vec.begin() + ui.dataTree->indexOfTopLevelItem(curItem);
 		// 删除点云之前，将其点的数目保存

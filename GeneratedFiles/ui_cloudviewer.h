@@ -76,6 +76,7 @@ public:
     QAction *actionNDT;
     QAction *actioncsf;
     QAction *actionsetpara;
+    QAction *actiondembycsf;
     QWidget *centralWidget;
     QHBoxLayout *horizontalLayout_5;
     QVTKWidget *screen;
@@ -313,6 +314,11 @@ public:
         QIcon icon26;
         icon26.addFile(QStringLiteral(":/Resources/images/csfpara.png"), QSize(), QIcon::Normal, QIcon::Off);
         actionsetpara->setIcon(icon26);
+        actiondembycsf = new QAction(CloudViewerClass);
+        actiondembycsf->setObjectName(QStringLiteral("actiondembycsf"));
+        QIcon icon27;
+        icon27.addFile(QStringLiteral(":/Resources/images/demcsf.png"), QSize(), QIcon::Normal, QIcon::Off);
+        actiondembycsf->setIcon(icon27);
         centralWidget = new QWidget(CloudViewerClass);
         centralWidget->setObjectName(QStringLiteral("centralWidget"));
         QSizePolicy sizePolicy1(QSizePolicy::Preferred, QSizePolicy::Preferred);
@@ -671,23 +677,23 @@ public:
         menuGenerate->setObjectName(QStringLiteral("menuGenerate"));
         menuBasic_shapes = new QMenu(menuGenerate);
         menuBasic_shapes->setObjectName(QStringLiteral("menuBasic_shapes"));
-        QIcon icon27;
-        icon27.addFile(QStringLiteral(":/Resources/images/shape.png"), QSize(), QIcon::Normal, QIcon::Off);
-        menuBasic_shapes->setIcon(icon27);
+        QIcon icon28;
+        icon28.addFile(QStringLiteral(":/Resources/images/shape.png"), QSize(), QIcon::Normal, QIcon::Off);
+        menuBasic_shapes->setIcon(icon28);
         menuAbout = new QMenu(menuBar);
         menuAbout->setObjectName(QStringLiteral("menuAbout"));
         menuOption = new QMenu(menuBar);
         menuOption->setObjectName(QStringLiteral("menuOption"));
         themeAction = new QMenu(menuOption);
         themeAction->setObjectName(QStringLiteral("themeAction"));
-        QIcon icon28;
-        icon28.addFile(QStringLiteral(":/Resources/images/theme.png"), QSize(), QIcon::Normal, QIcon::Off);
-        themeAction->setIcon(icon28);
+        QIcon icon29;
+        icon29.addFile(QStringLiteral(":/Resources/images/theme.png"), QSize(), QIcon::Normal, QIcon::Off);
+        themeAction->setIcon(icon29);
         langAction = new QMenu(menuOption);
         langAction->setObjectName(QStringLiteral("langAction"));
-        QIcon icon29;
-        icon29.addFile(QStringLiteral(":/Resources/images/language.png"), QSize(), QIcon::Normal, QIcon::Off);
-        langAction->setIcon(icon29);
+        QIcon icon30;
+        icon30.addFile(QStringLiteral(":/Resources/images/language.png"), QSize(), QIcon::Normal, QIcon::Off);
+        langAction->setIcon(icon30);
         menuView = new QMenu(menuBar);
         menuView->setObjectName(QStringLiteral("menuView"));
         menuAngle_view = new QMenu(menuView);
@@ -721,6 +727,7 @@ public:
         mainToolBar->addSeparator();
         mainToolBar->addAction(actiondsmAction);
         mainToolBar->addAction(actionactiondem);
+        mainToolBar->addAction(actiondembycsf);
         mainToolBar->addAction(actioncsf);
         mainToolBar->addAction(actionsetpara);
         mainToolBar->addAction(actionshowdem);
@@ -898,6 +905,10 @@ public:
         actionsetpara->setText(QApplication::translate("CloudViewerClass", "setpara", Q_NULLPTR));
 #ifndef QT_NO_TOOLTIP
         actionsetpara->setToolTip(QApplication::translate("CloudViewerClass", "\350\256\276\347\275\256CSF\345\217\202\346\225\260", Q_NULLPTR));
+#endif // QT_NO_TOOLTIP
+        actiondembycsf->setText(QApplication::translate("CloudViewerClass", "dembycsf", Q_NULLPTR));
+#ifndef QT_NO_TOOLTIP
+        actiondembycsf->setToolTip(QApplication::translate("CloudViewerClass", "\351\200\232\350\277\207\345\270\203\346\226\231\346\250\241\346\213\237\347\256\227\346\263\225\346\226\271\345\274\217\347\224\237\346\210\220DEM", Q_NULLPTR));
 #endif // QT_NO_TOOLTIP
         RGBDock->setWindowTitle(QApplication::translate("CloudViewerClass", "RGB\351\242\234\350\211\262\347\256\241\347\220\206\345\231\250", Q_NULLPTR));
         label_1->setText(QApplication::translate("CloudViewerClass", "\347\272\242", Q_NULLPTR));

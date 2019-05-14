@@ -16,4 +16,5 @@ private:
 
 private slots:
 	void get_para();
+	void get_default();
 };

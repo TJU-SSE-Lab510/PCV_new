@@ -32,5 +32,6 @@
         <file>Resources/images/showdsm.png</file>
         <file>Resources/images/csf.png</file>
         <file>Resources/images/csfpara.png</file>
+        <file>Resources/images/demcsf.png</file>
     </qresource>
 </RCC>
