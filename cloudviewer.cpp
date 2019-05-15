@@ -2297,11 +2297,13 @@ void CloudViewer::registeringICP() {
 	QList<QTreeWidgetItem*> itemList = ui.dataTree->selectedItems();
 	PointCloudT::Ptr cloud_in(new PointCloudT);  //源点云
 	PointCloudT::Ptr cloud_target(new PointCloudT);   //目标点云
+	PointCloudT::Ptr filtered_cloud(new PointCloudT);    //过滤后的源点云
 	QStringList items;
 	int pos = 0;
 	bool in_ok;
 	bool out_ok;
 	bool times;
+	bool distance;
 	for (int i = 0; i < mycloud_vec.size(); i++) {
 		items << QString::fromLocal8Bit(mycloud_vec[i].subname.c_str());
 	}
@@ -2322,20 +2324,39 @@ void CloudViewer::registeringICP() {
 			QString item_out = QInputDialog::getItem(this, QString::fromLocal8Bit("请选择目标点云"),
 				QString::fromLocal8Bit("目标点云:"), items, 0, false, &out_ok);
 			if (out_ok && !item_out.isEmpty()) {
-				int num = QInputDialog::getInt(this, QString::fromLocal8Bit("迭代次数"), QString::fromLocal8Bit("请设置匹配迭代的最大次数"), 20, 1, 100, 1, &times);
+				int num = QInputDialog::getInt(this, QString::fromLocal8Bit("迭代次数"), QString::fromLocal8Bit("请设置匹配迭代的最大次数"), 20, 1, 1000, 1, &times);
 				if (times) {
-					for (int i = 0; i < mycloud_vec.size(); i++) {
-						if (QString::fromLocal8Bit(mycloud_vec[i].subname.c_str()) == item_out) {
-							cloud_target = mycloud_vec[i].cloud;
-							pcl::IterativeClosestPoint<PointT, PointT> icp;
-							icp.setInputSource(cloud_in);   //设置源点云
-							icp.setInputTarget(cloud_target);    //设置目标点云
-							icp.setMaximumIterations(num);    //设置最大迭代次数
-							PointCloudT::Ptr Final(new PointCloudT);
-							icp.align(*Final);        //变换后源点云
-							QMessageBox::about(NULL, tr("Result"), tr("has converged:%1 \nscore:%2\n").arg(icp.hasConverged()).arg(icp.getFitnessScore()));
-							mycloud_vec[pos].cloud = Final;
-							showPointcloud();           //配准完成刷新ui窗口
+					double dis = QInputDialog::getDouble(this, QString::fromLocal8Bit("对应点距离"), QString::fromLocal8Bit("请设置最大的对应点距离"), 0.10, 0.01, 10000.0, 2, &distance);
+					if (distance) {
+						for (int i = 0; i < mycloud_vec.size(); i++) {
+							if (QString::fromLocal8Bit(mycloud_vec[i].subname.c_str()) == item_out) {
+								//开始计时
+								timeStart();
+								cloud_target = mycloud_vec[i].cloud;
+								pcl::IterativeClosestPoint<PointT, PointT> icp;
+								/*		//设置源点云的kd-tree
+										pcl::search::KdTree<PointT>::Ptr tree1(new pcl::search::KdTree<PointT>);
+										tree1->setInputCloud(cloud_in);
+										//设置目标点云的kd-tree
+										pcl::search::KdTree<PointT>::Ptr tree2(new pcl::search::KdTree<PointT>);
+										tree2->setInputCloud(cloud_target);
+										icp.setSearchMethodSource(tree1);	//设置源点云搜索方法
+										icp.setSearchMethodTarget(tree2);	//设置目标点云搜索方法 */
+								icp.setInputSource(cloud_in);      //设置源点云
+								icp.setInputTarget(cloud_target);   //设置目标点云
+								icp.setMaxCorrespondenceDistance(dis);   //设置最大的对应点距离
+								icp.setTransformationEpsilon(1e-10);      //设置精度
+								icp.setMaximumIterations(num);    //设置最大迭代次数
+								icp.setEuclideanFitnessEpsilon(0.01);
+								PointCloudT::Ptr Final(new PointCloudT);
+								//开始配准
+								icp.align(*Final);
+								//结束计时
+								time_cost = timeOff();
+								QMessageBox::about(NULL, tr("Result"), QString::fromLocal8Bit("花费时间:%1秒\n").arg(time_cost) + tr("has converged:%1 \nscore:%2\n").arg(icp.hasConverged()).arg(icp.getFitnessScore()));
+								mycloud_vec[pos].cloud = Final;
+								showPointcloud();           //配准完成刷新ui窗口
+							}
 						}
 					}
 				}
@@ -2368,6 +2389,7 @@ void CloudViewer::registeringNDT() {
 				if (QString::fromLocal8Bit(mycloud_vec[i].subname.c_str()) == item_in) {
 					cloud_in = mycloud_vec[i].cloud;
 					items.removeAt(i);
+					//近似体素滤波器提高配准效率
 					pcl::ApproximateVoxelGrid<PointT> approximate_voxel_filter;
 					approximate_voxel_filter.setLeafSize(0.2, 0.2, 0.2);
 					approximate_voxel_filter.setInputCloud(cloud_in);
@@ -2388,10 +2410,12 @@ void CloudViewer::registeringNDT() {
 						double resolution = QInputDialog::getDouble(this, QString::fromLocal8Bit("分辨率"), QString::fromLocal8Bit("请设置NDT网格结构分辨率"), 1.00, 0.01, 10.00, 2, &res);
 						if (res) {
 							//设置匹配迭代的最大次数
-							int num = QInputDialog::getInt(this, QString::fromLocal8Bit("迭代次数"), QString::fromLocal8Bit("请设置匹配迭代的最大次数"), 35, 1, 100, 1, &times);
+							int num = QInputDialog::getInt(this, QString::fromLocal8Bit("迭代次数"), QString::fromLocal8Bit("请设置匹配迭代的最大次数"), 35, 1, 1000, 1, &times);
 							if (times) {
 								for (int i = 0; i < mycloud_vec.size(); i++) {
 									if (QString::fromLocal8Bit(mycloud_vec[i].subname.c_str()) == item_out) {
+										//开始计时
+										timeStart();
 										cloud_target = mycloud_vec[i].cloud;
 										//初始化正态分布变换（NDT）
 										pcl::NormalDistributionsTransform<PointT, PointT> ndt;
@@ -2408,9 +2432,12 @@ void CloudViewer::registeringNDT() {
 										ndt.setInputTarget(cloud_target);
 										PointCloudT::Ptr output_cloud(new PointCloudT);
 										ndt.align(*output_cloud);        //变换后源点云,此处output_cloud不能作为最终的源点云变换，因为上面对源点云进行了滤波处理
-										QMessageBox::about(NULL, tr("Result"), tr("has converged:%1 \nscore:%2\n").arg(ndt.hasConverged()).arg(ndt.getFitnessScore()));
+										//结束计时
+										time_cost = timeOff();
+										QMessageBox::about(NULL, tr("Result"), QString::fromLocal8Bit("花费时间:%1秒\n").arg(time_cost) + tr("has converged:%1 \nscore:%2\n").arg(ndt.hasConverged()).arg(ndt.getFitnessScore()));
 										//使用创建的变换对未过滤的输入点云进行变换
 										pcl::transformPointCloud(*cloud_in, *output_cloud, ndt.getFinalTransformation());
+										mycloud_vec[pos].cloud = output_cloud;
 										showPointcloud();           //配准完成刷新ui窗口
 									}
 								}
