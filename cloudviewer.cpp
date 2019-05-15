@@ -2333,6 +2333,9 @@ void CloudViewer::registeringICP() {
 								//开始计时
 								timeStart();
 								cloud_target = mycloud_vec[i].cloud;
+								//从点云中移除无效点
+								std::vector<int> indices;
+								pcl::removeNaNFromPointCloud(*cloud_in, *cloud_in, indices);
 								pcl::IterativeClosestPoint<PointT, PointT> icp;
 								/*		//设置源点云的kd-tree
 										pcl::search::KdTree<PointT>::Ptr tree1(new pcl::search::KdTree<PointT>);
