@@ -169,9 +169,11 @@ private:
 	//Filters
 	void statisticalFilter();  //统计滤波
 	void radiusFilter();
-	//Operations
-	void registeringICP();//ICP配准
-	void registeringNDT();//NDT配准
+	//Registeration
+	void registeringICPDouble();//两点云ICP配准
+	void registeringICPPairs();//多点云ICP配准
+	void registeringNDTDouble();//两点云NDT配准
+	void registeringNDTPairs();//多点云NDT配准
 	// Option menu slots
 	void windowsTheme();
 	void darculaTheme();

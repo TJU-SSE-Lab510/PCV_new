@@ -749,7 +749,7 @@
      <x>0</x>
      <y>0</y>
      <width>1800</width>
-     <height>23</height>
+     <height>26</height>
     </rect>
    </property>
    <property name="font">
@@ -860,9 +860,23 @@
     <property name="title">
      <string>配准</string>
     </property>
+    <widget class="QMenu" name="menuICP">
+     <property name="title">
+      <string>ICP</string>
+     </property>
+     <addaction name="actionIcpDouble"/>
+     <addaction name="actionIcpPairs"/>
+    </widget>
+    <widget class="QMenu" name="menuNDT">
+     <property name="title">
+      <string>NDT</string>
+     </property>
+     <addaction name="actionNdtDouble"/>
+     <addaction name="actionNdtPairs"/>
+    </widget>
     <addaction name="separator"/>
-    <addaction name="actionICP"/>
-    <addaction name="actionNDT"/>
+    <addaction name="menuICP"/>
+    <addaction name="menuNDT"/>
    </widget>
    <addaction name="menuFile"/>
    <addaction name="menuView"/>
@@ -1253,16 +1267,6 @@
     <string>showdem</string>
    </property>
   </action>
-  <action name="actionICP">
-   <property name="text">
-    <string>ICP</string>
-   </property>
-  </action>
-  <action name="actionNDT">
-   <property name="text">
-    <string>NDT</string>
-   </property>
-  </action>
   <action name="actioncsf">
    <property name="icon">
     <iconset resource="cloudviewer.qrc">
@@ -1285,6 +1289,26 @@
    </property>
    <property name="toolTip">
     <string>设置CSF参数</string>
+   </property>
+  </action>
+  <action name="actionIcpDouble">
+   <property name="text">
+    <string>两点云配准</string>
+   </property>
+  </action>
+  <action name="actionIcpPairs">
+   <property name="text">
+    <string>多点云配准</string>
+   </property>
+  </action>
+  <action name="actionNdtDouble">
+   <property name="text">
+    <string>两点云配准</string>
+   </property>
+  </action>
+  <action name="actionNdtPairs">
+   <property name="text">
+    <string>多点云配准</string>
    </property>
   </action>
  </widget>

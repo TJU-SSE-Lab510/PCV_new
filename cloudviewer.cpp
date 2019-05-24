@@ -52,8 +52,11 @@ CloudViewer::CloudViewer(QWidget *parent)
 	QObject::connect(ui.aboutAction, &QAction::triggered, this, &CloudViewer::about);
 	QObject::connect(ui.helpAction, &QAction::triggered, this, &CloudViewer::help);
 	// Regist (connect)
-	QObject::connect(ui.actionICP, &QAction::triggered, this, &CloudViewer::registeringICP);
-	QObject::connect(ui.actionNDT, &QAction::triggered, this, &CloudViewer::registeringNDT);
+	QObject::connect(ui.actionIcpDouble, &QAction::triggered, this, &CloudViewer::registeringICPDouble);
+	QObject::connect(ui.actionIcpPairs, &QAction::triggered, this, &CloudViewer::registeringICPDouble);
+	QObject::connect(ui.actionNdtDouble, &QAction::triggered, this, &CloudViewer::registeringNDTDouble);
+	QObject::connect(ui.actionNdtPairs, &QAction::triggered, this, &CloudViewer::registeringNDTDouble);
+
 
 	/***** Slots connection of RGB widget *****/
 	// Random color (connect)
@@ -2292,12 +2295,11 @@ void CloudViewer::radiusFilter() {
 }
 
 //registration
-//ICP配准
-void CloudViewer::registeringICP() {
+//两点云ICP配准
+void CloudViewer::registeringICPDouble() {
 	QList<QTreeWidgetItem*> itemList = ui.dataTree->selectedItems();
 	PointCloudT::Ptr cloud_in(new PointCloudT);  //源点云
 	PointCloudT::Ptr cloud_target(new PointCloudT);   //目标点云
-	PointCloudT::Ptr filtered_cloud(new PointCloudT);    //过滤后的源点云
 	QStringList items;
 	int pos = 0;
 	bool in_ok;
@@ -2337,14 +2339,14 @@ void CloudViewer::registeringICP() {
 								std::vector<int> indices;
 								pcl::removeNaNFromPointCloud(*cloud_in, *cloud_in, indices);
 								pcl::IterativeClosestPoint<PointT, PointT> icp;
-								/*		//设置源点云的kd-tree
-										pcl::search::KdTree<PointT>::Ptr tree1(new pcl::search::KdTree<PointT>);
-										tree1->setInputCloud(cloud_in);
-										//设置目标点云的kd-tree
-										pcl::search::KdTree<PointT>::Ptr tree2(new pcl::search::KdTree<PointT>);
-										tree2->setInputCloud(cloud_target);
-										icp.setSearchMethodSource(tree1);	//设置源点云搜索方法
-										icp.setSearchMethodTarget(tree2);	//设置目标点云搜索方法 */
+								//设置源点云的kd-tree
+								pcl::search::KdTree<PointT>::Ptr tree1(new pcl::search::KdTree<PointT>);
+								tree1->setInputCloud(cloud_in);
+								//设置目标点云的kd-tree
+								pcl::search::KdTree<PointT>::Ptr tree2(new pcl::search::KdTree<PointT>);
+								tree2->setInputCloud(cloud_target);
+								icp.setSearchMethodSource(tree1);	//设置源点云搜索方法
+								icp.setSearchMethodTarget(tree2);	//设置目标点云搜索方法 */
 								icp.setInputSource(cloud_in);      //设置源点云
 								icp.setInputTarget(cloud_target);   //设置目标点云
 								icp.setMaxCorrespondenceDistance(dis);   //设置最大的对应点距离
@@ -2367,8 +2369,58 @@ void CloudViewer::registeringICP() {
 		}
 	}
 }
-//NDT配准
-void CloudViewer::registeringNDT() {
+/*
+//多点云ICP配准
+void CloudViewer::registeringICPPairs() {
+	QList<QTreeWidgetItem*> itemList = ui.dataTree->selectedItems();
+	PointCloudT::Ptr cloud_in(new PointCloudT);  //源点云
+	PointCloudT::Ptr cloud_target(new PointCloudT);   //目标点云
+	//bool num;
+	bool times;
+	bool distance;
+	if (mycloud_vec.size()<2) {
+		QMessageBox::warning(NULL, QString::fromLocal8Bit("警告"), QString::fromLocal8Bit("至少需要添加两个点云文件！"));
+	}
+	int num = QInputDialog::getInt(this, QString::fromLocal8Bit("迭代次数"), QString::fromLocal8Bit("请设置匹配迭代的最大次数"), 20, 1, 1000, 1, &times);
+	if (times) {
+		double dis = QInputDialog::getDouble(this, QString::fromLocal8Bit("对应点距离"), QString::fromLocal8Bit("请设置最大的对应点距离"), 0.10, 0.01, 10000.0, 2, &distance);
+		if (distance) {
+			//开始计时
+			timeStart();
+			for (int i = 0; i < mycloud_vec.size(); i++) {
+				cloud_target = mycloud.cloud;
+				cloud_in = mycloud_vec[mycloud_vec.size() - i - 1].cloud;
+				//从点云中移除无效点
+				std::vector<int> indices;
+				pcl::removeNaNFromPointCloud(*cloud_in, *cloud_in, indices);
+				pcl::IterativeClosestPoint<PointT, PointT> icp;
+				//设置源点云的kd-tree
+				pcl::search::KdTree<PointT>::Ptr tree1(new pcl::search::KdTree<PointT>);
+				tree1->setInputCloud(cloud_in);
+				//设置目标点云的kd-tree
+				pcl::search::KdTree<PointT>::Ptr tree2(new pcl::search::KdTree<PointT>);
+				tree2->setInputCloud(cloud_target);
+				icp.setSearchMethodSource(tree1);	//设置源点云搜索方法
+				icp.setSearchMethodTarget(tree2);	//设置目标点云搜索方法 
+				icp.setInputSource(cloud_in);      //设置源点云
+				icp.setInputTarget(cloud_target);   //设置目标点云
+				icp.setMaxCorrespondenceDistance(dis);   //设置最大的对应点距离
+				icp.setTransformationEpsilon(1e-10);      //设置精度
+				icp.setMaximumIterations(num);    //设置最大迭代次数
+				icp.setEuclideanFitnessEpsilon(0.01);
+				PointCloudT::Ptr Final(new PointCloudT);
+				//开始配准
+				icp.align(*Final);
+			}
+			//结束计时
+			time_cost = timeOff();
+			QMessageBox::about(NULL, tr("Result"), QString::fromLocal8Bit("花费时间:%1秒\n").arg(time_cost) + tr("has converged:%1 \nscore:%2\n").arg(icp.hasConverged()).arg(icp.getFitnessScore()));
+		}
+	}
+}
+*/
+//两点云NDT配准
+void CloudViewer::registeringNDTDouble() {
 	QList<QTreeWidgetItem*> itemList = ui.dataTree->selectedItems();
 	PointCloudT::Ptr cloud_in(new PointCloudT);  //源点云
 	PointCloudT::Ptr cloud_target(new PointCloudT);   //目标点云
@@ -2451,4 +2503,8 @@ void CloudViewer::registeringNDT() {
 			}
 		}
 	}
+}
+//多点云NDT配准
+void CloudViewer::registeringNDTPairs() {
+
 }
