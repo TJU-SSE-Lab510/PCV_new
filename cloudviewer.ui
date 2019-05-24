@@ -856,28 +856,6 @@
     <addaction name="meshsurfaceAction"/>
     <addaction name="wireframeAction"/>
    </widget>
-   <widget class="QMenu" name="menu">
-    <property name="title">
-     <string>配准</string>
-    </property>
-    <widget class="QMenu" name="menuICP">
-     <property name="title">
-      <string>ICP</string>
-     </property>
-     <addaction name="actionIcpDouble"/>
-     <addaction name="actionIcpPairs"/>
-    </widget>
-    <widget class="QMenu" name="menuNDT">
-     <property name="title">
-      <string>NDT</string>
-     </property>
-     <addaction name="actionNdtDouble"/>
-     <addaction name="actionNdtPairs"/>
-    </widget>
-    <addaction name="separator"/>
-    <addaction name="menuICP"/>
-    <addaction name="menuNDT"/>
-   </widget>
    <addaction name="menuFile"/>
    <addaction name="menuView"/>
    <addaction name="menuView_2"/>
@@ -885,7 +863,6 @@
    <addaction name="menuProcess"/>
    <addaction name="menuOption"/>
    <addaction name="menuAbout"/>
-   <addaction name="menu"/>
   </widget>
   <action name="openAction">
    <property name="icon">
