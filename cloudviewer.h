@@ -169,7 +169,7 @@ private:
 	//Filters
 	void statisticalFilter();  //统计滤波
 	void radiusFilter();
-	//Operations
+	//Registeration
 	void registeringICP();//ICP配准
 	void registeringNDT();//NDT配准
 	// Option menu slots
