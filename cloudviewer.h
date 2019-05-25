@@ -228,6 +228,7 @@ private:
 	void showdem();
 	void showcsf();  //v5
 	void setpara();
+	void dembycsf();  //v6
 };
 
 #endif // CLOUDVIEWER_H

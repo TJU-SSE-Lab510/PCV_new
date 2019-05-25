@@ -91,6 +91,7 @@
    <addaction name="separator"/>
    <addaction name="actiondsmAction"/>
    <addaction name="actionactiondem"/>
+   <addaction name="actiondembycsf"/>
    <addaction name="actioncsf"/>
    <addaction name="actionsetpara"/>
    <addaction name="actionshowdem"/>
@@ -1268,24 +1269,16 @@
     <string>设置CSF参数</string>
    </property>
   </action>
-  <action name="actionIcpDouble">
-   <property name="text">
-    <string>两点云配准</string>
+  <action name="actiondembycsf">
+   <property name="icon">
+    <iconset resource="cloudviewer.qrc">
+     <normaloff>:/Resources/images/demcsf.png</normaloff>:/Resources/images/demcsf.png</iconset>
    </property>
-  </action>
-  <action name="actionIcpPairs">
    <property name="text">
-    <string>多点云配准</string>
+    <string>dembycsf</string>
    </property>
-  </action>
-  <action name="actionNdtDouble">
-   <property name="text">
-    <string>两点云配准</string>
-   </property>
-  </action>
-  <action name="actionNdtPairs">
-   <property name="text">
-    <string>多点云配准</string>
+   <property name="toolTip">
+    <string>通过布料模拟算法方式生成DEM</string>
    </property>
   </action>
  </widget>

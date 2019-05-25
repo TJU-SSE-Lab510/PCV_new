@@ -46,21 +46,11 @@
     <ClCompile Include="cloudviewer.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
-    <ClCompile Include="GeneratedFiles\Debug\moc_cloudviewer.cpp">
-      <Filter>Generated Files\Debug</Filter>
-    </ClCompile>
-    <ClCompile Include="GeneratedFiles\Release\moc_cloudviewer.cpp">
-      <Filter>Generated Files\Release</Filter>
-    </ClCompile>
-    <ClCompile Include="GeneratedFiles\qrc_cloudviewer.cpp">
-      <Filter>Generated Files</Filter>
-    </ClCompile>
-    <ClCompile Include="GeneratedFiles\Debug\moc_AboutWin.cpp">
-      <Filter>Generated Files\Debug</Filter>
-    </ClCompile>
-    <ClCompile Include="GeneratedFiles\Release\moc_AboutWin.cpp">
-      <Filter>Generated Files\Release</Filter>
-    </ClCompile>
+    
+    
+    
+    
+    
     <ClCompile Include="AboutWin.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
@@ -73,35 +63,31 @@
     <ClCompile Include="csfwin.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
-    <ClCompile Include="GeneratedFiles\Debug\moc_csfwin.cpp">
-      <Filter>Generated Files\Debug</Filter>
-    </ClCompile>
-    <ClCompile Include="GeneratedFiles\Release\moc_csfwin.cpp">
-      <Filter>Generated Files\Release</Filter>
-    </ClCompile>
+    
+    
   </ItemGroup>
   <ItemGroup>
-    <CustomBuild Include="cloudviewer.h">
+    <QtMoc Include="cloudviewer.h">
       <Filter>Header Files</Filter>
-    </CustomBuild>
-    <CustomBuild Include="cloudviewer.ui">
+    </QtMoc>
+    <QtUic Include="cloudviewer.ui">
       <Filter>Form Files</Filter>
-    </CustomBuild>
-    <CustomBuild Include="cloudviewer.qrc">
+    </QtUic>
+    <QtRcc Include="cloudviewer.qrc">
       <Filter>Resource Files</Filter>
-    </CustomBuild>
-    <CustomBuild Include="AboutWin.ui">
+    </QtRcc>
+    <QtUic Include="AboutWin.ui">
       <Filter>Form Files</Filter>
-    </CustomBuild>
-    <CustomBuild Include="AboutWin.h">
+    </QtUic>
+    <QtMoc Include="AboutWin.h">
       <Filter>Header Files</Filter>
-    </CustomBuild>
-    <CustomBuild Include="csfwin.h">
+    </QtMoc>
+    <QtMoc Include="csfwin.h">
       <Filter>Header Files</Filter>
-    </CustomBuild>
-    <CustomBuild Include="csfwin.ui">
+    </QtMoc>
+    <QtUic Include="csfwin.ui">
       <Filter>Form Files</Filter>
-    </CustomBuild>
+    </QtUic>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="GeneratedFiles\ui_cloudviewer.h">
