@@ -3000,8 +3000,8 @@ void CloudViewer::radiusFilter() {
 		int id = ui.dataTree->indexOfTopLevelItem(curItem);
 		//用户设置半径及邻点个数
 		bool isOK1, isOK2;
-		double radiusSearch = QInputDialog::getDouble(this, QString::fromLocal8Bit("标准差乘数"), QString::fromLocal8Bit(mycloud_vec[id].subname.c_str()) + 
-			QString::fromLocal8Bit(":\n请输入标准差乘数"), 1.00, 0.01, 10.00, 2, &isOK1);
+		double radiusSearch = QInputDialog::getDouble(this, QString::fromLocal8Bit("搜索半径"), QString::fromLocal8Bit(mycloud_vec[id].subname.c_str()) + 
+			QString::fromLocal8Bit(":\n请输入搜索半径"), 1.00, 0.01, 10.00, 2, &isOK1);
 		if (isOK1) {
 			int MinNeighbor = QInputDialog::getInt(this, QString::fromLocal8Bit("近邻的点数"),
 				QString::fromLocal8Bit("请输入近邻点数"),
