@@ -3094,7 +3094,7 @@ void CloudViewer::registeringICP() {
 				}
 				//结束计时
 				time_cost = timeOff();
-				QMessageBox::about(NULL, tr("Result"), QString::fromLocal8Bit("花费时间:%1秒\n").arg(time_cost));
+				QMessageBox::about(this, QString::fromLocal8Bit("耗时"), QString::fromLocal8Bit("花费时间:%1秒\n").arg(time_cost));
 			}
 		}
 	}
@@ -3159,7 +3159,7 @@ void CloudViewer::registeringNDT() {
 						}
 					//结束计时
 					time_cost = timeOff();
-					QMessageBox::about(NULL, tr("Result"), QString::fromLocal8Bit("花费时间:%1秒\n").arg(time_cost));
+					QMessageBox::about(this, QString::fromLocal8Bit("耗时"), QString::fromLocal8Bit("花费时间:%1秒\n").arg(time_cost));
 					}
 				}
 			}
