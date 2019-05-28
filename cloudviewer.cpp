@@ -3148,7 +3148,7 @@ void CloudViewer::registeringNDT() {
 						ndt.setResolution(resolution);
 						//设置匹配迭代的最大次数
 						ndt.setMaximumIterations(num);
-						ndt.setInputCloud(filtered_cloud);
+						ndt.setInputSource(filtered_cloud);
 						ndt.setInputTarget(cloud_target);
 						PointCloudT::Ptr output_cloud(new PointCloudT);
 						ndt.align(*output_cloud);        //变换后源点云,此处output_cloud不能作为最终的源点云变换，因为上面对源点云进行了滤波处理
