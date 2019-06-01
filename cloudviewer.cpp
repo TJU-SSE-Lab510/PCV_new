@@ -3000,8 +3000,8 @@ void CloudViewer::radiusFilter() {
 		int id = ui.dataTree->indexOfTopLevelItem(curItem);
 		//用户设置半径及邻点个数
 		bool isOK1, isOK2;
-		double radiusSearch = QInputDialog::getDouble(this, QString::fromLocal8Bit("标准差乘数"), QString::fromLocal8Bit(mycloud_vec[id].subname.c_str()) + 
-			QString::fromLocal8Bit(":\n请输入标准差乘数"), 1.00, 0.01, 10.00, 2, &isOK1);
+		double radiusSearch = QInputDialog::getDouble(this, QString::fromLocal8Bit("搜索半径"), QString::fromLocal8Bit(mycloud_vec[id].subname.c_str()) + 
+			QString::fromLocal8Bit(":\n请输入搜索半径"), 1.00, 0.01, 10.00, 2, &isOK1);
 		if (isOK1) {
 			int MinNeighbor = QInputDialog::getInt(this, QString::fromLocal8Bit("近邻的点数"),
 				QString::fromLocal8Bit("请输入近邻点数"),
@@ -3094,7 +3094,7 @@ void CloudViewer::registeringICP() {
 				}
 				//结束计时
 				time_cost = timeOff();
-				QMessageBox::about(NULL, tr("Result"), QString::fromLocal8Bit("花费时间:%1秒\n").arg(time_cost));
+				QMessageBox::about(this, QString::fromLocal8Bit("耗时"), QString::fromLocal8Bit("花费时间:%1秒\n").arg(time_cost));
 			}
 		}
 	}
@@ -3148,7 +3148,7 @@ void CloudViewer::registeringNDT() {
 						ndt.setResolution(resolution);
 						//设置匹配迭代的最大次数
 						ndt.setMaximumIterations(num);
-						ndt.setInputCloud(filtered_cloud);
+						ndt.setInputSource(filtered_cloud);
 						ndt.setInputTarget(cloud_target);
 						PointCloudT::Ptr output_cloud(new PointCloudT);
 						ndt.align(*output_cloud);        //变换后源点云,此处output_cloud不能作为最终的源点云变换，因为上面对源点云进行了滤波处理
@@ -3159,7 +3159,7 @@ void CloudViewer::registeringNDT() {
 						}
 					//结束计时
 					time_cost = timeOff();
-					QMessageBox::about(NULL, tr("Result"), QString::fromLocal8Bit("花费时间:%1秒\n").arg(time_cost));
+					QMessageBox::about(this, QString::fromLocal8Bit("耗时"), QString::fromLocal8Bit("花费时间:%1秒\n").arg(time_cost));
 					}
 				}
 			}
