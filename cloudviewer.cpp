@@ -1,4 +1,4 @@
-﻿#define _SCL_SECURE_NO_WARNINGS    //https://blog.csdn.net/cyh706510441/article/details/44757553
+#define _SCL_SECURE_NO_WARNINGS    //https://blog.csdn.net/cyh706510441/article/details/44757553
 #include "cloudviewer.h"
 #pragma comment( lib, "ws2_32.lib")
 
@@ -1691,7 +1691,7 @@ void CloudViewer::clear()
 void CloudViewer::save()
 {
 	save_filename = QFileDialog::getSaveFileName(this, QString::fromLocal8Bit("保存点云文件"),
-		QString::fromLocal8Bit(mycloud.dirname.c_str()), QString::fromLocal8Bit("点云文件(*.pcd *.ply);;Allfile(*.*)"));
+		QString::fromLocal8Bit(mycloud.dirname.c_str()), QString::fromLocal8Bit("点云文件(*.pcd *.ply *.las);;Allfile(*.*)"));
 	if (save_filename.isEmpty())	//文件名为空直接返回
 		return;
 	std::string file_name = string(save_filename.toLocal8Bit());
@@ -1712,12 +1712,53 @@ void CloudViewer::save()
 	{
 		status = pcl::io::savePLYFile(file_name, *(mycloud.cloud));
 	}
+	else if (save_filename.endsWith(".las", Qt::CaseInsensitive))
+	{
+
+		std::ofstream ofs(file_name, ios::out | ios::binary);
+
+		liblas::Header header;
+		header.SetVersionMajor(1);
+		header.SetVersionMinor(2);
+		header.SetDataFormatId(liblas::PointFormatName::ePointFormat3);
+		header.SetScale(0.01, 0.01, 0.01);  //slove the long double problem
+
+											//дliblas,
+		liblas::Writer writer(ofs, header);
+		liblas::Point point(&header);
+
+		for (size_t i = 0; i < mycloud.cloud->points.size(); i++)
+		{
+			long double x = mycloud.cloud->points[i].x;
+			long double y = mycloud.cloud->points[i].y;
+			long double z = mycloud.cloud->points[i].z;
+			point.SetCoordinates(x, y, z);
+
+			uint32_t red = (uint32_t)mycloud.cloud->points[i].r;
+			uint32_t green = (uint32_t)mycloud.cloud->points[i].g;
+			uint32_t blue = (uint32_t)mycloud.cloud->points[i].b;
+
+			liblas::Color pointColor(red, green, blue);
+			point.SetColor(pointColor);
+			writer.WritePoint(point);
+		}
+		long double minPt[3] = { 9999999, 9999999, 9999999 };
+		long double maxPt[3] = { 0, 0, 0 };
+		header.SetPointRecordsCount(mycloud.cloud->points.size());
+		header.SetPointRecordsByReturnCount(0, mycloud.cloud->points.size());
+		header.SetMax(maxPt[0], maxPt[1], maxPt[2]);
+		header.SetMin(minPt[0], minPt[1], minPt[2]);
+		writer.SetHeader(header);
+
+
+	}
 	else //提示：无法保存为除了.ply .pcd以外的文件
 	{
 		QMessageBox::information(this, QString::fromLocal8Bit("文件格式错误"),
-			QString::fromLocal8Bit("不能保存除.ply .pcd以外格式的文件"));
+			QString::fromLocal8Bit("不能保存除.ply .pcd .las以外格式的文件"));
 		return;
 	}
+
 	//提示：后缀没问题，但是无法保存
 	if (status != 0)
 	{
